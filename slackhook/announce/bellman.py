@@ -272,8 +272,7 @@ class Bellman:
                        .get(group_name=group_name)
                        .person_set
                        .all()):
-            tag_text += ('<@' + person.person_id + '|' + person.person_name
-                         + '> ')
+            tag_text += ('<@' + person.person_id + '> ')
         return tag_text
 
     def get_response(self):
