@@ -12,6 +12,8 @@ text = ''
 
 'people-in-group <group>'
 
+'people-in-group <group>' - no people in group
+
 'people-in-group <group> <other text>'
 
 'people-in-group <group that  doesn't exist> <other text>'
@@ -22,7 +24,7 @@ text = ''
 
 'list-my-groups <message>'
 
-'list-my-groups' - no groups
+'list-my-groups' - belongs to no groups
 
 ############ opt-in ############
 

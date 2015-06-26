@@ -18,7 +18,7 @@ class Bellman:
     # list groups
     def list_groups(self):
         print 'Listing groups'
-        self.response_text = 'list of groups: \n'
+        self.response_text = 'List of groups: \n'
         for group in Group.objects.all():
             self.response_text += (str(group) + '\n')
 
@@ -38,6 +38,7 @@ class Bellman:
     # list-my-groups
     def list_my_groups(self):
         self.update_user_info()
+        # iterate through groups that person belongs to
         for group in (
                 Person.objects
                 .get(person_id=self.user_id)
@@ -46,18 +47,35 @@ class Bellman:
             self.response_text += (str(group) + '\n')
         # check if there are no groups
         if self.response_text == '':
-            self.response_text = ('Hi there, you don\'t seem'
+            self.response_text = ('You don\'t seem'
                                   ' to belong to any groups. Use the '
                                   '\'opt-in\' '
                                   'command to join a group, '
                                   'or use \'help\' to get more info')
         else:
-            self.response_text = 'Groups you belong to:\n',
-            self.response_text
+            self.response_text = (
+                'Groups you belong to:\n' + self.response_text)
 
     # opt-in
+    @csrf_exempt
     def opt_in(self):
-        pass
+        group_name, space, self.text = self.text.partition(' ')
+        self.update_user_info()
+        # check group exists
+        if self.group_exists(group_name):
+            # check if person belongs to group
+            if not self.user_in_group(group_name):
+                # add person to the group
+                group = Group.objects.get(group_name=group_name)
+                group.person_set.add(
+                    Person.objects.get(person_id=self.user_id))
+                group.save()
+                self.response_text = 'You\'ve been added to ' + group_name
+            else:
+                self.response_text = 'You\'re already part of ' + group_name
+        else:
+            self.response_text = ('The group \'' + group_name +
+                                  '\' doesn\'t exist')
 
     # opt-out
     def opt_out(self):
@@ -125,6 +143,15 @@ class Bellman:
         return self.user_name != (Person.objects
                                         .get(person_id=self.user_id)
                                         .person_name)
+
+    def user_in_group(self, group_name):
+        return ((Person.objects
+                .get(person_id=self.user_id))
+                in
+                (Group.objects
+                    .get(group_name=group_name)
+                    .person_set
+                    .all()))
 
     @csrf_exempt
     def make_group(self, group_name):
