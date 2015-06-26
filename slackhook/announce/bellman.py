@@ -129,6 +129,25 @@ class Bellman:
     def create(self):
         group_name, space, self.text = self.text.partition(' ')
         self.update_user_info()
+        if group_name != '':
+            # check group exists
+            if not self.group_exists(group_name):
+                # create and save the group
+                group = Group(group_name=group_name)
+                group.save()
+                self.response_text = ('The group \'' + group_name + '\' has'
+                                      ' been created.\n'
+                                      'To join the group, run the following '
+                                      'comand:\n'
+                                      '```/bellman opt-in ' + group_name
+                                      + '```')
+            else:
+                self.response_text = ('The group \'' + group_name +
+                                      '\' already exists')
+        else:
+            self.response_text = ('Please give me a group name in your bellman'
+                                  ' command:\n'
+                                  '```/bellman create GROUP_NAME```')
 
     # announce
     def announce(self):
@@ -137,8 +156,6 @@ class Bellman:
     # help - autoresponse
     def help(self):
         pass
-
-    # HELPER FUNCTIONS
 
     # execute (works out what function to run, based on command)
     @csrf_exempt
@@ -166,12 +183,16 @@ class Bellman:
             self.create()
         elif self.command == 'announce':
             self.announce()
-        elif self.command == 'help':
+        elif (self.command == 'help' or
+                self.command == ''):
             self.help()
         else:
-            self.response_text = 'Sorry, I didn\'t',
-            'understand your command of: \'', self.command, '\'\n\n'
+            self.response_text = ('Sorry, I didn\'t'
+                                  'understand your command of'
+                                  ' \'', self.command, '\'\n\n')
             self.help()
+
+    # HELPER FUNCTIONS
 
     @csrf_exempt
     def update_user_info(self):

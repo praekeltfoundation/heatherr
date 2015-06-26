@@ -48,6 +48,16 @@ text = ''
 
 'opt-out <group name that doesn't exist>'
 
+############ create ############
+
+'create'
+
+'create <group name that doesn't exist>'
+
+'create <group name that exists>'
+
+'create <group name> <other text>'
+
 ############ announce ############
 
 'announce'
