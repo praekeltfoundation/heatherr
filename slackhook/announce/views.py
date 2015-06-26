@@ -13,7 +13,6 @@ def check_token_safe(token):
 def announce(request):
     print "---------------------------------------"
     # default empty text field will be ignored by slack
-    response_text = ''
 
     # security check
     if request.method == 'POST' and check_token_safe(request.POST['token']):
@@ -35,4 +34,4 @@ def announce(request):
 
         bellman.execute()
 
-    return HttpResponse(response_text)
+    return HttpResponse(bellman.get_response())

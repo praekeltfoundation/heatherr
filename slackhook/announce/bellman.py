@@ -10,12 +10,17 @@ class Bellman:
         self.user_name = user_name
         self.user_id = user_id
         self.response_text = ''
+        print '********************************************'
+        print self.command
+        print self.user_name
+        print self.user_id
 
     # list groups
     def list_groups(self):
-        response_text = 'list of groups: \n'
+        print 'Listing groups'
+        self.response_text = 'list of groups: \n'
         for group in Group.objects.all():
-            response_text += (str(group) + '\n')
+            self.response_text += (str(group) + '\n')
 
     # people-in-group
     def people_in_group(self):
@@ -107,3 +112,6 @@ class Bellman:
 
     def message_group_created(self, user_name, group_name):
         return 'Thanks ', user_name, ' you created the group: ', group_name
+
+    def get_response(self):
+        return self.response_text
