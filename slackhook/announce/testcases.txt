@@ -1,0 +1,66 @@
+text = ''
+
+############ list-groups ############
+
+'list-groups'
+
+'list-groups <other text>'
+
+############ people-in-group ##########
+
+'people-in-group'
+
+'people-in-group <other text>'
+
+############ list-my-groups ############
+
+'list-my-groups'
+
+'list-my-groups <message>'
+
+############ opt-in ############
+
+'opt-in'
+
+'opt-in <group name that they are a part of>'
+
+'opt-in <group name that doesn't exist>'
+
+'opt-in <group name that they are already a part of>'
+
+'opt-in <group name> <other text>'
+
+############ opt-out ############
+
+'opt-out'
+
+'opt-out <group name>'
+
+'opt-out <group name that they are already out of>'
+
+'opt-out <group name that doesn't exist>'
+
+############ announce ############
+
+'announce'
+
+'announce <group name that doesn't exist>''
+
+'announce <group name that doesn't exist> <message>'
+
+'announce <group name that they are not a part of>'
+
+'announce <group name that they are not a part of> <message>'
+
+'announce <group name> <message>'
+
+'announce <group name that doesn't exist> <message>'
+
+
+############ help - autoresponse ############
+
+'help'
+
+'help <text>'
+
+'<not a listed command>'
