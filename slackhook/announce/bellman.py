@@ -24,11 +24,36 @@ class Bellman:
 
     # people-in-group
     def people_in_group(self):
-        pass
+        group_name, space, self.text = self.text.partition(' ')
+        if self.group_exists(group_name):
+            for person in (
+                    Group.objects
+                    .get(group_name=group_name)
+                    .person_set
+                    .all()):
+                self.response_text += (str(person) + '\n')
+        else:
+            self.response_text = 'That group doesn\'t exist'
 
     # list-my-groups
     def list_my_groups(self):
-        pass
+        self.update_user_info()
+        for group in (
+                Person.objects
+                .get(person_id=self.user_id)
+                .groups
+                .all()):
+            self.response_text += (str(group) + '\n')
+        # check if there are no groups
+        if self.response_text == '':
+            self.response_text = ('Hi there, you don\'t seem'
+                                  ' to belong to any groups. Use the '
+                                  '\'opt-in\' '
+                                  'command to join a group, '
+                                  'or use \'help\' to get more info')
+        else:
+            self.response_text = 'Groups you belong to:\n',
+            self.response_text
 
     # opt-in
     def opt_in(self):
@@ -49,6 +74,7 @@ class Bellman:
     # HELPER FUNCTIONS
 
     # execute (works out what function to run, based on command)
+    @csrf_exempt
     def execute(self):
         if (self.command == 'list-groups' or
                 self.command == 'list_groups'):
@@ -76,33 +102,29 @@ class Bellman:
             'understand your command of: \'', self.command, '\'\n\n'
             self.help()
 
-    def update_user_info(self, user_id, user_name):
-        p = Person(person_id=user_id, person_name=user_name)
+    @csrf_exempt
+    def update_user_info(self):
         # check if user is new/if they exist
-        if self.person_exists(user_id):
-            # check if username is the same
-            if self.name_changed(user_id, user_name):
+        if self.person_exists():
+            if self.name_changed():
+                # update user name
+                p = Person.objects.get(person_id=self.user_id)
+                p.person_name = self.user_name
                 p.save()
         else:
+            p = Person(person_id=self.user_id, person_name=self.user_name)
             p.save()
 
     def group_exists(self, group_name):
-        print 'running group_exists'
-        print 'Existing Groups:'
-        for group in Group.objects.all():
-            print group
-        test_group = Group(group_name=group_name)
-        if test_group in Group.objects.all():
-            print "group exists!"
-        else:
-            print "group does not exist"
-        return test_group in Group.objects.all()
+        return Group(group_name=group_name) in Group.objects.all()
 
-    def person_exists(self, user_id):
-        return Person.object(person_id=user_id) in Person.objects.all()
+    def person_exists(self):
+        return Person(person_id=self.user_id) in Person.objects.all()
 
-    def name_changed(self, user_id, user_name):
-        return user_name != Person.objects.get(person_id=user_id).person_name
+    def name_changed(self):
+        return self.user_name != (Person.objects
+                                        .get(person_id=self.user_id)
+                                        .person_name)
 
     @csrf_exempt
     def make_group(self, group_name):

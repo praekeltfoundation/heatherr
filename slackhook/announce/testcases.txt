@@ -10,13 +10,19 @@ text = ''
 
 'people-in-group'
 
-'people-in-group <other text>'
+'people-in-group <group>'
+
+'people-in-group <group> <other text>'
+
+'people-in-group <group that  doesn't exist> <other text>'
 
 ############ list-my-groups ############
 
 'list-my-groups'
 
 'list-my-groups <message>'
+
+'list-my-groups' - no groups
 
 ############ opt-in ############
 
