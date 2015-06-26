@@ -105,6 +105,10 @@ class Bellman:
             self.response_text = ('The group \'' + group_name +
                                   '\' doesn\'t exist')
 
+    # create
+    def create(self):
+        pass
+
     # announce
     def announce(self):
         pass
@@ -135,6 +139,8 @@ class Bellman:
         elif (self.command == 'opt-out' or
                 self.command == 'opt_out'):
             self.opt_out()
+        elif (self.command == 'create'):
+            self.create()
         elif self.command == 'announce':
             self.announce()
         elif self.command == 'help':
