@@ -104,6 +104,8 @@ STATIC_URL = '/static/'
 
 SLACK_TOKEN = 'MY_SLACK_TOKEN'
 
+SLACK_INCOMING_WEBHOOK_URL = 'MY_SLACK_INCOMING_WEBHOOK_URL'
+
 try:
     from local_settings import *
 except ImportError:

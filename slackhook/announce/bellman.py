@@ -1,5 +1,8 @@
 from .models import Group, Person
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+import urllib2
+import json
 
 
 class Bellman:
@@ -14,6 +17,7 @@ class Bellman:
         print self.command
         print self.user_name
         print self.user_id
+        print self.text
 
     # list groups
     def list_groups(self):
@@ -138,7 +142,7 @@ class Bellman:
                 self.response_text = ('The group \'' + group_name + '\' has'
                                       ' been created.\n'
                                       'To join the group, run the following '
-                                      'comand:\n'
+                                      'command:\n'
                                       '```/bellman opt-in ' + group_name
                                       + '```')
             else:
@@ -151,7 +155,23 @@ class Bellman:
 
     # announce
     def announce(self):
-        pass
+        group_name, space, self.text = self.text.partition(' ')
+        self.update_user_info()
+        if group_name != '':
+            # check group exists
+            if self.group_exists(group_name):
+                self.text = self.get_ping_tags(group_name) + self.text
+                self.send_announcement()
+                self.response_text = ('The group \'' + group_name + '\' has'
+                                      ' been sent your message in the '
+                                      'praekelt_org channel')
+            else:
+                self.response_text = ('The group \'' + group_name +
+                                      '\' does not exists')
+        else:
+            self.response_text = ('Please give me a group name in your bellman'
+                                  ' command:\n'
+                                  '```/bellman announce GROUP_NAME MESSAGE```')
 
     # help - autoresponse
     def help(self):
@@ -235,6 +255,26 @@ class Bellman:
 
     def message_group_created(self, user_name, group_name):
         return 'Thanks ', user_name, ' you created the group: ', group_name
+
+    def send_announcement(self):
+        data = {
+            'text': self.text
+        }
+        url = settings.SLACK_INCOMING_WEBHOOK_URL
+        opener = urllib2.build_opener(urllib2.HTTPHandler)
+        request = urllib2.Request(url, data=json.dumps(data))
+        request.add_header("Content-Type", "application/json")
+        opener.open(request)
+
+    def get_ping_tags(self, group_name):
+        tag_text = ''
+        for person in (Group.objects
+                       .get(group_name=group_name)
+                       .person_set
+                       .all()):
+            tag_text += ('<@' + person.person_id + '|' + person.person_name
+                         + '> ')
+        return tag_text
 
     def get_response(self):
         return self.response_text
