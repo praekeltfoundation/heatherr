@@ -25,23 +25,28 @@ class Bellman:
     # people-in-group
     def people_in_group(self):
         group_name, space, self.text = self.text.partition(' ')
-        if self.group_exists(group_name):
-            for person in (
-                    Group.objects
-                    .get(group_name=group_name)
-                    .person_set
-                    .all()):
-                self.response_text += (str(person) + '\n')
-            # Check if there are people in group
-            if self.response_text == '':
-                self.response_text = (
-                    'There are currently no people in' + group_name)
-            # otherwise insert header message
+        if group_name != '':
+            if self.group_exists(group_name):
+                for person in (
+                        Group.objects
+                        .get(group_name=group_name)
+                        .person_set
+                        .all()):
+                    self.response_text += (str(person) + '\n')
+                # Check if there are people in group
+                if self.response_text == '':
+                    self.response_text = (
+                        'There are currently no people in' + group_name)
+                # otherwise insert header message
+                else:
+                    self.response_text = (
+                        'People in ' + group_name + ':\n' + self.response_text)
             else:
-                self.response_text = (
-                    'People in ' + group_name + ':\n' + self.response_text)
+                self.response_text = 'That group doesn\'t exist'
         else:
-            self.response_text = 'That group doesn\'t exist'
+            self.response_text = ('Please give me a group name in your bellman'
+                                  ' command:\n'
+                                  '```/bellman people-in-group GROUP_NAME```')
 
     # list-my-groups
     def list_my_groups(self):
@@ -58,8 +63,10 @@ class Bellman:
             self.response_text = ('You don\'t seem'
                                   ' to belong to any groups. Use the '
                                   '\'opt-in\' '
-                                  'command to join a group, '
-                                  'or use \'help\' to get more info')
+                                  'command to join a group:\n'
+                                  '```/bellman opt-in GROUP_NAME```'
+                                  'or use \'help\' to get more info:\n'
+                                  '```/bellman help```')
         # otherwise insert header message
         else:
             self.response_text = (
@@ -70,44 +77,58 @@ class Bellman:
     def opt_in(self):
         group_name, space, self.text = self.text.partition(' ')
         self.update_user_info()
-        # check group exists
-        if self.group_exists(group_name):
-            # check if person belongs to group
-            if not self.user_in_group(group_name):
-                # add person to the group
-                group = Group.objects.get(group_name=group_name)
-                group.person_set.add(
-                    Person.objects.get(person_id=self.user_id))
-                group.save()
-                self.response_text = 'You\'ve been added to ' + group_name
+        if group_name != '':
+            # check group exists
+            if self.group_exists(group_name):
+                # check if person belongs to group
+                if not self.user_in_group(group_name):
+                    # add person to the group
+                    group = Group.objects.get(group_name=group_name)
+                    group.person_set.add(
+                        Person.objects.get(person_id=self.user_id))
+                    group.save()
+                    self.response_text = 'You\'ve been added to ' + group_name
+                else:
+                    self.response_text = ('You\'re already part of '
+                                          + group_name)
             else:
-                self.response_text = 'You\'re already part of ' + group_name
+                self.response_text = ('The group \'' + group_name +
+                                      '\' doesn\'t exist')
         else:
-            self.response_text = ('The group \'' + group_name +
-                                  '\' doesn\'t exist')
+            self.response_text = ('Please give me a group name in your bellman'
+                                  ' command:\n'
+                                  '```/bellman opt-in GROUP_NAME```')
 
     # opt-out
     def opt_out(self):
         group_name, space, self.text = self.text.partition(' ')
         self.update_user_info()
-        # check group exists
-        if self.group_exists(group_name):
-            # check if person belongs to group
-            if self.user_in_group(group_name):
-                # remove person from the group
-                person = Person.objects.get(person_id=self.user_id)
-                person.groups.remove(Group.objects.get(group_name=group_name))
-                person.save()
-                self.response_text = 'You\'ve been removed from ' + group_name
+        if group_name != '':
+            # check group exists
+            if self.group_exists(group_name):
+                # check if person belongs to group
+                if self.user_in_group(group_name):
+                    # remove person from the group
+                    person = Person.objects.get(person_id=self.user_id)
+                    (person.groups
+                        .remove(Group.objects.get(group_name=group_name)))
+                    person.save()
+                    self.response_text = ('You\'ve been removed from '
+                                          + group_name)
+                else:
+                    self.response_text = 'You\'re not in ' + group_name
             else:
-                self.response_text = 'You\'re not in ' + group_name
+                self.response_text = ('The group \'' + group_name +
+                                      '\' doesn\'t exist')
         else:
-            self.response_text = ('The group \'' + group_name +
-                                  '\' doesn\'t exist')
+            self.response_text = ('Please give me a group name in your bellman'
+                                  ' command:\n'
+                                  '```/bellman opt-out GROUP_NAME```')
 
     # create
     def create(self):
-        pass
+        group_name, space, self.text = self.text.partition(' ')
+        self.update_user_info()
 
     # announce
     def announce(self):
@@ -139,7 +160,9 @@ class Bellman:
         elif (self.command == 'opt-out' or
                 self.command == 'opt_out'):
             self.opt_out()
-        elif (self.command == 'create'):
+        elif (self.command == 'create' or
+                self.command == 'create_group' or
+                self.command == 'create-group'):
             self.create()
         elif self.command == 'announce':
             self.announce()
