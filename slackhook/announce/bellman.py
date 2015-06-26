@@ -13,7 +13,9 @@ class Bellman:
 
     # list groups
     def list_groups(self):
-        pass
+        response_text = 'list of groups: \n'
+        for group in Group.objects.all():
+            response_text += (str(group) + '\n')
 
     # people-in-group
     def people_in_group(self):
@@ -68,6 +70,16 @@ class Bellman:
             self.response_text = 'Sorry, I didn\'t',
             'understand your command of: \'', self.command, '\'\n\n'
             self.help()
+
+    def update_user_info(self, user_id, user_name):
+        p = Person(person_id=user_id, person_name=user_name)
+        # check if user is new/if they exist
+        if self.person_exists(user_id):
+            # check if username is the same
+            if self.name_changed(user_id, user_name):
+                p.save()
+        else:
+            p.save()
 
     def group_exists(self, group_name):
         print 'running group_exists'
