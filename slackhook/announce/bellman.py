@@ -40,7 +40,7 @@ class Bellman:
                 # Check if there are people in group
                 if self.response_text == '':
                     self.response_text = (
-                        'There are currently no people in' + group_name)
+                        'There are currently no people in ' + group_name)
                 # otherwise insert header message
                 else:
                     self.response_text = (
@@ -175,7 +175,8 @@ class Bellman:
 
     # help - autoresponse
     def help(self):
-        pass
+        self.response_text = ('Sorry, my creator hasn\'t gotten around'
+                              ' to writing this function yet')
 
     # execute (works out what function to run, based on command)
     @csrf_exempt
