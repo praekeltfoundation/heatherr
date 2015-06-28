@@ -1,0 +1,6 @@
+coveralls
+pytest
+pytest-cov
+pytest-xdist
+pytest-django
+flake8
