@@ -1,4 +1,4 @@
-from django.http import HttpResponse  # JsonResponse
+from django.http import HttpResponse, HttpResponseBadRequest  # JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from bellman import Bellman
@@ -27,11 +27,12 @@ def announce(request):
 
         # check that POST has the correct form?
 
-        bellman = Bellman(
+        app = Bellman(
             text=request.POST['text'],
             user_name=request.POST['user_name'],
             user_id=request.POST['user_id'])
 
-        bellman.execute()
+        app.execute()
 
-    return HttpResponse(bellman.get_response())
+        return HttpResponse(app.get_response())
+    return HttpResponseBadRequest()
