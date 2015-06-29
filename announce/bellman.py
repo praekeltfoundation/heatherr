@@ -160,7 +160,7 @@ class Bellman:
         if group_name != '':
             # check group exists
             if self.group_exists(group_name):
-                self.text = self.get_ping_tags(group_name) + self.text
+                self.text = self.get_ping_tags(group_name) + '\n' + self.text
                 self.send_announcement()
                 self.response_text = ('The group \'' + group_name + '\' has'
                                       ' been sent your message in the '
@@ -175,8 +175,21 @@ class Bellman:
 
     # help - autoresponse
     def help(self):
-        self.response_text = ('Sorry, my creator hasn\'t gotten around'
-                              ' to writing this function yet')
+        self.response_text = ('LIST THE GROUPS THAT EXIST\n\n'
+                              '```/bellman list-groups```\n\n'
+                              'SEE THE PEOPLE WHO BELONG TO A PARTICULAR '
+                              'GROUP\n\n'
+                              '```/bellman people-in-group <group>```\n\n'
+                              'LIST THE GROUPS YOU BELONG TO\n\n'
+                              '```/bellman list-my-groups```\n\n'
+                              'JOIN A GROUP\n\n'
+                              '```/bellman opt-in <group name>```\n\n'
+                              'OPT-OUT OF A GROUP\n\n'
+                              '```/bellman opt-out <group name>```\n\n'
+                              'CREATE A GROUP\n\n'
+                              '```/bellman create <group name>```\n\n'
+                              'SEND MESSAGE TO A GROUP\n\n'
+                              '```/bellman announce <group name> <message>```')
 
     # execute (works out what function to run, based on command)
     @csrf_exempt
@@ -268,12 +281,13 @@ class Bellman:
         opener.open(request)
 
     def get_ping_tags(self, group_name):
-        tag_text = ''
+        tag_text = 'Message from <@' + self.user_id + '> :\n'
         for person in (Group.objects
                        .get(group_name=group_name)
                        .person_set
                        .all()):
-            tag_text += ('<@' + person.person_id + '> ')
+            if(person.person_id != self.user_id):
+                tag_text += ('<@' + person.person_id + '> ')
         return tag_text
 
     def get_response(self):
