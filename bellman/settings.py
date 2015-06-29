@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'announce',
+    'raven.contrib.django.raven_compat',
 )
 
 MIDDLEWARE_CLASSES = (
