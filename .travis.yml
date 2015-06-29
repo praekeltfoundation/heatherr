@@ -1,0 +1,19 @@
+language: python
+python:
+  - "2.7"
+install:
+  - pip install -r requirements-dev.txt
+  - pip install -e .
+script:
+  - flake8 bellman
+  - coverage run `which py.test` --ds=bellman.settings --verbose bellman
+after_success:
+  - coveralls
+deploy:
+  provider: pypi
+  user: Praekelt
+  password:
+    secure: "Wa1tFvzOmr2Xydpt1KBDVC+OotyPCCRthY/WDU01BRC2PkISLt99WTZQqV+pirfmUfB2bRrIO5qB+4Swt3yfRMFVs57LLnJDabwbvxYh0CQytVxfOe1GMkJ410ZYgibeNHdKgRMA+nytEYDXPYchMCJDiDt/YV7Kd7ZpprlaLhYtnx17WmkH2IJ77lsMED1IAA6z0j3GFMGToaGUCjQMPM7iPftIhqVVepKAXAxaGY9NQv10dJ3fMhLF5OpV6nDL4FKQSmM0+DI0Q6n5hmIS8tWIpraOKTase3lYPPiA+hNZPU9MLjEQeEfaqummGDtLjPTkZChy88/tnO/3c8zmtvTiOXVbwqfTib2X3Uk9HkJwcJHxqglx4Ok4ehlz6RZhhOnUdvEEiZqsxBPrYF0lEuYmL4VSYsrNBXIMpcsmgLpgeJe8dH8aLVSssRoEi9OulFBwP4xnVmRNg1g6X2Ax3e8neW4nKubrJ2sAYCcdManBEbUzCeI99gewKd6szt2q5qQ51Lr7wBwcV/Eqrgo6AhtnpEx2ud5+2kVt+9udtvUa2aIUEKU87xvO0nGxHZXBtlDGRiopuTyS7dthQ39zjxmRMPyzVbLOB5igcRH/xFkImoqiVlM+j0nzxCvPlvl4i5BZwtYZdYRyoS8cmBBDw67CEdAONHSOGebwcg4fOP8="
+  on:
+    tags: true
+    all_branches: true

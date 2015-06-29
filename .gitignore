@@ -1,5 +1,5 @@
-slackhook/local_settings.py
-
+local_settings.py
 ve
 *.sqlite3
 *.pyc
+*.egg-info

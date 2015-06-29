@@ -1,3 +1,0 @@
-SLACK_TOKEN = '6yiDJgKJD5Q0R6SFMPgF4dJv'
-
-SLACK_INCOMING_WEBHOOK_URL = 'https://hooks.slack.com/services/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'
