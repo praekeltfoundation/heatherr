@@ -1,3 +1,5 @@
+Security settings: not post and wrong token
+
 text = ''
 
 ############ list-groups ############

@@ -11,6 +11,18 @@ def make_post(user_name='bob', user_id='test_id', token='1234abc', text=''):
 
 
 @override_settings(SLACK_TOKEN='1234abc')
+class SecurityTestCase(TestCase):
+    def test_post_check(self):
+        c = Client()
+        response = c.get('/announce/', {'token': '1234abc'})
+        self.assertFalse(response.content)
+
+    def test_token_check(self):
+        c = Client()
+        response = c.post('/announce/',
+                          make_post(token='fake')
+                          )
+        self.assertFalse(response.content)
 class AnnounceTestCase(TestCase):
     def setUp(self):
         Group.objects.create(group_name='test_group')
