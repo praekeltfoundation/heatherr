@@ -1,5 +1,6 @@
 from django.test import TestCase, Client, override_settings
 from announce.models import Group, Person
+from bellman import Bellman
 
 
 def make_post(user_name='bob', user_id='test_id', token='1234abc', text=''):
@@ -27,7 +28,8 @@ class SecurityTestCase(TestCase):
         self.assertTrue(response.status_code, 400)
 
 
-@override_settings(SLACK_TOKEN='1234abc')
+@override_settings(SLACK_TOKEN='1234abc',
+                   SLACK_INCOMING_WEBHOOK_URL='')
 class AnnounceTestCase(TestCase):
     def setUp(self):
         Group.objects.create(group_name='test_group')
@@ -194,3 +196,52 @@ class AnnounceTestCase(TestCase):
         self.assertTrue(g2 in Group.objects.all())
         self.assertTrue(g3 in Group.objects.all())
 
+    def announce(self):
+        c = Client()
+        # no group
+        response = c.post('/announce/',
+                          make_post(text='announce'))
+        self.assertTrue('Please give me a group name in your '
+                        + 'bellman command:' in response.content)
+        # group name doesn't exist
+        response = c.post('/announce/',
+                          make_post(text='announce BLAH'))
+        self.assertTrue('The group \'BLAH\' doesn\'t exist' in
+                        response.content)
+        # no text message
+        response = c.post('/announce/',
+                          make_post(text='announce test_group'))
+        self.assertTrue('Please give me a message in your'
+                        + 'bellman command:' in response.content)
+        # standard test case
+        response = c.post('/announce/',
+                          make_post(text='announce test_group message text'))
+        self.assertTrue('The group \'test_group\' has been sent your message'
+                        in response.content)
+
+
+class BellmanTestCase(TestCase):
+    def setUp(self):
+        Group.objects.create(group_name='test_group')
+        Person.objects.create(person_name='bob', person_id='test_id')
+        p1 = Person(person_name='foo', person_id='1')
+        p1.save()
+        p2 = Person(person_name='bar', person_id='2')
+        p2.save()
+        g1 = Group(group_name='apple')
+        g1.save()
+        g1.person_set.add(p1, p2)
+        g2 = Group(group_name='banana')
+        g2.save()
+        g2.person_set.add(p1)
+
+    def test_announce(self):
+        bm = Bellman(text='announce apple message text',
+                     user_name='bob',
+                     user_id='test_id')
+        group_name, space, bm.text = bm.text.partition(' ')
+        response = (bm.get_ping_tags(group_name) + '\n' + bm.text)
+        self.assertTrue('Message from <@test_id> :\n'
+                        in response)
+        self.assertTrue('<@1>' in response)
+        self.assertTrue('<@2>' in response)
