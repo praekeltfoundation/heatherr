@@ -46,13 +46,11 @@ class AnnounceTestCase(TestCase):
     def test_group_listing(self):
         c = Client()
         response = c.post('/announce/',
-                          make_post(text='list-groups')
-                          )
+                          make_post(text='list-groups'))
         self.assertTrue('test_group' in response.content)
         # check text after command does not break anything
         response = c.post('/announce/',
-                          make_post(text='list-groups other text')
-                          )
+                          make_post(text='list-groups other text'))
         self.assertTrue('test_group' in response.content)
         self.assertTrue('apple' in response.content)
         self.assertTrue('banana' in response.content)
@@ -61,32 +59,52 @@ class AnnounceTestCase(TestCase):
         c = Client()
         # no group name
         response = c.post('/announce/',
-                          make_post(text='people-in-group')
-                          )
+                          make_post(text='people-in-group'))
         self.assertTrue('Please give me a group name in your '
                         + 'bellman command:' in response.content)
         # group name doesn't exist
         response = c.post('/announce/',
-                          make_post(text='people-in-group BLAH')
-                          )
+                          make_post(text='people-in-group BLAH'))
         self.assertTrue('That group doesn\'t exist' in response.content)
         # no people in group
         response = c.post('/announce/',
-                          make_post(text='people-in-group test_group')
-                          )
+                          make_post(text='people-in-group test_group'))
         self.assertTrue('There are currently no people in test_group' in
                         response.content)
         # people in group
         response = c.post('/announce/',
-                          make_post(text='people-in-group apple')
-                          )
+                          make_post(text='people-in-group apple'))
         self.assertTrue('foo' in response.content)
         self.assertTrue('bar' in response.content)
         self.assertFalse('bob' in response.content)
         # people in group
         response = c.post('/announce/',
-                          make_post(text='people-in-group banana')
-                          )
+                          make_post(text='people-in-group banana'))
         self.assertTrue('foo' in response.content)
         self.assertFalse('bar' in response.content)
         self.assertFalse('bob' in response.content)
+
+    def test_list_my_groups(self):
+        c = Client()
+        # person belongs to no groups
+        response = c.post('/announce/',
+                          make_post(text='list-my-groups'))
+        self.assertTrue('You don\'t seem to belong to any groups' in
+                        response.content)
+        # standard query
+        response = c.post('/announce/',
+                          make_post(user_name='foo',
+                                    user_id='1',
+                                    text='list-my-groups BLAH'))
+        self.assertTrue('apple' in response.content)
+        self.assertTrue('banana' in response.content)
+        self.assertFalse('test_group' in response.content)
+        # text after command
+        response = c.post('/announce/',
+                          make_post(user_name='foo',
+                                    user_id='1',
+                                    text='list-my-groups BLAH'))
+        self.assertTrue('apple' in response.content)
+        self.assertTrue('banana' in response.content)
+        self.assertFalse('test_group' in response.content)
+        self.assertFalse('BLAH' in response.content)
