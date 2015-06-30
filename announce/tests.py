@@ -167,3 +167,30 @@ class AnnounceTestCase(TestCase):
         self.assertFalse(p in g.person_set.all())
         self.assertFalse(g in p.groups.all())
 
+    def create(self):
+        c = Client()
+        g1 = Group(group_name='test_group')
+        g2 = Group(group_name='apple')
+        g3 = Group(group_name='banana')
+        self.assertTrue(g1 in Group.objects.all())
+        self.assertTrue(g2 in Group.objects.all())
+        self.assertTrue(g3 in Group.objects.all())
+
+        # no argument
+        response = c.post('/announce/',
+                          make_post(text='create'))
+        self.assertTrue('Please give me a group name in your '
+                        + 'bellman command:' in response.content)
+        # group already exists
+        response = c.post('/announce/',
+                          make_post(text='create test_group'))
+        self.assertTrue('The group \'test_group\' already exists'
+                        in response.content)
+        # standard use case
+        response = c.post('/announce/',
+                          make_post(text='create test_group2'))
+        self.assertTrue(Group(group_name='test_group2') in Group.objects.all())
+        self.assertTrue(g1 in Group.objects.all())
+        self.assertTrue(g2 in Group.objects.all())
+        self.assertTrue(g3 in Group.objects.all())
+
