@@ -18,6 +18,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='group',
             name='group_name',
-            field=models.CharField(max_length=200, serialize=False, primary_key=True),
+            field=models.CharField(max_length=200,
+                                   serialize=False,
+                                   primary_key=True),
         ),
     ]
