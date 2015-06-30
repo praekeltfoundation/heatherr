@@ -1,6 +1,6 @@
 from django.test import TestCase, Client, override_settings
 from announce.models import Group, Person
-from bellman import Bellman
+from announce.bellman import Bellman
 
 
 def make_post(user_name='bob', user_id='test_id', token='1234abc', text=''):
