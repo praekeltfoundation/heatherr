@@ -13,15 +13,9 @@ class Bellman:
         self.user_name = user_name
         self.user_id = user_id
         self.response_text = ''
-        print '********************************************'
-        print self.command
-        print self.user_name
-        print self.user_id
-        print self.text
 
     # list groups
     def list_groups(self):
-        print 'Listing groups'
         self.response_text = 'List of groups: \n'
         for group in Group.objects.all():
             self.response_text += (str(group) + '\n')
@@ -263,7 +257,6 @@ class Bellman:
 
     @csrf_exempt
     def make_group(self, group_name):
-        print 'running make_group'
         g = Group(group_name=group_name)
         g.save()
 
