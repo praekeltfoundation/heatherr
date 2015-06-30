@@ -127,7 +127,7 @@ class AnnounceTestCase(TestCase):
         self.assertTrue('You\'ve been added to test_group' in
                         response.content)
         g = Group.objects.get(group_name='test_group')
-        self.assertTrue(Person(person_name='test_group', person_id='test_id')
+        self.assertTrue(Person(person_name='bob', person_id='test_id')
                         in g.person_set.all())
         self.assertTrue(g in Person.objects.get(person_id='test_id')
                                    .groups.all())
@@ -136,3 +136,34 @@ class AnnounceTestCase(TestCase):
                           make_post(text='opt-in test_group'))
         self.assertTrue('You\'re already part of test_group' in
                         response.content)
+
+    def test_opt_out(self):
+        c = Client()
+        # no group name
+        response = c.post('/announce/',
+                          make_post(text='opt-out'))
+        self.assertTrue('Please give me a group name in your '
+                        + 'bellman command:' in response.content)
+        # group name doesn't exist
+        response = c.post('/announce/',
+                          make_post(text='opt-out BLAH'))
+        self.assertTrue('The group \'BLAH\' doesn\'t exist' in
+                        response.content)
+        # does not belong to group
+        response = c.post('/announce/',
+                          make_post(text='opt-out test_group'))
+        self.assertTrue('You\'re not in test_group'in response.content)
+        # standard test case
+        g = Group.objects.get(group_name='test_group')
+        p = Person.objects.get(person_id='test_id')
+        g.person_set.add(p)
+        g.save()
+        self.assertTrue(p in g.person_set.all())
+        self.assertTrue(g in p.groups.all())
+        response = c.post('/announce/',
+                          make_post(text='opt-out test_group'))
+        self.assertTrue('You\'ve been removed from test_group'
+                        in response.content)
+        self.assertFalse(p in g.person_set.all())
+        self.assertFalse(g in p.groups.all())
+
