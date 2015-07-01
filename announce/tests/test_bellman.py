@@ -169,7 +169,7 @@ class AnnounceTestCase(TestCase):
         self.assertFalse(p in g.person_set.all())
         self.assertFalse(g in p.groups.all())
 
-    def create(self):
+    def test_create(self):
         c = Client()
         g1 = Group(group_name='test_group')
         g2 = Group(group_name='apple')
@@ -196,7 +196,7 @@ class AnnounceTestCase(TestCase):
         self.assertTrue(g2 in Group.objects.all())
         self.assertTrue(g3 in Group.objects.all())
 
-    def announce(self):
+    def test_announce(self):
         c = Client()
         # no group
         response = c.post('/announce/',
