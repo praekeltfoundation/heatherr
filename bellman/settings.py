@@ -110,17 +110,46 @@ SLACK_INCOMING_WEBHOOK_URL = 'MY_SLACK_INCOMING_WEBHOOK_URL'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'handlers': {
-        'console': {
-            'class': 'logging.StreamHandler',
+    'formatters': {
+        'verbose': {
+            'format': ('%(levelname)s %(asctime)s %(module)s %(process)d '
+                       '%(thread)d %(message)s'),
         },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+        }
     },
     'loggers': {
-        'bellman': {
-            'handlers': ['console'],
-            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+        'django': {
+            'handlers': ['null'],
+            'propagate': True,
+            'level': 'INFO',
         },
-    },
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'bellman': {
+            'handlers': ['console', 'mail_admins'],
+            'level': 'DEBUG',
+        }
+    }
 }
 
 try:
