@@ -1,6 +1,8 @@
-from fabric.api import sudo, cd
+from fabric.api import sudo, cd, env
 
 code_dir = '/var/praekelt/bellman'
+
+env.hosts = ['kraken.praekelt.com']
 
 
 def deploy():
@@ -8,3 +10,4 @@ def deploy():
         sudo('git pull', user='ubuntu')
         sudo('pip install -e .')
         sudo('./manage.py collectstatic --noinput', user='ubuntu')
+        sudo('supervisorctl restart bellman')
