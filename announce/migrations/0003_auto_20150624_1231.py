@@ -20,7 +20,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='person',
             name='person_id',
-            field=models.CharField(default=datetime.datetime(2015, 6, 24, 12, 31, 29, 668430, tzinfo=utc), max_length=200, serialize=False, primary_key=True),
+            field=models.CharField(
+                default=datetime.datetime(2015, 6, 24, 12, 31, 29, 668430,
+                                          tzinfo=utc),
+                max_length=200,
+                serialize=False,
+                primary_key=True),
             preserve_default=False,
         ),
     ]

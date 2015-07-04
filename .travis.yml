@@ -5,8 +5,8 @@ install:
   - pip install -r requirements-dev.txt
   - pip install -e .
 script:
-  - flake8 bellman
-  - coverage run `which py.test` --ds=bellman.settings --verbose bellman
+  - flake8 .
+  - coverage run `which py.test`
 after_success:
   - coveralls
 deploy:

@@ -154,14 +154,21 @@ class Bellman:
         if group_name != '':
             # check group exists
             if self.group_exists(group_name):
-                self.text = self.get_ping_tags(group_name) + '\n' + self.text
-                self.send_announcement()
-                self.response_text = ('The group \'' + group_name + '\' has'
-                                      ' been sent your message in the '
-                                      'praekelt_org channel')
+                # check is there is a message
+                if self.text != '':
+                    self.text = self.get_ping_tags(group_name), '\n', self.text
+                    self.send_announcement()
+                    self.response_text = ('The group \'' + group_name + '\' '
+                                          'has been sent your message in the '
+                                          'praekelt_org channel')
+                else:
+                    self.response_text = ('Please give me a message in your'
+                                          'bellman command:\n'
+                                          '```/bellman announce '
+                                          'GROUP_NAME MESSAGE```')
             else:
                 self.response_text = ('The group \'' + group_name +
-                                      '\' does not exists')
+                                      '\' does not exist.')
         else:
             self.response_text = ('Please give me a group name in your bellman'
                                   ' command:\n'
