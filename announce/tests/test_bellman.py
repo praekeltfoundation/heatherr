@@ -2,6 +2,8 @@ from django.test import TestCase, Client, override_settings
 from announce.models import Group, Person
 from announce.bellman import Bellman
 
+from mock import patch
+
 
 def make_post(user_name='bob', user_id='test_id', token='1234abc', text=''):
     return {'token': token,
@@ -196,7 +198,8 @@ class AnnounceTestCase(TestCase):
         self.assertTrue(g2 in Group.objects.all())
         self.assertTrue(g3 in Group.objects.all())
 
-    def test_announce(self):
+    @patch.object(Bellman, 'send_announcement')
+    def test_announce(self, mock_send_announcement):
         c = Client()
         # no group
         response = c.post('/announce/',
@@ -206,7 +209,8 @@ class AnnounceTestCase(TestCase):
         # group name doesn't exist
         response = c.post('/announce/',
                           make_post(text='announce BLAH'))
-        self.assertTrue('The group \'BLAH\' doesn\'t exist' in
+        print 'response', response.content
+        self.assertTrue('The group \'BLAH\' does not exist' in
                         response.content)
         # no text message
         response = c.post('/announce/',
@@ -218,6 +222,7 @@ class AnnounceTestCase(TestCase):
                           make_post(text='announce test_group message text'))
         self.assertTrue('The group \'test_group\' has been sent your message'
                         in response.content)
+        mock_send_announcement.assert_called()
 
 
 class BellmanTestCase(TestCase):

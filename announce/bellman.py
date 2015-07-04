@@ -168,7 +168,7 @@ class Bellman:
                                           'GROUP_NAME MESSAGE```')
             else:
                 self.response_text = ('The group \'' + group_name +
-                                      '\' does not exists')
+                                      '\' does not exist.')
         else:
             self.response_text = ('Please give me a group name in your bellman'
                                   ' command:\n'
