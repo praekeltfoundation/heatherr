@@ -107,6 +107,22 @@ SLACK_TOKEN = 'MY_SLACK_TOKEN'
 
 SLACK_INCOMING_WEBHOOK_URL = 'MY_SLACK_INCOMING_WEBHOOK_URL'
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'bellman': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'DEBUG'),
+        },
+    },
+}
+
 try:
     from local_settings import *
 except ImportError:
