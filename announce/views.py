@@ -1,6 +1,11 @@
+import logging
+
+logger = logging.getLogger('bellman.views')
+
 from django.http import HttpResponse, HttpResponseBadRequest  # JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
+
 from bellman import Bellman
 # Create your views here.
 
@@ -11,21 +16,19 @@ def check_token_safe(token):
 
 @csrf_exempt
 def announce(request):
-    if settings.DEBUG:
-        print "---------------------------------------"
+    logger.debug("---------------------------------------")
     # default empty text field will be ignored by slack
 
     # security check
     if request.method == 'POST' and check_token_safe(request.POST['token']):
 
-        if settings.DEBUG:
-            print 'POST from northhq slack'
-            print request.POST
-            args = request.POST['text'].split()
-            print 'args:', args
-            num_of_args = len(args)
-            print 'num_of_args:', num_of_args
-            print "---------------------------------------"
+        logger.debug('POST from northhq slack')
+        logger.debug(request.POST)
+        args = request.POST['text'].split()
+        logger.debug('args:', args)
+        num_of_args = len(args)
+        logger.debug('num_of_args:', num_of_args)
+        logger.debug("---------------------------------------")
 
         # check that POST has the correct form?
 
@@ -37,6 +40,6 @@ def announce(request):
         app.execute()
 
         return HttpResponse(app.get_response())
-    if settings.DEBUG:
-        print "---------------------------------------"
+
+    logger.debug("---------------------------------------")
     return HttpResponseBadRequest()
