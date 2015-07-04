@@ -147,6 +147,7 @@ LOGGING = {
         },
         'bellman': {
             'handlers': ['console', 'mail_admins'],
+            'propagate': True,
             'level': 'DEBUG',
         }
     }
