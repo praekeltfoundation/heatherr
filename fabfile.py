@@ -10,4 +10,5 @@ def deploy():
         sudo('git pull', user='ubuntu')
         sudo('pip install -e .')
         sudo('./manage.py collectstatic --noinput', user='ubuntu')
+        sudo('./manage.py migrate --noinput', user='ubuntu')
         sudo('supervisorctl restart bellman')
