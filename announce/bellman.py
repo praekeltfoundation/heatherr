@@ -1,8 +1,12 @@
 from .models import Group, Person
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
+import logging
 import urllib2
 import json
+
+
+logger = logging.getLogger('bellman.bellman')
 
 
 class Bellman:
@@ -274,6 +278,7 @@ class Bellman:
         request = urllib2.Request(url, data=json.dumps(data))
         request.add_header("Content-Type", "application/json")
         opener.open(request)
+        logger.debug('Sent reply: %r' % (data,))
 
     def get_ping_tags(self, group_name):
         tag_text = 'Message from <@' + self.user_id + '> :\n'
