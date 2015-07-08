@@ -25,9 +25,9 @@ def announce(request):
         logger.debug('POST from northhq slack')
         logger.debug(request.POST)
         args = request.POST['text'].split()
-        logger.debug('args:', args)
+        logger.debug('args: %r' % (args,))
         num_of_args = len(args)
-        logger.debug('num_of_args:', num_of_args)
+        logger.debug('num_of_args: %r' % (num_of_args,))
         logger.debug("---------------------------------------")
 
         # check that POST has the correct form?
