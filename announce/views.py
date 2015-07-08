@@ -10,11 +10,16 @@ from bellman import Bellman
 # Create your views here.
 
 
-def check_token_safe(token):
-    return token == settings.SLACK_TOKEN
-
-
 @csrf_exempt
+def require_slack_token(func):
+    def decorator(slack_token):
+        def handler(request, *args, **kwargs):
+            if slack_token == request.POST.get('token'):
+                return func(request, *args, **kwargs)
+    return decorator
+
+
+@require_slack_token(settings.SLACK_TOKEN)
 def announce(request):
     logger.debug("---------------------------------------")
     # default empty text field will be ignored by slack
