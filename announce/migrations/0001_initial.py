@@ -13,20 +13,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Group',
             fields=[
-                ('id', models.AutoField(verbose_name='ID',
-                                        serialize=False,
-                                        auto_created=True,
-                                        primary_key=True)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('group_name', models.CharField(max_length=200)),
             ],
         ),
         migrations.CreateModel(
             name='Person',
             fields=[
-                ('id', models.AutoField(verbose_name='ID',
-                                        serialize=False,
-                                        auto_created=True,
-                                        primary_key=True)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('person_id', models.CharField(max_length=200)),
                 ('person_name', models.CharField(max_length=200)),
                 ('groups', models.ManyToManyField(to='announce.Group')),
             ],
