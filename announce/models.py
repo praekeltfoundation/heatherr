@@ -3,7 +3,6 @@ from django.db import models
 
 class Group(models.Model):
     group_name = models.CharField(max_length=200)
-    group_name.primary_key = True
 
     def __unicode__(self):
         return self.group_name
@@ -11,7 +10,6 @@ class Group(models.Model):
 
 class Person(models.Model):
     person_id = models.CharField(max_length=200)
-    person_id.primary_key = True
     person_name = models.CharField(max_length=200)
     groups = models.ManyToManyField(Group)
 

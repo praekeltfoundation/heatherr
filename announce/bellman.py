@@ -243,10 +243,10 @@ class Bellman:
             p.save()
 
     def group_exists(self, group_name):
-        return Group(group_name=group_name) in Group.objects.all()
+        return Group.objects.filter(group_name=group_name).exists()
 
     def person_exists(self):
-        return Person(person_id=self.user_id) in Person.objects.all()
+        return Person.objects.filter(person_id=self.user_id).exists()
 
     def name_changed(self):
         return self.user_name != (Person.objects
@@ -254,13 +254,8 @@ class Bellman:
                                         .person_name)
 
     def user_in_group(self, group_name):
-        return ((Person.objects
-                .get(person_id=self.user_id))
-                in
-                (Group.objects
-                    .get(group_name=group_name)
-                    .person_set
-                    .all()))
+        return Group.objects.filter(person__person_id=self.user_id,
+                                    group_name=group_name).exists()
 
     @csrf_exempt
     def make_group(self, group_name):

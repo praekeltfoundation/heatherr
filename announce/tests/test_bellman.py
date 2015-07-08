@@ -131,8 +131,9 @@ class AnnounceTestCase(TestCase):
         self.assertTrue('You\'ve been added to test_group' in
                         response.content)
         g = Group.objects.get(group_name='test_group')
-        self.assertTrue(Person(person_name='bob', person_id='test_id')
-                        in g.person_set.all())
+        self.assertTrue(
+            g.person_set.filter(
+                person_name='bob', person_id='test_id').exists())
         self.assertTrue(g in Person.objects.get(person_id='test_id')
                                    .groups.all())
         # already belongs to group
@@ -173,12 +174,9 @@ class AnnounceTestCase(TestCase):
 
     def test_create(self):
         c = Client()
-        g1 = Group(group_name='test_group')
-        g2 = Group(group_name='apple')
-        g3 = Group(group_name='banana')
-        self.assertTrue(g1 in Group.objects.all())
-        self.assertTrue(g2 in Group.objects.all())
-        self.assertTrue(g3 in Group.objects.all())
+        self.assertTrue(Group.objects.filter(group_name='test_group').exists())
+        self.assertTrue(Group.objects.filter(group_name='apple').exists())
+        self.assertTrue(Group.objects.filter(group_name='banana').exists())
 
         # no argument
         response = c.post('/announce/',
@@ -193,10 +191,10 @@ class AnnounceTestCase(TestCase):
         # standard use case
         response = c.post('/announce/',
                           make_post(text='create test_group2'))
-        self.assertTrue(Group(group_name='test_group2') in Group.objects.all())
-        self.assertTrue(g1 in Group.objects.all())
-        self.assertTrue(g2 in Group.objects.all())
-        self.assertTrue(g3 in Group.objects.all())
+        self.assertTrue(Group.objects.filter(group_name='test_group2').exists())
+        self.assertTrue(Group.objects.filter(group_name='test_group').exists())
+        self.assertTrue(Group.objects.filter(group_name='apple').exists())
+        self.assertTrue(Group.objects.filter(group_name='banana').exists())
 
     @patch.object(Bellman, 'send_announcement')
     def test_announce(self, mock_send_announcement):
@@ -209,12 +207,12 @@ class AnnounceTestCase(TestCase):
         # group name doesn't exist
         response = c.post('/announce/',
                           make_post(text='announce BLAH'))
-        print 'response', response.content
         self.assertTrue('The group \'BLAH\' does not exist' in
                         response.content)
         # no text message
         response = c.post('/announce/',
                           make_post(text='announce test_group'))
+        print response.content
         self.assertTrue('Please give me a message in your'
                         + 'bellman command:' in response.content)
         # standard test case
