@@ -245,7 +245,8 @@ class BellmanTestCase(TestCase):
                      user_id='test_id')
         group_name, space, bm.text = bm.text.partition(' ')
         response = (bm.get_ping_tags(group_name) + '\n' + bm.text)
-        self.assertTrue('Message from <@test_id> :\n'
-                        in response)
-        self.assertTrue('<@1>' in response)
-        self.assertTrue('<@2>' in response)
+        self.assertEqual(response, '\n'.join([
+            'Message from <@test_id> :',
+            '<@1> <@2>',
+            bm.text,
+        ]))
