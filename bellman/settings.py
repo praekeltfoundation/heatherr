@@ -25,7 +25,7 @@ SECRET_KEY = 'zbec(un5bpe-+l9^%n170sntne#*xowtls0pt*hl1xo1=72t*b'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
