@@ -41,5 +41,9 @@ def announce(request):
 
         return HttpResponse(app.get_response())
 
-    logger.debug("---------------------------------------")
-    return HttpResponseBadRequest()
+    elif request.method != 'POST':
+        return HttpResponseBadRequest('Did not receive an HTTP POST.')
+    elif not check_token_safe(request.POST['token']):
+        return HttpResponseBadRequest('Received an invalid token.')
+    else:
+        HttpResponseBadRequest('Not sure how to handle this request.')
