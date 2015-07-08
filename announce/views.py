@@ -23,24 +23,11 @@ def require_slack_token(slack_token):
 
 @require_slack_token(settings.SLACK_TOKEN)
 def announce(request):
-    logger.debug("---------------------------------------")
-    # default empty text field will be ignored by slack
-
     logger.debug('POST from northhq slack')
     logger.debug(request.POST)
-    args = request.POST['text'].split()
-    logger.debug('args: %r' % (args,))
-    num_of_args = len(args)
-    logger.debug('num_of_args: %r' % (num_of_args,))
-    logger.debug("---------------------------------------")
-
-    # check that POST has the correct form?
-
     app = Bellman(
         text=request.POST['text'],
         user_name=request.POST['user_name'],
         user_id=request.POST['user_id'])
-
     app.execute()
-
     return HttpResponse(app.get_response())
