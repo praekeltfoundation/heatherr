@@ -191,7 +191,8 @@ class AnnounceTestCase(TestCase):
         # standard use case
         response = c.post('/announce/',
                           make_post(text='create test_group2'))
-        self.assertTrue(Group.objects.filter(group_name='test_group2').exists())
+        self.assertTrue(
+            Group.objects.filter(group_name='test_group2').exists())
         self.assertTrue(Group.objects.filter(group_name='test_group').exists())
         self.assertTrue(Group.objects.filter(group_name='apple').exists())
         self.assertTrue(Group.objects.filter(group_name='banana').exists())
