@@ -18,7 +18,7 @@ class SecurityTestCase(TestCase):
     def test_post_check(self):
         c = Client()
         response = c.get('/announce/', {'token': '1234abc'})
-        self.assertEqual(response.content, 'Did not receive an HTTP POST.')
+        self.assertEqual(response.content, 'Invalid or missing slack token.')
         self.assertTrue(response.status_code, 400)
 
     def test_token_check(self):
@@ -26,7 +26,7 @@ class SecurityTestCase(TestCase):
         response = c.post('/announce/',
                           make_post(token='fake')
                           )
-        self.assertEqual(response.content, 'Received an invalid token.')
+        self.assertEqual(response.content, 'Invalid or missing slack token.')
         self.assertTrue(response.status_code, 400)
 
 
