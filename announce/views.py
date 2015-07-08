@@ -10,9 +10,9 @@ from bellman import Bellman
 # Create your views here.
 
 
-@csrf_exempt
 def require_slack_token(slack_token):
     def decorator(func):
+        @csrf_exempt
         def handler(request, *args, **kwargs):
             if slack_token == request.POST.get('token'):
                 return func(request, *args, **kwargs)
