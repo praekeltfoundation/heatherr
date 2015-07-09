@@ -13,7 +13,6 @@ class Bellman:
 
     def __init__(self, text, user_name, user_id):
         temp_command, space, self.text = text.partition(' ')
-        print 'self.text', self.text
         self.command = temp_command.lower()
         self.user_name = user_name
         self.user_id = user_id
