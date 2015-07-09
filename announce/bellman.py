@@ -160,7 +160,10 @@ class Bellman:
             if self.group_exists(group_name):
                 # check is there is a message
                 if self.text != '':
-                    self.text = self.get_ping_tags(group_name), '\n', self.text
+                    self.text = '\n'.join([
+                        self.get_ping_tags(group_name),
+                        self.text,
+                    ])
                     self.send_announcement()
                     self.response_text = ('The group \'' + group_name + '\' '
                                           'has been sent your message in the '
