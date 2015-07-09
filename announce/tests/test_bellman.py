@@ -243,10 +243,13 @@ class BellmanTestCase(TestCase):
         bm = Bellman(text='announce apple message text',
                      user_name='bob',
                      user_id='test_id')
-        group_name, space, bm.text = bm.text.partition(' ')
-        response = (bm.get_ping_tags(group_name) + '\n' + bm.text)
-        self.assertEqual(response, '\n'.join([
-            'Message from <@test_id> :',
-            '<@1> <@2>',
-            bm.text,
-        ]))
+        group_name, space, text = bm.text.partition(' ')
+
+        with patch.object(bm, 'send_announcement') as mock:
+            bm.execute()
+            mock.assert_called()
+            self.assertEqual(bm.text, '\n'.join([
+                'Message from <@test_id> :',
+                '<@1> <@2> ',
+                'message text'
+            ]))

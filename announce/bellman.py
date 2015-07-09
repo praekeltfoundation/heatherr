@@ -13,6 +13,7 @@ class Bellman:
 
     def __init__(self, text, user_name, user_id):
         temp_command, space, self.text = text.partition(' ')
+        print 'self.text', self.text
         self.command = temp_command.lower()
         self.user_name = user_name
         self.user_id = user_id
@@ -160,7 +161,10 @@ class Bellman:
             if self.group_exists(group_name):
                 # check is there is a message
                 if self.text != '':
-                    self.text = self.get_ping_tags(group_name), '\n', self.text
+                    self.text = '\n'.join([
+                        self.get_ping_tags(group_name),
+                        self.text,
+                    ])
                     self.send_announcement()
                     self.response_text = ('The group \'' + group_name + '\' '
                                           'has been sent your message in the '
