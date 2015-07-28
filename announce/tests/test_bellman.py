@@ -210,18 +210,26 @@ class AnnounceTestCase(TestCase):
                           make_post(text='announce BLAH'))
         self.assertTrue('The group \'BLAH\' does not exist' in
                         response.content)
+        # user does not belong to group
+        response = c.post('/announce/',
+                          make_post(text='announce test_group BLAH'))
+        self.assertTrue('You do not belong to the group \'test_group\'' in
+                        response.content)
         # no text message
         response = c.post('/announce/',
-                          make_post(text='announce test_group'))
-        print response.content
-        self.assertTrue('Please give me a message in your'
-                        + 'bellman command:' in response.content)
+                          make_post(user_name='foo',
+                                    user_id='1',
+                                    text='announce apple'))
+        self.assertTrue('Please give me a message in your bellman command:'
+                        in response.content)
         # standard test case
         response = c.post('/announce/',
-                          make_post(text='announce test_group message text'))
-        self.assertTrue('The group \'test_group\' has been sent your message'
+                          make_post(user_name='foo',
+                                    user_id='1',
+                                    text='announce apple message text'))
+        self.assertTrue('The group \'apple\' has been sent your message'
                         in response.content)
-        mock_send_announcement.assert_called()
+        mock_send_announcement.assert_called_with()
 
 
 class BellmanTestCase(TestCase):
@@ -241,15 +249,15 @@ class BellmanTestCase(TestCase):
 
     def test_announce(self):
         bm = Bellman(text='announce apple message text',
-                     user_name='bob',
-                     user_id='test_id')
+                     user_name='foo',
+                     user_id='1')
         group_name, space, text = bm.text.partition(' ')
 
         with patch.object(bm, 'send_announcement') as mock:
             bm.execute()
-            mock.assert_called()
+            mock.assert_called_with()
             self.assertEqual(bm.text, '\n'.join([
-                'Message from <@test_id> :',
-                '<@1> <@2> ',
+                'Message from <@1> :',
+                '<@2> ',
                 'message text'
             ]))
