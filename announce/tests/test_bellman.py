@@ -229,7 +229,7 @@ class AnnounceTestCase(TestCase):
                                     text='announce apple message text'))
         self.assertTrue('The group \'apple\' has been sent your message'
                         in response.content)
-        mock_send_announcement.assert_called()
+        mock_send_announcement.assert_called_with()
 
 
 class BellmanTestCase(TestCase):
@@ -255,7 +255,7 @@ class BellmanTestCase(TestCase):
 
         with patch.object(bm, 'send_announcement') as mock:
             bm.execute()
-            mock.assert_called()
+            mock.assert_called_with()
             self.assertEqual(bm.text, '\n'.join([
                 'Message from <@1> :',
                 '<@2> ',
