@@ -44,7 +44,8 @@ class Bellman:
                     self.response_text = (
                         'People in ' + group_name + ':\n' + self.response_text)
             else:
-                self.response_text = 'That group doesn\'t exist'
+                self.response_text = ('The group `' + group_name +
+                                      '` doesn\'t exist')
         else:
             self.response_text = ('Please give me a group name in your bellman'
                                   ' command:\n'
@@ -66,7 +67,7 @@ class Bellman:
                                   ' to belong to any groups. Use the '
                                   '\'opt-in\' '
                                   'command to join a group:\n'
-                                  '```/bellman opt-in GROUP_NAME```'
+                                  ' ```/bellman opt-in GROUP_NAME``` '
                                   'or use \'help\' to get more info:\n'
                                   '```/bellman help```')
         # otherwise insert header message
@@ -141,8 +142,8 @@ class Bellman:
                                       ' been created.\n'
                                       'To join the group, run the following '
                                       'command:\n'
-                                      '```/bellman opt-in ' + group_name
-                                      + '```')
+                                      '```/bellman opt-in ' + group_name +
+                                      '```')
             else:
                 self.response_text = ('The group \'' + group_name +
                                       '\' already exists')
@@ -170,7 +171,7 @@ class Bellman:
                         self.response_text = ('The group \'' + group_name +
                                               '\' ' +
                                               'has been sent your message in'
-                                              ' the praekelt_org channel')
+                                              ' the bellman channel')
                     else:
                         self.response_text = ('Please give me a message in '
                                               'your bellman command:\n'

@@ -69,7 +69,7 @@ class AnnounceTestCase(TestCase):
         # group name doesn't exist
         response = c.post('/announce/',
                           make_post(text='people-in-group BLAH'))
-        self.assertTrue('That group doesn\'t exist' in response.content)
+        self.assertTrue('The group `BLAH` doesn\'t exist' in response.content)
         # no people in group
         response = c.post('/announce/',
                           make_post(text='people-in-group test_group'))
