@@ -158,21 +158,27 @@ class Bellman:
         if group_name != '':
             # check group exists
             if self.group_exists(group_name):
-                # check is there is a message
-                if self.text != '':
-                    self.text = '\n'.join([
-                        self.get_ping_tags(group_name),
-                        self.text,
-                    ])
-                    self.send_announcement()
-                    self.response_text = ('The group \'' + group_name + '\' '
-                                          'has been sent your message in the '
-                                          'praekelt_org channel')
+                # check that the announcer belongs to the group
+                if self.user_in_group(group_name):
+                    # check is there is a message
+                    if self.text != '':
+                        self.text = '\n'.join([
+                            self.get_ping_tags(group_name),
+                            self.text,
+                        ])
+                        self.send_announcement()
+                        self.response_text = ('The group \'' + group_name +
+                                              '\' ' +
+                                              'has been sent your message in'
+                                              ' the praekelt_org channel')
+                    else:
+                        self.response_text = ('Please give me a message in '
+                                              'your bellman command:\n'
+                                              '```/bellman announce '
+                                              'GROUP_NAME MESSAGE```')
                 else:
-                    self.response_text = ('Please give me a message in your'
-                                          'bellman command:\n'
-                                          '```/bellman announce '
-                                          'GROUP_NAME MESSAGE```')
+                    self.response_text = ('You do not belong to the group \''
+                                          + group_name + '\'')
             else:
                 self.response_text = ('The group \'' + group_name +
                                       '\' does not exist.')
