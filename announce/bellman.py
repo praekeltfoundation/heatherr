@@ -290,7 +290,8 @@ class Bellman:
         logger.debug('Sent reply: %r' % (data,))
 
     def get_ping_tags(self, group_name):
-        tag_text = 'Message from <@' + self.user_id + '> :\n'
+        tag_text = ('Message from <@' + self.user_id +
+                    '> to `' + group_name + '`:\n')
         for person in (Group.objects
                        .get(group_name=group_name)
                        .person_set

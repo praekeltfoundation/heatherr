@@ -257,7 +257,7 @@ class BellmanTestCase(TestCase):
             bm.execute()
             mock.assert_called_with()
             self.assertEqual(bm.text, '\n'.join([
-                'Message from <@1> :',
+                'Message from <@1> to `apple`:',
                 '<@2> ',
                 'message text'
             ]))
