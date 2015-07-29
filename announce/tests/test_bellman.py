@@ -157,7 +157,7 @@ class AnnounceTestCase(TestCase):
         # does not belong to group
         response = c.post("/announce/",
                           make_post(text="opt-out test_group"))
-        self.assertTrue("You\"re not in test_group"in response.content)
+        self.assertTrue("You're not in test_group"in response.content)
         # standard test case
         g = Group.objects.get(group_name="test_group")
         p = Person.objects.get(person_id="test_id")
@@ -167,7 +167,7 @@ class AnnounceTestCase(TestCase):
         self.assertTrue(g in p.groups.all())
         response = c.post("/announce/",
                           make_post(text="opt-out test_group"))
-        self.assertTrue("You\"ve been removed from test_group"
+        self.assertTrue("You've been removed from test_group"
                         in response.content)
         self.assertFalse(p in g.person_set.all())
         self.assertFalse(g in p.groups.all())
