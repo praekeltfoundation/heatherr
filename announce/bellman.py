@@ -279,9 +279,6 @@ class Bellman:
         g = Group(group_name=group_name)
         g.save()
 
-    def message_group_created(self, user_name, group_name):
-        return 'Thanks ', user_name, ' you created the group: ', group_name
-
     def send_announcement(self):
         data = {
             "text": self.text
