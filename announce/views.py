@@ -23,7 +23,7 @@ def require_slack_token(slack_token):
 
 @require_slack_token(settings.SLACK_TOKEN)
 def announce(request):
-    logger.debug('POST from northhq slack')
+    logger.debug('POST from Slack')
     logger.debug(request.POST)
     app = Bellman(
         text=request.POST['text'],
