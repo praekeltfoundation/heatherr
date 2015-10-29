@@ -173,7 +173,7 @@ class Bellman:
                         self.send_announcement()
                         self.response_text = ("The group `{0}` "
                                               "has been sent your message in"
-                                              " the <#bellman> channel"
+                                              " the bellman channel"
                                               .format(group_name))
                     else:
                         self.response_text = ("Please give me a message in "
