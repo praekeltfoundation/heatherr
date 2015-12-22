@@ -1,28 +1,42 @@
 from uuid import uuid4
 
 from django.conf import settings
+from django.contrib.auth import logout
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import reverse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.views.generic import DetailView
 
-from account.models import Account
+from account.models import SlackAccount
 
 import requests
 
 
-def index(request):
-    return render(request, "account/index.html")
+def login_view(request):
+    return render(request, "account/login.html")
 
 
+def logout_view(request):
+    logout(request)
+    messages.success(request, 'You have been logged out. See you again soon!')
+    return redirect(reverse('accounts:login'))
+
+
+@login_required
 def profile(request):
     request.session['authorize_state'] = uuid4().hex
     request.session['authorize_request_uri'] = '%s://%s%s' % (
         ('https' if request.is_secure() else 'http'),
         get_current_site(request).domain,
-        reverse('frontend:authorize'))
-    return render(request, "account/profile.html")
+        reverse('accounts:authorize'))
+    if request.user.slackaccount_set.exists():
+        return render(request, "account/profile.html")
+    return render(request, "account/new_profile.html")
 
 
+@login_required
 def authorize(request):
     if request.session['authorize_state'] != request.GET['state']:
         return render(request, "account/authorize_fail.html", {
@@ -37,11 +51,8 @@ def authorize(request):
     })
     data = response.json()
 
-    from pprint import pprint
-    pprint(data)
-
-    account, created = Account.objects.update_or_create(
-        team_id=data['team_id'], defaults={
+    account, created = SlackAccount.objects.update_or_create(
+        user=request.user, team_id=data['team_id'], defaults={
             'access_token': data['access_token'],
             'scope': data['scope'],
             'team_name': data['team_name'],
@@ -54,7 +65,10 @@ def authorize(request):
         }
     )
 
-    return render(request, "account/authorize.html", {
-        'account': account,
-        'created': created,
-    })
+    messages.success(request, "Bellman is now linked to %s." % (
+        account.team_name,))
+    return redirect(reverse('accounts:profile'))
+
+
+class SlackAccountDetailView(DetailView):
+    model = SlackAccount

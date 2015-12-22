@@ -1,9 +1,0 @@
-{% extends "frontend/base.html" %}
-
-{% block container %}
-    {% if created %}
-        Hi there, the account for {{account.team_name}} has been created.
-    {% else %}
-        Hi there, the account for {{account.team_name}} has been updated.
-    {% endif %}
-{% endblock %}
