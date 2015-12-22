@@ -11,17 +11,21 @@ import requests
 
 
 def index(request):
+    return render(request, "account/index.html")
+
+
+def profile(request):
     request.session['authorize_state'] = uuid4().hex
     request.session['authorize_request_uri'] = '%s://%s%s' % (
         ('https' if request.is_secure() else 'http'),
         get_current_site(request).domain,
         reverse('frontend:authorize'))
-    return render(request, "frontend/index.html")
+    return render(request, "account/profile.html")
 
 
 def authorize(request):
     if request.session['authorize_state'] != request.GET['state']:
-        return render(request, "frontend/authorize_fail.html", {
+        return render(request, "account/authorize_fail.html", {
             "error": "Invalid state token.",
         })
 
@@ -50,7 +54,7 @@ def authorize(request):
         }
     )
 
-    return render(request, "frontend/authorize.html", {
+    return render(request, "account/authorize.html", {
         'account': account,
         'created': created,
     })
