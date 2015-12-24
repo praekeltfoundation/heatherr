@@ -9,7 +9,7 @@ import json
 logger = logging.getLogger("bellman.bellman")
 
 
-class Bellman:
+class Bellman(object):
 
     def __init__(self, text, user_name, user_id):
         temp_command, space, self.text = text.partition(" ")
