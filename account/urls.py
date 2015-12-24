@@ -1,4 +1,5 @@
 from django.conf.urls import url
+from django.contrib.auth.decorators import login_required
 
 from . import views
 
@@ -9,6 +10,6 @@ urlpatterns = [
     url(r'^authorize/', views.authorize, name='authorize'),
     url(
         r'^integration/(?P<pk>[0-9]+)/$',
-        views.SlackAccountDetailView.as_view(),
+        login_required(views.SlackAccountDetailView.as_view()),
         name='slack-detail'),
 ]
