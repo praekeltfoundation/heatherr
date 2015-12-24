@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block container %}
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <ul class="nav navbar-nav">
+    </ul>
+    <ul class="nav navbar-nav navbar-right">
+      <li><a href="{% url 'accounts:profile' %}">My profile</a></li>
+      <li><a href="{% url 'accounts:logout' %}">Logout</a></li>
+    </ul>
+  </div><!-- /.container-fluid -->
+</nav>
+
+{% block page_header %}
+<div class="page-header">
+  <h1>Bellman <small>Collaborate a bit better across time zones.</small></h1>
+</div>
+{% endblock %}
+
+
+{% block page_content %}
+{% endblock %}
+
+{% endblock %}
