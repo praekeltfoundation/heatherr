@@ -37,4 +37,6 @@ class Dispatcher(object):
 
 
 dispatcher = Dispatcher(settings.SLACK_TOKEN)
+# NOTE: this is here for backwards compatbility
 dispatcher.register('/bellman', AnnounceCommand())
+dispatcher.register('/announce', AnnounceCommand())
