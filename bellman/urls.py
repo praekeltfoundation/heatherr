@@ -22,7 +22,6 @@ from django.views.generic.base import RedirectView
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url=settings.LOGIN_URL)),
     url(r'^', include('social.apps.django_app.urls', namespace='social')),
-    url(r'^announce/', include('announce.urls')),
     url(r'^commands/', include('commands.urls', namespace='commands')),
     url(r'^accounts/', include('account.urls', namespace='accounts')),
     url(r'^admin/', include(admin.site.urls)),
