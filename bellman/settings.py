@@ -40,6 +40,7 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'announce',
     'account',
+    'commands.apps.CommandsConfig',
     'raven.contrib.django.raven_compat',
     'social.apps.django_app.default',
 )

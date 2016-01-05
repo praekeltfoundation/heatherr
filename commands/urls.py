@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
-from commands import views
+from commands import dispatcher
 
 urlpatterns = [
-    url(r'^$', views.dispatcher.view, name='dispatcher'),
+    url(r'^$', dispatcher.view, name='dispatcher'),
 ]

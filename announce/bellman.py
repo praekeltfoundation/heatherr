@@ -1,4 +1,4 @@
-from .models import Group, Person
+from announce.models import Group, Person
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 import logging
