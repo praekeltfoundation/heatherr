@@ -226,10 +226,12 @@ class AnnounceTestCase(TestCase):
         # no group
         response = c.post("/announce/",
                           make_post(text="announce"))
+        self.assertTrue("Please give me a group name in your "
+                        + "bellman command:" in response.content)
 
         # group name doesn't exist
         response = c.post("/announce/",
-                          make_post(text="announce BLAH foo"))
+                          make_post(text="announce BLAH"))
 
         self.assertTrue("The group `BLAH` doesn't exist" in
                         response.content)
