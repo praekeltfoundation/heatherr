@@ -25,6 +25,11 @@ announce = dispatcher.command('/announce')
 
 @announce.respond(r'^list-groups$', r'^list$')
 def list_groups(request, match):
+    """
+    `list-groups`
+
+    List the known groups.
+    """
     groups = Group.objects.filter(
         slackaccount__team_id=request.POST['team_id'])
     if not groups.exists():
@@ -38,6 +43,11 @@ def list_groups(request, match):
 
 @announce.respond(r'^list-my-groups$')
 def list_my_groups(request, match):
+    """
+    `list-my-groups`
+
+    List the groups you have opted-in for.
+    """
     person, _ = Person.objects.get_or_create(person_id=request.POST['user_id'])
     groups = person.groups.all()
     if not groups.exists():
@@ -48,6 +58,11 @@ def list_my_groups(request, match):
 
 @announce.respond(r'^create\s+(?P<group_name>[\w-]+)$')
 def create_groups(request, match):
+    """
+    `create <new-group-name>`
+
+    Create a new group.
+    """
     (group_name,) = match.groups()
     slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
     group, created = Group.objects.get_or_create(
@@ -61,6 +76,11 @@ def create_groups(request, match):
 
 @announce.respond(r'^opt-in\s+(?P<group_name>[\w-]+)$')
 def opt_in(request, match):
+    """
+    `opt-in <group-name>`
+
+    Opt-in to a group.
+    """
     (group_name,) = match.groups()
     slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
     person, _ = Person.objects.get_or_create(person_id=request.POST['user_id'])
@@ -74,6 +94,11 @@ def opt_in(request, match):
 
 @announce.respond(r'^opt-out\s+(?P<group_name>[\w-]+)$')
 def opt_out(request, match):
+    """
+    `opt-out <group-name>`
+
+    Opt out of a group
+    """
     (group_name,) = match.groups()
     slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
     person, _ = Person.objects.get_or_create(person_id=request.POST['user_id'])
@@ -87,6 +112,11 @@ def opt_out(request, match):
 
 @announce.respond(r'^people-in-group\s+(?P<group_name>[\w-]+)$')
 def people_in_group(request, match):
+    """
+    `people-in-group <group-name>`
+
+    List the people opted-in to a group.
+    """
     (group_name,) = match.groups()
     slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
     try:

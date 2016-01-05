@@ -3,11 +3,11 @@ from __future__ import absolute_import
 from functools import wraps
 from collections import defaultdict
 import re
+import textwrap
 
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
-
 
 
 class NotFoundHandler(object):
@@ -31,9 +31,11 @@ class Dispatcher(object):
     def unregister(self, command):
         return self.registry.pop(command)
 
-    def command(self, command):
-        r = CommandRouter()
-        self.register(command, r)
+    def command(self, command, auto_document=True):
+        r = CommandRouter(command=command)
+        if auto_document:
+            r.auto_document()
+        self.register(r.command, r)
         return r
 
     @csrf_exempt
@@ -48,12 +50,14 @@ class Dispatcher(object):
 
 class CommandRouter(object):
 
-    def __init__(self):
+    def __init__(self, command=None):
         self.registry = defaultdict(list)
+        self.command = command
 
     def respond(self, *patterns):
         def decorator(func):
             self.registry[func].extend(list(patterns))
+            setattr(func, 'patterns', frozenset(patterns))
 
             @wraps(func)
             def handler(*args, **kwargs):
@@ -74,6 +78,21 @@ class CommandRouter(object):
                         })
                     return response
         return self.noop(text)
+
+    def auto_document(self):
+        self.registry[self.auto_document_handler].append(r'^help$')
+
+    def auto_document_handler(self, request, match):
+        """
+        `help`
+
+        Prints out the help for this command handler.
+        """
+        docstrings = '\n'.join([textwrap.dedent(func.__doc__)
+                                for func in self.registry])
+        if self.command:
+            return 'Help for *%s*\n\n%s' % (self.command, docstrings)
+        return docstrings
 
     def noop(self, text):
         return JsonResponse({
