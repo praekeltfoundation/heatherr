@@ -1,8 +1,28 @@
 from django.test import TestCase, Client, override_settings
+from django.conf.urls import url
+
 from announce.models import Group, Person
 from announce.bellman import Bellman
+from announce.commands import bellman
+from commands.views import Dispatcher
 
 from mock import patch
+
+
+def temp_view(request):
+    """
+    A helper view to lazy load the SLACK_TOKEN so the
+    @override_settings decorator works.
+    """
+    from django.conf import settings
+    dispatcher = Dispatcher(settings.SLACK_TOKEN)
+    router = dispatcher.command('/bellman')
+    router.respond(r'.*')(bellman)
+    return dispatcher.view(request)
+
+urlpatterns = [
+    url(r'.*', temp_view, name='dispatcher'),
+]
 
 
 def make_post(user_name="bob", user_id="test_id", token="1234abc", text=""):
@@ -14,7 +34,8 @@ def make_post(user_name="bob", user_id="test_id", token="1234abc", text=""):
             }
 
 
-@override_settings(SLACK_TOKEN="1234abc")
+@override_settings(SLACK_TOKEN="1234abc",
+                   ROOT_URLCONF='announce.tests.test_bellman')
 class SecurityTestCase(TestCase):
     def test_post_check(self):
         c = Client()
@@ -32,7 +53,8 @@ class SecurityTestCase(TestCase):
 
 
 @override_settings(SLACK_TOKEN="1234abc",
-                   SLACK_INCOMING_WEBHOOK_URL="")
+                   SLACK_INCOMING_WEBHOOK_URL="",
+                   ROOT_URLCONF='announce.tests.test_bellman')
 class AnnounceTestCase(TestCase):
     def setUp(self):
         Group.objects.create(group_name="test_group")
@@ -204,11 +226,11 @@ class AnnounceTestCase(TestCase):
         # no group
         response = c.post("/announce/",
                           make_post(text="announce"))
-        self.assertTrue("Please give me a group name in your "
-                        + "bellman command:" in response.content)
+
         # group name doesn't exist
         response = c.post("/announce/",
-                          make_post(text="announce BLAH"))
+                          make_post(text="announce BLAH foo"))
+
         self.assertTrue("The group `BLAH` doesn't exist" in
                         response.content)
         # user does not belong to group
