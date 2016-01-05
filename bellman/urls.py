@@ -17,14 +17,15 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic.base import RedirectView
+from bellman import dispatcher
 
 
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url=settings.LOGIN_URL)),
     url(r'^', include('social.apps.django_app.urls', namespace='social')),
+    url(r'^commands/', dispatcher.view, name='dispatcher'),
     # NOTE: This is here for backwards compatibility.
-    url(r'^announce/', include('bellman.commands.urls', namespace='commands')),
-    url(r'^commands/', include('bellman.commands.urls', namespace='commands')),
+    url(r'^announce/', dispatcher.view, name='dispatcher'),
     url(r'^accounts/', include('bellman.account.urls', namespace='accounts')),
     url(r'^admin/', include(admin.site.urls)),
 ]

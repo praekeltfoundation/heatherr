@@ -4,9 +4,9 @@ from importlib import import_module
 from django.apps import AppConfig, apps
 
 
-class CommandsConfig(AppConfig):
+class BellmanConfig(AppConfig):
 
-    name = 'bellman.commands'
+    name = 'bellman'
 
     def ready(self):
         for app in apps.get_app_configs():

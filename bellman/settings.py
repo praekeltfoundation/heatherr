@@ -41,7 +41,7 @@ INSTALLED_APPS = (
     # NOTE: this is here for backwards compatibility
     'announce',
     'bellman.account',
-    'bellman.commands.apps.CommandsConfig',
+    'bellman.apps.BellmanConfig',
     'raven.contrib.django.raven_compat',
     'social.apps.django_app.default',
 )
