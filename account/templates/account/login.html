@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block container %}
+<div class="starter-template">
+  <img src="{% static "img/bell.png" %}" alt="Bell" />
+  <h1>Bellman</h1>
+  <p class="lead">
+    Bellman is a bunch of Slack tools that make <br/>
+    collaborating and working remotely a bit easier.<br/>
+  </p>
+  <p class="lead">
+    <a class="btn btn-primary btn-lg" href="{% url 'social:begin' 'google-oauth2' %}">Login with Google</a>
+  </p>
+</div>
+{% endblock %}

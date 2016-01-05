@@ -1,0 +1,38 @@
+{% extends "account/base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+
+{% block page_content %}
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Your Bellman Slack accounts</div>
+
+  <!-- Table -->
+  <table class="table table-striped table-hover">
+    <thead>
+      <tr>
+        <td></td>
+        <td>Team Name</td>
+        <td>Created at</td>
+      </tr>
+    </thead>
+    <tbody>
+    {% for account in user.slackaccount_set.all %}
+    <tr>
+      <th>{{forloop.counter}}</th>
+      <td>
+        <a href="{% url 'accounts:slack-detail' pk=account.pk %}">
+          {{account.team_name}}
+        </a>
+      </td>
+      <td>
+        <a href="{% url 'accounts:slack-detail' pk=account.pk %}">
+          {{account.updated_at|naturaltime}}
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

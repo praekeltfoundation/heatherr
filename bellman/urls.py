@@ -13,10 +13,18 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
+from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.views.generic.base import RedirectView
+
 
 urlpatterns = [
-    url(r'^announce/', include('announce.urls')),
+    url(r'^$', RedirectView.as_view(url=settings.LOGIN_URL)),
+    url(r'^', include('social.apps.django_app.urls', namespace='social')),
+    # NOTE: This is here for backwards compatibility.
+    url(r'^announce/', include('commands.urls', namespace='commands')),
+    url(r'^commands/', include('commands.urls', namespace='commands')),
+    url(r'^accounts/', include('account.urls', namespace='accounts')),
     url(r'^admin/', include(admin.site.urls)),
 ]

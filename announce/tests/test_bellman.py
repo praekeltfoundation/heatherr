@@ -10,6 +10,7 @@ def make_post(user_name="bob", user_id="test_id", token="1234abc", text=""):
             "user_name": user_name,
             "user_id": user_id,
             "text": text,
+            "command": "/bellman",
             }
 
 
