@@ -23,41 +23,32 @@ def bellman(request, match):
 announce = dispatcher.command('/announce')
 
 
-@announce.respond(r'^list-groups$', r'^list$')
-def list_groups(request, match):
+@announce.respond(r'^list$')
+def list(request, match):
     """
-    `list-groups`
+    `list`
 
     List the known groups.
     """
     groups = Group.objects.filter(
         slackaccount__team_id=request.POST['team_id'])
+    person, _ = Person.objects.get_or_create(person_id=request.POST['user_id'])
     if not groups.exists():
         return JsonResponse({
             'text': 'No groups exist'
         })
 
-    return 'Groups: %s' % (
-        '\n'.join([unicode(group) for group in groups]),)
+    return 'Groups:\n%s' % ('\n'.join([
+        '- %s%s' % (
+            unicode(group),
+            (' (member)'
+             if person.groups.filter(pk=group.pk).exists()
+             else ''))
+        for group in groups]),)
 
 
-@announce.respond(r'^list-my-groups$')
-def list_my_groups(request, match):
-    """
-    `list-my-groups`
-
-    List the groups you have opted-in for.
-    """
-    person, _ = Person.objects.get_or_create(person_id=request.POST['user_id'])
-    groups = person.groups.all()
-    if not groups.exists():
-        return "You don't seem to belong to any groups."
-    return "Groups you belong to: %s" % (
-        ', '.join([unicode(group) for group in groups]))
-
-
-@announce.respond(r'^create\s+(?P<group_name>[\w-]+)$')
-def create_groups(request, match):
+@announce.respond(r'^create (?P<group_name>[\w-]+)$')
+def create(request, match):
     """
     `create <new-group-name>`
 
@@ -74,12 +65,12 @@ def create_groups(request, match):
         return 'The group %s already exists.' % (group_name,)
 
 
-@announce.respond(r'^opt-in\s+(?P<group_name>[\w-]+)$')
-def opt_in(request, match):
+@announce.respond(r'^join (?P<group_name>[\w-]+)$')
+def join(request, match):
     """
-    `opt-in <group-name>`
+    `join <group-name>`
 
-    Opt-in to a group.
+    Join a group.
     """
     (group_name,) = match.groups()
     slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
@@ -92,12 +83,12 @@ def opt_in(request, match):
         return 'The group %s does not exist.' % (group_name,)
 
 
-@announce.respond(r'^opt-out\s+(?P<group_name>[\w-]+)$')
-def opt_out(request, match):
+@announce.respond(r'^leave (?P<group_name>[\w-]+)$')
+def leave(request, match):
     """
-    `opt-out <group-name>`
+    `leave <group-name>`
 
-    Opt out of a group
+    Leave a group
     """
     (group_name,) = match.groups()
     slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
@@ -110,12 +101,12 @@ def opt_out(request, match):
         return 'The group %s does not exist.' % (group_name,)
 
 
-@announce.respond(r'^people-in-group\s+(?P<group_name>[\w-]+)$')
-def people_in_group(request, match):
+@announce.respond(r'^members (?P<group_name>[\w-]+)$')
+def members(request, match):
     """
-    `people-in-group <group-name>`
+    `members <group-name>`
 
-    List the people opted-in to a group.
+    List the members in a group.
     """
     (group_name,) = match.groups()
     slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
@@ -130,4 +121,26 @@ def people_in_group(request, match):
                 [person.person_name for person in group.person_set.all()]))
 
     except Group.DoesNotExist:
-        return 'The group %s does not exist.'
+        return 'The group %s does not exist.' % (group_name,)
+
+
+@announce.respond(r'^announce (?P<group_name>[\w-]+) (?P<message>.+)$')
+def announce(request, match):
+    """
+    `announce <group-name> <your message>`
+
+    Broadcast a message to all the members in a group
+    """
+    (group_name, message) = match.groups()
+    slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
+    person, _ = Person.objects.get_or_create(person_id=request.POST['user_id'])
+    try:
+        group = slackaccount.group_set.get(group_name=group_name)
+        return 'Message from <@%s> to `%s`:\n%s\n%s' % (
+            person.person_id, group.group_name,
+            ' '.join(['<@%s>' % (member.person_id,)
+                      for member in group.person_set.all()]),
+            message,
+        )
+    except Group.DoesNotExist:
+        return 'The group %s does not exist.' % (group_name,)
