@@ -4,8 +4,8 @@ from django.http import HttpResponse, JsonResponse
 
 from announce.bellman import Bellman
 from announce.models import Group, Person
-from account.models import SlackAccount
-from commands import dispatcher
+from bellman.account.models import SlackAccount
+from bellman.commands import dispatcher
 
 
 bellman = dispatcher.command('/bellman')

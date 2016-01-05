@@ -23,8 +23,8 @@ urlpatterns = [
     url(r'^$', RedirectView.as_view(url=settings.LOGIN_URL)),
     url(r'^', include('social.apps.django_app.urls', namespace='social')),
     # NOTE: This is here for backwards compatibility.
-    url(r'^announce/', include('commands.urls', namespace='commands')),
-    url(r'^commands/', include('commands.urls', namespace='commands')),
-    url(r'^accounts/', include('account.urls', namespace='accounts')),
+    url(r'^announce/', include('bellman.commands.urls', namespace='commands')),
+    url(r'^commands/', include('bellman.commands.urls', namespace='commands')),
+    url(r'^accounts/', include('bellman.account.urls', namespace='accounts')),
     url(r'^admin/', include(admin.site.urls)),
 ]

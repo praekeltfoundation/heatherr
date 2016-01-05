@@ -4,7 +4,7 @@ from django.conf.urls import url
 from announce.models import Group, Person
 from announce.bellman import Bellman
 from announce.commands import bellman
-from commands.views import Dispatcher
+from bellman.commands.views import Dispatcher
 
 from mock import patch
 

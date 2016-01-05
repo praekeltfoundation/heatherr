@@ -6,7 +6,7 @@ from django.apps import AppConfig, apps
 
 class CommandsConfig(AppConfig):
 
-    name = 'commands'
+    name = 'bellman.commands'
 
     def ready(self):
         for app in apps.get_app_configs():
