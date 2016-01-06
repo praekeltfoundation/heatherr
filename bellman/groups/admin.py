@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from announce.models import Group, Person
+from bellman.groups.models import Group, Person
 
 
 class GroupModelAdmin(admin.ModelAdmin):

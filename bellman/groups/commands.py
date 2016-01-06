@@ -1,24 +1,11 @@
 from __future__ import absolute_import
 
-from django.http import HttpResponse, JsonResponse
+from django.http import JsonResponse
 
-from announce.bellman import Bellman
 from bellman.groups.models import Group, Person
 from bellman.account.models import SlackAccount
 from bellman.views import dispatcher
 
-
-bellman = dispatcher.command('/bellman')
-
-
-@bellman.respond(r'.*')
-def bellman(request, match):
-    app = Bellman(
-        text=request.POST['text'],
-        user_name=request.POST['user_name'],
-        user_id=request.POST['user_id'])
-    app.execute()
-    return HttpResponse(app.get_response())
 
 announce = dispatcher.command('/announce')
 
