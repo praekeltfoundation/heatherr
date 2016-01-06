@@ -38,8 +38,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    # NOTE: this is here for backwards compatibility
-    'announce',
     'bellman.account',
     'bellman.groups',
     'bellman.apps.BellmanConfig',
