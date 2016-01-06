@@ -3,7 +3,7 @@ from __future__ import absolute_import
 from django.http import JsonResponse
 
 from bellman.groups.models import Group, Person
-from bellman.account.models import SlackAccount
+from bellman.models import SlackAccount
 from bellman.views import dispatcher
 
 
