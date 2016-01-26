@@ -3,9 +3,9 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
-from bellman.groups.commands import announce
 from bellman.groups.models import Group, Person
 from bellman.models import SlackAccount
+
 
 class CommandTestCase(TestCase):
 
@@ -100,7 +100,7 @@ class GroupsCommandTestCase(CommandTestCase):
             'The group my-group does not exist.')
 
     def test_join(self):
-        group = Group.objects.create(
+        Group.objects.create(
             group_name='my-group', slackaccount=self.slackaccount)
         self.assertCommandResponse(
             '/announce join my-group',
