@@ -29,7 +29,7 @@ class Dispatcher(object):
         self.registry[command] = handler
 
     def unregister(self, command):
-        return self.registry.pop(command)
+        return self.registry.pop(command, None)
 
     def command(self, command, auto_document=True):
         r = CommandRouter(command=command)
