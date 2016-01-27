@@ -84,7 +84,7 @@ class GroupsCommandTestCase(CommandTestCase):
             'People in my-group: Example Person')
 
     def test_members_empty(self):
-        group = Group.objects.create(
+        Group.objects.create(
             group_name='my-group', slackaccount=self.slackaccount)
         self.assertCommandResponse(
             '/announce members my-group',
@@ -107,7 +107,7 @@ class GroupsCommandTestCase(CommandTestCase):
                                  slackaccount=self.slackaccount).count(), 1)
 
     def test_create_existing(self):
-        group = Group.objects.create(
+        Group.objects.create(
             group_name='my-group', slackaccount=self.slackaccount)
         self.assertCommandResponse(
             '/announce create my-group',
