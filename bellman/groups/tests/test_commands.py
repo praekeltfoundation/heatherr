@@ -1,7 +1,5 @@
 from bellman.groups.models import Group, Person
-from bellman.models import SlackAccount
 from bellman.tests import CommandTestCase
-
 
 
 class GroupsCommandTestCase(CommandTestCase):
