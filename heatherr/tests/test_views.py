@@ -1,6 +1,6 @@
 from django.test import override_settings
-from bellman.tests import CommandTestCase
-from bellman.views import dispatcher
+from heatherr.tests import CommandTestCase
+from heatherr.views import dispatcher
 
 
 class TestDispatcher(CommandTestCase):

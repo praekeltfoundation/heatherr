@@ -2,9 +2,9 @@ from __future__ import absolute_import
 
 from django.http import JsonResponse
 
-from bellman.groups.models import Group, Person
-from bellman.models import SlackAccount
-from bellman.views import dispatcher
+from heatherr.groups.models import Group, Person
+from heatherr.models import SlackAccount
+from heatherr.views import dispatcher
 
 
 announce = dispatcher.command('/announce')

@@ -12,9 +12,9 @@ with open(os.path.join(here, 'requirements.txt')) as f:
 with open(os.path.join(here, 'VERSION')) as f:
     version = f.read().strip()
 
-setup(name='bellman',
+setup(name='heatherr',
       version=version,
-      description='Bellman',
+      description='Heatherr',
       long_description=README,
       classifiers=[
           "Programming Language :: Python",
@@ -23,7 +23,7 @@ setup(name='bellman',
       ],
       author='Praekelt Foundation',
       author_email='dev@praekelt.com',
-      url='http://github.com/praekelt/bellman',
+      url='http://github.com/smn/heatherr',
       license='BSD',
       keywords='web',
       packages=find_packages(),

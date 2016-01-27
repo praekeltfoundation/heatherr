@@ -1,5 +1,5 @@
-from bellman.groups.models import Group, Person
-from bellman.tests import CommandTestCase
+from heatherr.groups.models import Group, Person
+from heatherr.tests import CommandTestCase
 
 
 class GroupsCommandTestCase(CommandTestCase):

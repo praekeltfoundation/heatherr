@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.views.generic import DetailView
 
-from bellman.models import SlackAccount
+from heatherr.models import SlackAccount
 
 import requests
 
@@ -65,7 +65,7 @@ def authorize(request):
         }
     )
 
-    messages.success(request, "Bellman is now linked to %s." % (
+    messages.success(request, "Heatherr is now linked to %s." % (
         account.team_name,))
     return redirect(reverse('accounts:profile'))
 

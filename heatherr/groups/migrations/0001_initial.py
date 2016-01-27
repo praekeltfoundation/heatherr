@@ -11,7 +11,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('bellman', '0001_initial'),
+        ('heatherr', '0001_initial'),
     ]
 
     operations = [
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('group_name', models.CharField(max_length=200)),
-                ('slackaccount', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='bellman.SlackAccount')),
+                ('slackaccount', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='heatherr.SlackAccount')),
             ],
         ),
         migrations.CreateModel(
@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                 ('person_id', models.CharField(max_length=200)),
                 ('person_name', models.CharField(max_length=200)),
                 ('groups', models.ManyToManyField(to='groups.Group')),
-                ('slackaccount', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='bellman.SlackAccount')),
+                ('slackaccount', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='heatherr.SlackAccount')),
             ],
         ),
     ]

@@ -4,9 +4,9 @@ from importlib import import_module
 from django.apps import AppConfig, apps
 
 
-class BellmanConfig(AppConfig):
+class HeatherrConfig(AppConfig):
 
-    name = 'bellman'
+    name = 'heatherr'
 
     def ready(self):
         for app in apps.get_app_configs():

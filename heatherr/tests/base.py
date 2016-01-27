@@ -3,7 +3,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
-from bellman.models import SlackAccount
+from heatherr.models import SlackAccount
 
 
 class CommandTestCase(TestCase):

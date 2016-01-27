@@ -1,4 +1,4 @@
-"""bellman URL Configuration
+"""heatherr URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.8/topics/http/urls/
@@ -17,7 +17,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic.base import RedirectView
-from bellman import dispatcher
+from heatherr import dispatcher
 
 
 urlpatterns = [
@@ -26,6 +26,6 @@ urlpatterns = [
     url(r'^commands/', dispatcher.view, name='dispatcher'),
     # NOTE: This is here for backwards compatibility.
     url(r'^announce/', dispatcher.view, name='dispatcher'),
-    url(r'^accounts/', include('bellman.account.urls', namespace='accounts')),
+    url(r'^accounts/', include('heatherr.account.urls', namespace='accounts')),
     url(r'^admin/', include(admin.site.urls)),
 ]

@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase, override_settings
 
-from bellman.models import SlackAccount
+from heatherr.models import SlackAccount
 
 
 class TestAccountViews(TestCase):
