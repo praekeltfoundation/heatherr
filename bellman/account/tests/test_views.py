@@ -1,5 +1,3 @@
-from urllib import urlencode
-
 import responses
 
 from django.contrib.auth.models import User
@@ -68,6 +66,7 @@ class TestAccountViews(TestCase):
         self.assertFalse(self.user.slackaccount_set.exists())
         response = self.client.get('%s?state=authorize_state&code=code' % (
             reverse('accounts:authorize'),))
+        self.assertRedirects(response, reverse('accounts:profile'))
         [slackaccount] = self.user.slackaccount_set.all()
         self.assertEqual(slackaccount.access_token, 'the-access-token')
         self.assertEqual(slackaccount.bot_user_id, 'bot-user-id')
