@@ -1,0 +1,3 @@
+[run]
+omit = ve/*,*/migrations/*,setup.py,wsgi.py,manage.py
+source= .

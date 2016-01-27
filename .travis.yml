@@ -1,0 +1,19 @@
+language: python
+python:
+  - "2.7"
+install:
+  - pip install -r requirements-dev.txt
+  - pip install -e .
+script:
+  - flake8 .
+  - coverage run `which py.test`
+after_success:
+  - coveralls
+deploy:
+  provider: pypi
+  user: smn
+  password:
+    secure: "FN+kFBO8+/PLovh9TXsnm5caWXBxtFuO+F+4xdvJFLWFG02EGvPSUddICyVux6nyCzMr7Ddw2vtimEyFg/aj4DOMmOt+ymb2NQuXz6lifdIeMfsOYCB+N8xNpniZQJRPBPUWqdhucrmJMxh6JzlpCIUXenhJDaRqnVO0TyowJelYgjlVPccbCFq1IZBrQRRWYJ5/jpGukz6kQ3x0m7IOzwGGTvTzKCAJgf2omAfOApgykWSPiActU4cMDb6uIFk3FXmHGwAlbGatIa4lhvmyzrExXFi0E3PKdgtXrTRINP8F4cA3MvQ/L3w/sxMVjYoKIsIdyz0i+82i+QDJoM/Yzp57vqVMcwakZ5TK2wzzCUfUZpjxL/gENhw4naOZQqz/kVkn1ElOIDOnRZoArtPBOifQoG/LMuVVRCTbS3GF0RMCOPrLw6jDELxHNoKhYfvEsVPtzI+rNS8GhNVUbOqDWVjLSoRMbIPArUwyTPT6SZh2DmE0vQ1cRg5q08fuMtjdoUv9s9UulShaopsoV+6Z8He+Le0bfBXIdUNIVVsU+U24nxYHW92izpaYvZp2V86fKNyOcp0ZV8AnzyHBWaEGdv4B9INV0yKBMW5/Iaijk0QzlsbJE6JdLsw7wqXFSEfzP44ocT0IEoGWir2adMQEVo2MM9Br3cayf2yvC33FK9c="
+  on:
+    tags: true
+    all_branches: true
