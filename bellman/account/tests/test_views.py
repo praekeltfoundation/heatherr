@@ -2,7 +2,7 @@ import responses
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from bellman.models import SlackAccount
 
@@ -38,6 +38,8 @@ class TestAccountViews(TestCase):
         self.assertTemplateUsed(response, 'account/profile.html')
 
     @responses.activate
+    @override_settings(SLACK_CLIENT_ID='slack-client-id',
+                       SLACK_CLIENT_SECRET='slack-client-secret')
     def test_authorize(self):
         responses.add(
             responses.POST, 'https://slack.com/api/oauth.access',
