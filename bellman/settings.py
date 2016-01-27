@@ -38,8 +38,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'announce',
-    'account',
+    'bellman.account',
+    'bellman.groups',
+    'bellman.apps.BellmanConfig',
     'raven.contrib.django.raven_compat',
     'social.apps.django_app.default',
 )

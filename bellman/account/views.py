@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.views.generic import DetailView
 
-from account.models import SlackAccount
+from bellman.models import SlackAccount
 
 import requests
 
