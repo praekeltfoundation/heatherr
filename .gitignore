@@ -3,3 +3,4 @@ ve
 *.sqlite3
 *.pyc
 *.egg-info
+.cache/
