@@ -6,3 +6,4 @@ pytest-django
 flake8
 fabric
 mock
+responses
