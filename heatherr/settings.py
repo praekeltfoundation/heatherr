@@ -91,13 +91,13 @@ WSGI_APPLICATION = 'heatherr.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
+import dj_database_url
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    'default': dj_database_url.config(
+        default='sqlite:///%s' % (
+            os.path.join(BASE_DIR, 'db.sqlite3'),)
+        )
     }
-}
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
