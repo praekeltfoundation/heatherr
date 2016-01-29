@@ -31,10 +31,10 @@ def profile(request):
         ('https' if request.is_secure() else 'http'),
         get_current_site(request).domain,
         reverse('accounts:authorize'))
-    if request.user.slackaccount_set.exists():
-        return render(request, "account/profile.html")
-    return render(request, "account/new_profile.html", {
+
+    return render(request, "account/profile.html", {
         'SLACK_CLIENT_ID': settings.SLACK_CLIENT_ID,
+        'user': request.user,
     })
 
 

@@ -26,12 +26,7 @@ class TestAccountViews(TestCase):
             self.client.get(reverse('accounts:logout')),
             reverse('accounts:login'))
 
-    def test_new_profile(self):
-        self.client.login(username='username', password='password')
-        response = self.client.get(reverse('accounts:profile'))
-        self.assertTemplateUsed(response, 'account/new_profile.html')
-
-    def test_existing_profile(self):
+    def test_profile(self):
         self.client.login(username='username', password='password')
         SlackAccount.objects.create(user=self.user)
         response = self.client.get(reverse('accounts:profile'))
