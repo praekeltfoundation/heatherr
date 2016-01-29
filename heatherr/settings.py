@@ -83,8 +83,11 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['username', 'first_name', 'email']
-SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = ''
-SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ''
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ.get(
+    'SOCIAL_AUTH_GOOGLE_OAUTH2_KEY', '')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get(
+    'SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET', '')
 
 WSGI_APPLICATION = 'heatherr.wsgi.application'
 
@@ -118,9 +121,9 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-SLACK_TOKEN = 'MY_SLACK_TOKEN'
-
-SLACK_INCOMING_WEBHOOK_URL = 'MY_SLACK_INCOMING_WEBHOOK_URL'
+SLACK_TOKEN = os.environ.get('SLACK_TOKEN', '')
+SLACK_CLIENT_ID = os.environ.get('SLACK_CLIENT_ID', '')
+SLACK_CLIENT_SECRET = os.environ.get('SLACK_CLIENT_SECRET', '')
 
 LOGGING = {
     'version': 1,
