@@ -1,5 +1,6 @@
 name: heatherr
 buildscript: scripts/build_script.sh
 postinstall: scripts/post_install.sh
-pip: []
+pip:
+  - gunicorn
 dependencies: []
