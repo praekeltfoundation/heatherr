@@ -1,5 +1,7 @@
 from django.db import models
 
+import requests
+
 
 class SlackAccount(models.Model):
     user = models.ForeignKey('auth.user', null=True)
@@ -17,3 +19,12 @@ class SlackAccount(models.Model):
 
     def __unicode__(self):
         return u'%s (%s)' % (self.team_name, self.team_id)
+
+    def api_call(self, method, **kwargs):
+        data = {
+            'token': self.access_token,
+        }
+        data.update(**kwargs)
+        response = requests.post(
+            'https://slack.com/api/%s' % (method,), data=data)
+        return response.json()
