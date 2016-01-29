@@ -3,4 +3,5 @@ buildscript: scripts/build_script.sh
 postinstall: scripts/post_install.sh
 pip:
   - gunicorn
+  - psycopg2
 dependencies: []
