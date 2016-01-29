@@ -33,7 +33,9 @@ def profile(request):
         reverse('accounts:authorize'))
     if request.user.slackaccount_set.exists():
         return render(request, "account/profile.html")
-    return render(request, "account/new_profile.html")
+    return render(request, "account/new_profile.html", {
+        'SLACK_CLIENT_ID': settings.SLACK_CLIENT_ID,
+    })
 
 
 @login_required
