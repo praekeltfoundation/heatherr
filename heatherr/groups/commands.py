@@ -7,10 +7,10 @@ from heatherr.models import SlackAccount
 from heatherr.views import dispatcher
 
 
-announce = dispatcher.command('/bellman')
+bellman = dispatcher.command('/bellman')
 
 
-@announce.respond(r'^list$')
+@bellman.respond(r'^list$')
 def list(request, match):
     """
     `list`
@@ -34,7 +34,7 @@ def list(request, match):
         for group in groups]),)
 
 
-@announce.respond(r'^create (?P<group_name>[\w-]+)$')
+@bellman.respond(r'^create (?P<group_name>[\w-]+)$')
 def create(request, match):
     """
     `create <new-group-name>`
@@ -52,7 +52,7 @@ def create(request, match):
         return 'The group %s already exists.' % (group_name,)
 
 
-@announce.respond(r'^join (?P<group_name>[\w-]+)$')
+@bellman.respond(r'^join (?P<group_name>[\w-]+)$')
 def join(request, match):
     """
     `join <group-name>`
@@ -70,7 +70,7 @@ def join(request, match):
         return 'The group %s does not exist.' % (group_name,)
 
 
-@announce.respond(r'^leave (?P<group_name>[\w-]+)$')
+@bellman.respond(r'^leave (?P<group_name>[\w-]+)$')
 def leave(request, match):
     """
     `leave <group-name>`
@@ -88,7 +88,7 @@ def leave(request, match):
         return 'The group %s does not exist.' % (group_name,)
 
 
-@announce.respond(r'^members (?P<group_name>[\w-]+)$')
+@bellman.respond(r'^members (?P<group_name>[\w-]+)$')
 def members(request, match):
     """
     `members <group-name>`
@@ -111,7 +111,7 @@ def members(request, match):
         return 'The group %s does not exist.' % (group_name,)
 
 
-@announce.respond(r'^announce (?P<group_name>[\w-]+) (?P<message>.+)$')
+@bellman.respond(r'^announce (?P<group_name>[\w-]+) (?P<message>.+)$')
 def announce(request, match):
     """
     `announce <group-name> <your message>`
