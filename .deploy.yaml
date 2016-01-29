@@ -4,5 +4,6 @@ postinstall: scripts/post_install.sh
 pip:
   - gunicorn
   - psycopg2
+  - "raven<=5.0"
 dependencies:
   - libpq-dev
