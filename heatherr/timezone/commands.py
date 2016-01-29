@@ -6,6 +6,7 @@ from heatherr.views import dispatcher
 
 timezone = dispatcher.command('/time')
 
-@timezone.respond(r'^for (.+)$')
+@timezone.respond(r'^for (?P<name>.+)$')
 def for_(request, match):
-    return 'not sure yet'
+    (group_name,) = match.groups()
+    return 'not sure yet for %s' % (group_name,)
