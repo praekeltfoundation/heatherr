@@ -41,6 +41,7 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'heatherr.account',
     'heatherr.groups',
+    'heatherr.timezone',
     'heatherr.apps.HeatherrConfig',
     'raven.contrib.django.raven_compat',
     'social.apps.django_app.default',
