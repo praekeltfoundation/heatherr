@@ -74,3 +74,9 @@ def authorize(request):
 
 class SlackAccountDetailView(DetailView):
     model = SlackAccount
+
+    def get_context_data(self, **kwargs):
+        context = super(
+            SlackAccountDetailView, self).get_context_data(**kwargs)
+        context['SLACK_CLIENT_ID'] = settings.SLACK_CLIENT_ID
+        return context

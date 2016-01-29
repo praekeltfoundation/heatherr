@@ -24,7 +24,7 @@
           <th>Created at:</th>
           <td>{{object.created_at}}</td>
           <td>
-            <a href="https://slack.com/oauth/authorize?scope=incoming-webhook,commands,bot,users:read&client_id={{settings.SLACK_CLIENT_ID}}&amp;redirect_uri={{request.session.authorize_request_uri}}&amp;state={{request.session.authorize_state}}&amp;team={{object.team_id}}">Setup again</a>
+            <a href="https://slack.com/oauth/authorize?scope=incoming-webhook,commands,bot,users:read&client_id={{SLACK_CLIENT_ID}}&amp;redirect_uri={{request.session.authorize_request_uri}}&amp;state={{request.session.authorize_state}}&amp;team={{object.team_id}}">Setup again</a>
           </td>
         </tr>
         <tr>
