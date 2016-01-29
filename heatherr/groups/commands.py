@@ -7,7 +7,7 @@ from heatherr.models import SlackAccount
 from heatherr.views import dispatcher
 
 
-announce = dispatcher.command('/announce')
+announce = dispatcher.command('/bellman')
 
 
 @announce.respond(r'^list$')

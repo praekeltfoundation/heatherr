@@ -10,13 +10,13 @@ class GroupsCommandTestCase(CommandTestCase):
     def test_list(self):
         Group.objects.create(
             group_name='Group Name', slackaccount=self.slackaccount)
-        self.assertCommandResponse('/announce list', '\n'.join([
+        self.assertCommandResponse('/bellman list', '\n'.join([
             'Groups:',
             '- Group Name',
         ]))
 
     def test_empty_list(self):
-        self.assertCommandResponse('/announce list', 'No groups exist')
+        self.assertCommandResponse('/bellman list', 'No groups exist')
 
     def test_list_member(self):
         group = Group.objects.create(
@@ -24,7 +24,7 @@ class GroupsCommandTestCase(CommandTestCase):
         person = Person.objects.create(
             person_id=self.default_user_id, slackaccount=self.slackaccount)
         person.groups.add(group)
-        self.assertCommandResponse('/announce list', '\n'.join([
+        self.assertCommandResponse('/bellman list', '\n'.join([
             'Groups:',
             '- group-name (member)',
         ]))
@@ -37,19 +37,19 @@ class GroupsCommandTestCase(CommandTestCase):
             person_id=self.default_user_id, slackaccount=self.slackaccount)
         person.groups.add(group)
         self.assertCommandResponse(
-            '/announce members my-group',
+            '/bellman members my-group',
             'People in my-group: Example Person')
 
     def test_members_empty(self):
         Group.objects.create(
             group_name='my-group', slackaccount=self.slackaccount)
         self.assertCommandResponse(
-            '/announce members my-group',
+            '/bellman members my-group',
             'There are no people in my-group.')
 
     def test_members_nonexistent(self):
         self.assertCommandResponse(
-            '/announce members my-group',
+            '/bellman members my-group',
             'The group my-group does not exist.')
 
     def test_create(self):
@@ -57,7 +57,7 @@ class GroupsCommandTestCase(CommandTestCase):
             Group.objects.filter(group_name='my-group',
                                  slackaccount=self.slackaccount).count(), 0)
         self.assertCommandResponse(
-            '/announce create my-group',
+            '/bellman create my-group',
             'The group my-group has been created.')
         self.assertEqual(
             Group.objects.filter(group_name='my-group',
@@ -67,24 +67,24 @@ class GroupsCommandTestCase(CommandTestCase):
         Group.objects.create(
             group_name='my-group', slackaccount=self.slackaccount)
         self.assertCommandResponse(
-            '/announce create my-group',
+            '/bellman create my-group',
             'The group my-group already exists.')
 
     def test_join_nonexistent(self):
         self.assertCommandResponse(
-            '/announce join my-group',
+            '/bellman join my-group',
             'The group my-group does not exist.')
 
     def test_join(self):
         Group.objects.create(
             group_name='my-group', slackaccount=self.slackaccount)
         self.assertCommandResponse(
-            '/announce join my-group',
+            '/bellman join my-group',
             'You\'ve been added to my-group.')
 
     def test_leave_nonexistent(self):
         self.assertCommandResponse(
-            '/announce leave my-group',
+            '/bellman leave my-group',
             'The group my-group does not exist.')
 
     def test_leave(self):
@@ -94,7 +94,7 @@ class GroupsCommandTestCase(CommandTestCase):
             person_id=self.default_user_id, slackaccount=self.slackaccount)
         person.groups.add(group)
         self.assertCommandResponse(
-            '/announce leave my-group',
+            '/bellman leave my-group',
             'You\'ve been removed from my-group.')
         self.assertEqual(person.groups.count(), 0)
 
@@ -105,7 +105,7 @@ class GroupsCommandTestCase(CommandTestCase):
             person_id=self.default_user_id, slackaccount=self.slackaccount)
         person.groups.add(group)
         self.assertCommandResponse(
-            '/announce announce my-group hello world!',
+            '/bellman announce my-group hello world!',
             '\n'.join([
                 'Message from <@announcing-user-id> to `my-group`:',
                 '<@%s>' % (person.person_id,),
@@ -115,5 +115,5 @@ class GroupsCommandTestCase(CommandTestCase):
 
     def test_announce_nonexistent(self):
         self.assertCommandResponse(
-            '/announce announce my-group hullo!',
+            '/bellman announce my-group hullo!',
             'The group my-group does not exist.')
