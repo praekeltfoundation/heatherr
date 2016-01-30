@@ -1,5 +1,8 @@
 from __future__ import absolute_import
 
+from django.http import JsonResponse
+
+
 from heatherr.models import SlackAccount
 from heatherr.views import dispatcher
 import arrow
@@ -20,5 +23,9 @@ def for_(request, match):
     [member] = found_members
     utc = arrow.utcnow()
     localtime = utc.to(member['tz'])
-    return '<@%s> is in %s, local time is %s' % (
+    text = '<@%s> is in %s, local time is %s' % (
         member['id'], member['tz_label'], localtime.format('h:mm A'))
+    return JsonResponse({
+        'response_type': 'in_channel',
+        'text': text,
+    })

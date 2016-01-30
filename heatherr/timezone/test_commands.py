@@ -25,7 +25,10 @@ class TestTimeZone(CommandTestCase):
                     'tz_offset': -18000,
                  }]
             })
-        self.assertCommandResponse(
-            '/time for testuser',
-            ('<@member-id> is in Eastern Standard Time, '
-             'local time is 7:00 PM'))
+        response = self.send_command('/time for testuser')
+        data = response.json()
+        self.assertEqual(data, {
+            'response_type': 'in_channel',
+            'text': ('<@member-id> is in Eastern Standard Time, '
+                     'local time is 7:00 PM')
+        })
