@@ -22,7 +22,7 @@ def for_(request, match):
         return 'I don\'t know %s' % (name,)
     [member] = found_members
     utc = arrow.utcnow()
-    localtime = utc.to(member['tz'])
+    localtime = (utc.to(member['tz']) + utc.dst())
     text = '<@%s> is in %s, local time is %s' % (
         member['id'], member['tz_label'], localtime.format('h:mm A'))
     return JsonResponse({
