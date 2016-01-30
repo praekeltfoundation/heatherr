@@ -32,6 +32,17 @@ class TestAccountViews(TestCase):
         response = self.client.get(reverse('accounts:profile'))
         self.assertTemplateUsed(response, 'account/profile.html')
 
+
+    def test_authorize_fail(self):
+        self.client.login(username='username', password='password')
+        session = self.client.session
+        session['authorize_state'] = 'foo'
+        session.save()
+
+        response = self.client.get('%s?state=bar' % (
+            reverse('accounts:authorize'),))
+        self.assertContains(response, 'Invalid state token')
+
     @responses.activate
     @override_settings(SLACK_CLIENT_ID='slack-client-id',
                        SLACK_CLIENT_SECRET='slack-client-secret')
@@ -68,3 +79,11 @@ class TestAccountViews(TestCase):
         self.assertEqual(slackaccount.access_token, 'the-access-token')
         self.assertEqual(slackaccount.bot_user_id, 'bot-user-id')
         self.assertEqual(slackaccount.bot_access_token, 'bot-access-token')
+
+    def test_account_detail(self):
+        self.client.login(username='username', password='password')
+        slackaccount = SlackAccount.objects.create(user=self.user)
+        response = self.client.get(reverse('accounts:slack-detail', kwargs={
+            'pk': slackaccount.pk,
+        }))
+        self.assertTemplateUsed(response, 'heatherr/slackaccount_detail.html')
