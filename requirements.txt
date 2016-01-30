@@ -3,3 +3,4 @@ raven
 requests==2.9.0
 python-social-auth==0.2.13
 dj-database-url
+arrow==0.7.0

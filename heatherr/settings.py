@@ -172,7 +172,7 @@ LOGGING = {
     }
 }
 
-try:
+try: # pragma: no cover
     from local_settings import *
-except ImportError:
+except ImportError: # pragma: no cover
     pass
