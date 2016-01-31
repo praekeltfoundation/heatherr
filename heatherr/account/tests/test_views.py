@@ -32,7 +32,6 @@ class TestAccountViews(TestCase):
         response = self.client.get(reverse('accounts:profile'))
         self.assertTemplateUsed(response, 'account/profile.html')
 
-
     def test_authorize_fail(self):
         self.client.login(username='username', password='password')
         session = self.client.session

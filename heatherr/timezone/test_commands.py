@@ -2,7 +2,6 @@ from heatherr.tests import CommandTestCase
 from freezegun import freeze_time
 
 import responses
-from mock import patch
 
 
 class TestTimeZone(CommandTestCase):
@@ -23,7 +22,7 @@ class TestTimeZone(CommandTestCase):
                     'tz': 'America/Indiana/Indianapolis',
                     'tz_label': 'Eastern Standard Time',
                     'tz_offset': -18000,
-                 }]
+                }]
             })
         response = self.send_command('/time for testuser')
         data = response.json()

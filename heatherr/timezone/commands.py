@@ -10,6 +10,7 @@ import arrow
 
 timezone = dispatcher.command('/time')
 
+
 @timezone.respond(r'^for @?(?P<name>.+)$')
 def for_(request, match):
     """
