@@ -8,10 +8,10 @@ from heatherr.views import dispatcher
 import arrow
 
 
-timezone = dispatcher.command('/time')
+time = dispatcher.command('/time')
 
 
-@timezone.respond(r'^for @?(?P<name>.+)$')
+@time.respond(r'^for @?(?P<name>.+)$')
 def for_(request, match):
     """
     `for <friend's name>`
