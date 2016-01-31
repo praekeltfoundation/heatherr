@@ -89,8 +89,7 @@ class CommandRouter(object):
         Prints out the help for this command handler.
         """
         docstrings = '\n\n'.join(
-            [inspect.cleandoc((func.__doc__ or 'Undocumented'))
-                              for func in self.registry])
+            [inspect.cleandoc(func.__doc__) for func in self.registry])
         if self.command:
             return 'Help for *%s*\n\n%s' % (self.command, docstrings)
         return docstrings

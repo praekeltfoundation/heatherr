@@ -12,6 +12,11 @@ timezone = dispatcher.command('/time')
 
 @timezone.respond(r'^for @?(?P<name>.+)$')
 def for_(request, match):
+    """
+    `for <friend's name>`
+
+    Print the local timezone and time for a friend on Slack.
+    """
     slackaccount = SlackAccount.objects.get(
         team_id=request.POST['team_id'])
     response = slackaccount.api_call('users.list', presence=1)
