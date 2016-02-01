@@ -11,6 +11,8 @@ class CommandTestCase(TestCase):
     default_user_name = 'username'
     default_team_id = 'team_id'
     default_user_id = 'user_id'
+    default_channel_id = 'channel_id'
+    default_channel_name = 'channel_name'
 
     def get_user_account(self, username=None):
         user, _ = User.objects.get_or_create(
@@ -26,9 +28,13 @@ class CommandTestCase(TestCase):
         return slackaccount
 
     def send_command(self, command_str,
-                     team_id=None, user_id=None, token=None):
+                     team_id=None, user_id=None,
+                     channel_id=None, channel_name=None,
+                     token=None):
         team_id = team_id or self.default_team_id
         user_id = user_id or self.default_user_id
+        channel_id = channel_id or self.default_channel_id
+        channel_name = channel_name or self.default_channel_name
         token = token or settings.SLACK_TOKEN
         command, _, text = command_str.partition(' ')
         parameters = {
@@ -37,6 +43,8 @@ class CommandTestCase(TestCase):
             'text': text,
             'team_id': team_id,
             'user_id': user_id,
+            'channel_id': channel_id,
+            'channel_name': channel_name,
         }
         return self.client.post(reverse('dispatcher'), parameters)
 
