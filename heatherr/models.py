@@ -17,7 +17,7 @@ class SlackAccount(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    def __unicode__(self):
+    def __unicode__(self):  # pragma: no cover
         return u'%s (%s)' % (self.team_name, self.team_id)
 
     def api_call(self, method, **kwargs):
@@ -28,3 +28,8 @@ class SlackAccount(models.Model):
         response = requests.post(
             'https://slack.com/api/%s' % (method,), data=data)
         return response.json()
+
+    def get_users(self):
+        response = self.api_call('users.list')
+        return dict([(member['id'], member)
+                     for member in response['members']])

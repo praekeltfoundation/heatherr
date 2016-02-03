@@ -1,3 +1,3 @@
 [run]
-omit = ve/*,*/migrations/*,setup.py,wsgi.py,manage.py
+omit = ve/*,*/migrations/*,setup.py,heatherr/wsgi.py,manage.py
 source= .

@@ -5,12 +5,13 @@ from django.core.urlresolvers import reverse
 
 from heatherr.models import SlackAccount
 
+import responses
 
-class CommandTestCase(TestCase):
 
-    default_user_name = 'username'
+class HeatherrTestCase(TestCase):
+
     default_team_id = 'team_id'
-    default_user_id = 'user_id'
+    default_user_name = 'username'
 
     def get_user_account(self, username=None):
         user, _ = User.objects.get_or_create(
@@ -25,12 +26,27 @@ class CommandTestCase(TestCase):
             user=user, team_id=(team_id or self.default_team_id))
         return slackaccount
 
+    def mock_api_call(self, method, data):
+        responses.add(
+            responses.POST, 'https://slack.com/api/%s' % (method,),
+            json=data)
+
+
+class CommandTestCase(HeatherrTestCase):
+
+    default_user_id = 'user_id'
+    default_channel_id = 'channel_id'
+    default_channel_name = 'channel_name'
+
     def send_command(self, command_str,
                      team_id=None, user_id=None, user_name=None,
+                     channel_id=None, channel_name=None,
                      token=None):
         team_id = team_id or self.default_team_id
         user_id = user_id or self.default_user_id
         user_name = user_name or self.default_user_name
+        channel_id = channel_id or self.default_channel_id
+        channel_name = channel_name or self.default_channel_name
         token = token or settings.SLACK_TOKEN
         command, _, text = command_str.partition(' ')
         parameters = {
@@ -40,6 +56,8 @@ class CommandTestCase(TestCase):
             'team_id': team_id,
             'user_id': user_id,
             'user_name': user_name,
+            'channel_id': channel_id,
+            'channel_name': channel_name,
         }
         return self.client.post(reverse('dispatcher'), parameters)
 
