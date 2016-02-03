@@ -6,7 +6,7 @@ install:
   - pip install -e .
 script:
   - flake8 .
-  - py.test
+  - py.test --cov=heatherr
 after_success:
   - coveralls
 deploy:

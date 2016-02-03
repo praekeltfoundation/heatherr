@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.db import models
 
 import arrow
@@ -23,16 +25,24 @@ class Checkin(models.Model):
         data = self.slackaccount.api_call('users.info', user=self.user_id)
         return data['user']
 
-    def needs_checkin(self, interval, current_time=None):
+    def required(self, current_time=None, target_hour=9, users={}):
         current_time = arrow.get(current_time or arrow.utcnow())
 
         days = {
             Checkin.DAILY: 1,
             Checkin.WEEKLY: 7,
-        }[interval]
+        }[self.interval]
 
+        user_info = users.get(self.user_id) or self.get_user_info()
         yesterday = current_time - timedelta(days=1)
         local_time = current_time.to(user_info['tz'])
-        return (
-            ((self.last_checkin - yesterday).hours) > 24 and
-            (8 < local_time.hour < 9))
+
+        if local_time.hour != target_hour:
+            print 'wrong target hour', local_time.hour, 'vs', target_hour
+            return False
+
+        if self.last_checkin is None:
+            return True
+
+        print (self.last_checkin - yesterday).days, 'vs', -days
+        return (self.last_checkin - yesterday).days <= -days
