@@ -65,12 +65,14 @@ def join(request, match):
     try:
         person.person_name = request.POST['user_name']
         person.save()
-        
+
         group = slackaccount.group_set.get(group_name=group_name)
         group.person_set.add(person)
         return JsonResponse({
             "response_type": "in_channel",
-            "text": "You've been added to %s." % (group_name,)
+            "text": (
+                "You've joined %s and will start receiving announcements"
+                " for this group.") % (group_name,)
         })
     except Group.DoesNotExist:
         return JsonResponse({
