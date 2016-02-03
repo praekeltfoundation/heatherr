@@ -69,14 +69,14 @@ def join(request, match):
         group = slackaccount.group_set.get(group_name=group_name)
         group.person_set.add(person)
         return JsonResponse({
-            "response_type": "in_channel",
+            "response_type": "ephemeral",
             "text": (
                 "You've joined %s and will start receiving announcements"
                 " for this group.") % (group_name,)
         })
     except Group.DoesNotExist:
         return JsonResponse({
-            "response_type": "in_channel",
+            "response_type": "ephemeral",
             "text": 'The group %s does not exist.' % (group_name,)
         })
 

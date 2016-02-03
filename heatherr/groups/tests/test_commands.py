@@ -82,7 +82,7 @@ class GroupsCommandTestCase(CommandTestCase):
             '/bellman join my-group',
             ('You\'ve joined my-group and will start receiving '
              'announcements for this group.'),
-            response_type='in_channel')
+            response_type='ephemeral')
 
     def test_leave_nonexistent(self):
         self.assertCommandResponse(
