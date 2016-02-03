@@ -26,9 +26,11 @@ class CommandTestCase(TestCase):
         return slackaccount
 
     def send_command(self, command_str,
-                     team_id=None, user_id=None, token=None):
+                     team_id=None, user_id=None, user_name=None,
+                     token=None):
         team_id = team_id or self.default_team_id
         user_id = user_id or self.default_user_id
+        user_name = user_name or self.default_user_name
         token = token or settings.SLACK_TOKEN
         command, _, text = command_str.partition(' ')
         parameters = {
@@ -37,6 +39,7 @@ class CommandTestCase(TestCase):
             'text': text,
             'team_id': team_id,
             'user_id': user_id,
+            'user_name': user_name,
         }
         return self.client.post(reverse('dispatcher'), parameters)
 

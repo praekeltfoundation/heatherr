@@ -63,6 +63,9 @@ def join(request, match):
     slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
     person, _ = Person.objects.get_or_create(person_id=request.POST['user_id'])
     try:
+        person.person_name = request.POST['user_name']
+        person.save()
+        
         group = slackaccount.group_set.get(group_name=group_name)
         group.person_set.add(person)
         return JsonResponse({
