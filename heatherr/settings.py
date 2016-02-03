@@ -130,7 +130,6 @@ SLACK_SCOPES = ','.join([
     'commands',
     'bot',
     'users:read',
-    'im:write',
     'chat:write:bot',
 ])
 
