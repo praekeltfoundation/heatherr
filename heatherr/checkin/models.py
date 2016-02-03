@@ -38,11 +38,9 @@ class Checkin(models.Model):
         local_time = current_time.to(user_info['tz'])
 
         if local_time.hour != target_hour:
-            print 'wrong target hour', local_time.hour, 'vs', target_hour
             return False
 
         if self.last_checkin is None:
             return True
 
-        print (self.last_checkin - yesterday).days, 'vs', -days
         return (self.last_checkin - yesterday).days <= -days
