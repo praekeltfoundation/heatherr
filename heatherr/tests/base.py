@@ -28,7 +28,7 @@ class CommandTestCase(TestCase):
         return slackaccount
 
     def send_command(self, command_str,
-                     team_id=None, user_id=None, user_name=None
+                     team_id=None, user_id=None, user_name=None,
                      channel_id=None, channel_name=None,
                      token=None):
         team_id = team_id or self.default_team_id
