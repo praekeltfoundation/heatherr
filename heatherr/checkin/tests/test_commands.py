@@ -1,5 +1,3 @@
-import responses
-
 from heatherr.tests import CommandTestCase
 from heatherr.checkin.models import Checkin
 

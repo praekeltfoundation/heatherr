@@ -4,7 +4,6 @@ from heatherr.checkin.tests.base import CheckinTestCase
 
 from django.utils import timezone
 
-import arrow
 import responses
 
 from freezegun import freeze_time

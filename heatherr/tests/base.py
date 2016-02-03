@@ -31,6 +31,7 @@ class HeatherrTestCase(TestCase):
             responses.POST, 'https://slack.com/api/%s' % (method,),
             json=data)
 
+
 class CommandTestCase(HeatherrTestCase):
 
     default_user_id = 'user_id'
