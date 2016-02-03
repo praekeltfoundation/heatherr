@@ -34,6 +34,7 @@ def profile(request):
 
     return render(request, "account/profile.html", {
         'SLACK_CLIENT_ID': settings.SLACK_CLIENT_ID,
+        'SLACK_SCOPES': settings.SLACK_SCOPES,
         'user': request.user,
     })
 
@@ -79,4 +80,5 @@ class SlackAccountDetailView(DetailView):
         context = super(
             SlackAccountDetailView, self).get_context_data(**kwargs)
         context['SLACK_CLIENT_ID'] = settings.SLACK_CLIENT_ID
+        context['SLACK_SCOPES'] = settings.SLACK_SCOPES
         return context
