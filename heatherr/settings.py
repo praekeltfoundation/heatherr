@@ -126,7 +126,12 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 SLACK_TOKEN = os.environ.get('SLACK_TOKEN', '')
 SLACK_CLIENT_ID = os.environ.get('SLACK_CLIENT_ID', '')
 SLACK_CLIENT_SECRET = os.environ.get('SLACK_CLIENT_SECRET', '')
-SLACK_SCOPES = 'incoming-webhook,commands,bot,users:read,im:read,im:write'
+SLACK_SCOPES = ','.join([
+    'incoming-webhook',
+    'commands',
+    'bot',
+    'users:read',
+])
 
 LOGGING = {
     'version': 1,

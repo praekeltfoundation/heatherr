@@ -19,7 +19,10 @@ def list(request, match):
     """
     groups = Group.objects.filter(
         slackaccount__team_id=request.POST['team_id'])
-    person, _ = Person.objects.get_or_create(person_id=request.POST['user_id'])
+    slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
+    person, _ = Person.objects.get_or_create(
+        person_id=request.POST['user_id'],
+        slackaccount=slackaccount)
     if not groups.exists():
         return JsonResponse({
             'text': 'No groups exist'
@@ -61,7 +64,9 @@ def join(request, match):
     """
     (group_name,) = match.groups()
     slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
-    person, _ = Person.objects.get_or_create(person_id=request.POST['user_id'])
+    person, _ = Person.objects.get_or_create(
+        person_id=request.POST['user_id'],
+        slackaccount=slackaccount)
     try:
         person.person_name = request.POST['user_name']
         person.save()
@@ -90,7 +95,9 @@ def leave(request, match):
     """
     (group_name,) = match.groups()
     slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
-    person, _ = Person.objects.get_or_create(person_id=request.POST['user_id'])
+    person, _ = Person.objects.get_or_create(
+        person_id=request.POST['user_id'],
+        slackaccount=slackaccount)
     try:
         group = slackaccount.group_set.get(group_name=group_name)
         group.person_set.remove(person)
@@ -131,7 +138,9 @@ def announce(request, match):
     """
     (group_name, message) = match.groups()
     slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
-    person, _ = Person.objects.get_or_create(person_id=request.POST['user_id'])
+    person, _ = Person.objects.get_or_create(
+        person_id=request.POST['user_id'],
+        slackaccount=slackaccount)
     try:
         group = slackaccount.group_set.get(group_name=group_name)
         return 'Message from <@%s> to `%s`:\n%s\n%s' % (
