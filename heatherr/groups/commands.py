@@ -65,9 +65,15 @@ def join(request, match):
     try:
         group = slackaccount.group_set.get(group_name=group_name)
         group.person_set.add(person)
-        return "You've been added to %s." % (group_name,)
+        return JsonResponse({
+            "response_type": "in_channel",
+            "text": "You've been added to %s." % (group_name,)
+        })
     except Group.DoesNotExist:
-        return 'The group %s does not exist.' % (group_name,)
+        return JsonResponse({
+            "response_type": "in_channel",
+            "text": 'The group %s does not exist.' % (group_name,)
+        })
 
 
 @bellman.respond(r'^leave (?P<group_name>[\w-]+)$')

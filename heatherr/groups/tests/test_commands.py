@@ -80,7 +80,8 @@ class GroupsCommandTestCase(CommandTestCase):
             group_name='my-group', slackaccount=self.slackaccount)
         self.assertCommandResponse(
             '/bellman join my-group',
-            'You\'ve been added to my-group.')
+            'You\'ve been added to my-group.',
+            response_type='in_channel')
 
     def test_leave_nonexistent(self):
         self.assertCommandResponse(

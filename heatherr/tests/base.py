@@ -41,11 +41,13 @@ class CommandTestCase(TestCase):
         return self.client.post(reverse('dispatcher'), parameters)
 
     def assertCommandResponse(self, command_str, expected_response,
-                              team_id=None, user_id=None, token=None):
+                              team_id=None, user_id=None, token=None,
+                              response_type=None):
         response = self.send_command(command_str,
                                      team_id=team_id,
                                      user_id=user_id,
                                      token=token)
-        self.assertEqual(response.json(), {
-            'text': expected_response,
-        })
+        data = response.json()
+        self.assertEqual(data['text'], expected_response)
+        if response_type is not None:
+            self.assertEqual(data['response_type'], response_type)
