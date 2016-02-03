@@ -28,11 +28,12 @@ class CommandTestCase(TestCase):
         return slackaccount
 
     def send_command(self, command_str,
-                     team_id=None, user_id=None,
+                     team_id=None, user_id=None, user_name=None
                      channel_id=None, channel_name=None,
                      token=None):
         team_id = team_id or self.default_team_id
         user_id = user_id or self.default_user_id
+        user_name = user_name or self.default_user_name
         channel_id = channel_id or self.default_channel_id
         channel_name = channel_name or self.default_channel_name
         token = token or settings.SLACK_TOKEN
@@ -43,17 +44,20 @@ class CommandTestCase(TestCase):
             'text': text,
             'team_id': team_id,
             'user_id': user_id,
+            'user_name': user_name,
             'channel_id': channel_id,
             'channel_name': channel_name,
         }
         return self.client.post(reverse('dispatcher'), parameters)
 
     def assertCommandResponse(self, command_str, expected_response,
-                              team_id=None, user_id=None, token=None):
+                              team_id=None, user_id=None, token=None,
+                              response_type=None):
         response = self.send_command(command_str,
                                      team_id=team_id,
                                      user_id=user_id,
                                      token=token)
-        self.assertEqual(response.json(), {
-            'text': expected_response,
-        })
+        data = response.json()
+        self.assertEqual(data['text'], expected_response)
+        if response_type is not None:
+            self.assertEqual(data['response_type'], response_type)

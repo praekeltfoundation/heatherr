@@ -63,11 +63,22 @@ def join(request, match):
     slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
     person, _ = Person.objects.get_or_create(person_id=request.POST['user_id'])
     try:
+        person.person_name = request.POST['user_name']
+        person.save()
+
         group = slackaccount.group_set.get(group_name=group_name)
         group.person_set.add(person)
-        return "You've been added to %s." % (group_name,)
+        return JsonResponse({
+            "response_type": "ephemeral",
+            "text": (
+                "You've joined %s and will start receiving announcements"
+                " for this group.") % (group_name,)
+        })
     except Group.DoesNotExist:
-        return 'The group %s does not exist.' % (group_name,)
+        return JsonResponse({
+            "response_type": "ephemeral",
+            "text": 'The group %s does not exist.' % (group_name,)
+        })
 
 
 @bellman.respond(r'^leave (?P<group_name>[\w-]+)$')
