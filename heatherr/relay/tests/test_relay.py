@@ -126,7 +126,7 @@ class RelayTest(TestCase):
 
         url, r = yield self.mk_relay()
         r.get_protocol = lambda *a, **kw: succeed(mock_protocol)
-        response = yield treq.post(
+        yield treq.post(
             '%s/rtm' % (url,),
             data=json.dumps({'foo': 'bar'}),
             headers={'X-Bot-Access-Token': 'token'},
