@@ -8,3 +8,5 @@ ve
 .coverage
 htmlcov/
 .coverage.*
+utils/
+_trial_temp/
