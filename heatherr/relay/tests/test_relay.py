@@ -168,10 +168,10 @@ class RelayTest(TestCase):
         })
         protocol.clock = Clock()
         protocol.factory = Mock()
-        protocol.send_message = Mock()
+        protocol.sendMessage = Mock()
 
         protocol.onOpen()
         protocol.clock.advance(3)
-        protocol.send_message.assert_has_calls([
-            call({'type': 'ping'}),
-            call({'type': 'ping'})])
+        protocol.sendMessage.assert_has_calls([
+            call('{"type": "ping"}'),
+            call('{"type": "ping"}')])
