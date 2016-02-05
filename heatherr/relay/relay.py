@@ -5,7 +5,7 @@ from urlparse import urlparse, urlunparse
 
 from klein import Klein
 
-from treq import post
+import treq
 
 from twisted.internet import reactor, ssl
 from twisted.internet.endpoints import SSL4ClientEndpoint
@@ -45,7 +45,7 @@ class RelayProtocol(RTMProtocol):
 
     def onClose(self, wasClean, code, reason):
         if self.relay is not None:
-            self.relay.remove_session(self.factory.token)
+            self.relay.remove_protocol(self.factory.token)
 
         if self.lc is not None:
             self.lc.stop()
@@ -122,15 +122,15 @@ class Relay(object):
     @app.route('/connect', methods=['POST'])
     def connect(self, request):
         request.setHeader('Content-Type', 'application/json')
-        d = self.get_session(token=request.getHeader('X-Bot-Access-Token'))
+        d = self.get_protocol(token=request.getHeader('X-Bot-Access-Token'))
         d.addCallback(
-            lambda session: json.dumps(session.session_data, indent=2))
+            lambda protocol: json.dumps(protocol.session_data, indent=2))
         return d
 
     @app.route('/im.open', methods=['POST'])
     def im_open(self, request):
         request.setHeader('Content-Type', 'application/json')
-        d = post('https://slack.com/api/im.open', data={
+        d = treq.post('https://slack.com/api/im.open', data={
             'token': request.getHeader('X-Bot-Access-Token'),
             'user': request.args.get('user'),
         })
@@ -141,26 +141,26 @@ class Relay(object):
     def send_rtm(self, request):
         request.setHeader('Content-Type', 'application/json')
         data = json.load(request.content)
-        d = self.get_session(token=request.getHeader('X-Bot-Access-Token'))
+        d = self.get_protocol(token=request.getHeader('X-Bot-Access-Token'))
         d.addCallback(
-            lambda session: session.send_message(json.dumps(data)))
+            lambda protocol: protocol.send_message(data))
         return d
 
-    def set_session(self, token, session):
-        self.connections[token] = session
-        return session
+    def set_protocol(self, token, protocol):
+        self.connections[token] = protocol
+        return protocol
 
-    def remove_session(self, token):
-        log.msg('Removing session for %s' % (token,))
+    def remove_protocol(self, token):
+        log.msg('Removing protocol for %s' % (token,))
         return self.connections.pop(token, None)
 
-    def get_session(self, token, **kwargs):
+    def get_protocol(self, token, **kwargs):
         if token in self.connections:
             return succeed(self.connections[token])
 
         d = self.rtm_start(token, **kwargs)
         d.addCallback(
-            lambda session: self.set_session(token, session))
+            lambda protocol: self.set_protocol(token, protocol))
         return d
 
     def rtm_start(self, token, **kwargs):
@@ -168,8 +168,8 @@ class Relay(object):
             'token': token
         }
         params.update(kwargs)
-        d = post('https://slack.com/api/rtm.start',
-                 params=params)
+        d = treq.post('https://slack.com/api/rtm.start',
+                      params=params)
         d.addCallback(lambda response: response.json())
         d.addCallback(self.connect_ws, token)
         return d
@@ -185,10 +185,11 @@ class Relay(object):
             RelayFactory(self, token, data, debug=self.debug))
 
     def relay(self, payload):
-        d = post(self.heatherr_url,
-                 auth=self.auth,
-                 data=json.dumps(payload),
-                 headers={'Content-Type': 'application/json'})
+        d = treq.post(
+            self.heatherr_url,
+            auth=self.auth,
+            data=json.dumps(payload),
+            headers={'Content-Type': 'application/json'})
         d.addCallback(lambda r: r.json())
         d.addCallback(lambda d: log.msg(d))
         return d

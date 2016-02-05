@@ -9,3 +9,4 @@ ve
 htmlcov/
 .coverage.*
 utils/
+_trial_temp/
