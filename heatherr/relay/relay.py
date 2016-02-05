@@ -14,7 +14,7 @@ from twisted.internet.task import LoopingCall
 from twisted.web import server
 from twisted.python import log
 
-from .protocol import RTMProtocol, RTMFactory, connectWS
+from .protocol import RTMProtocol, RTMFactory
 
 
 class RelaySite(server.Site):

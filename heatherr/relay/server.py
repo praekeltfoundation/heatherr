@@ -7,6 +7,7 @@ from twisted.python import log
 from .relay import Relay, RelaySite
 import click
 
+
 @click.command()
 @click.option('--listen',
               default='tcp:8001',
