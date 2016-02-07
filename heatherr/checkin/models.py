@@ -13,6 +13,7 @@ class Checkin(models.Model):
     slackaccount = models.ForeignKey('heatherr.SlackAccount')
     channel_id = models.CharField(blank=True, max_length=255)
     user_id = models.CharField(blank=True, max_length=255)
+    user_channel_id = models.CharField(blank=True, max_length=255, null=True)
     interval = models.CharField(blank=True, max_length=255, choices=[
         (DAILY, 'Daily'),
         (WEEKLY, 'Weekly'),
@@ -24,6 +25,21 @@ class Checkin(models.Model):
     def get_user_info(self):
         data = self.slackaccount.api_call('users.info', user=self.user_id)
         return data['user']
+
+    def get_user_channel_id(self):
+        if self.user_channel_id:
+            return self.user_channel_id
+
+        response = requests.post(
+            '%s%s' % (settings.HEATHER_RELAY, 'im.open'),
+            headers={'X-Bot-Access-Token': self.bot_access_token})
+
+        data = response.json()
+        channel_id = data['channel']['id']
+        self.user_channel_id = channel_id
+        self.save()
+
+        return self.user_channel_id()
 
     def required(self, current_time=None, target_hour=9, users={}):
         current_time = arrow.get(current_time or arrow.utcnow())

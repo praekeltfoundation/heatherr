@@ -19,6 +19,13 @@ def check_slackaccount_checkins(slackaccount):
 
 
 def check_checkin(checkin):
-    # At this point we need to get more oAuth scopes because incoming
-    # webhook URLs cannot do private messages.
-    pass
+    token = checkin.slackaccount.bot_access_token
+    user_channel_id = get_user_channel_id()
+
+    requests.post('%s%s' % (settings.HEATHER_RELAY, 'rtm'),
+                  headers={'X-Bot-Access-Token': token},
+                  data={
+                      "type": "message",
+                      "channel": user_channel_id,
+                      "text": "Hi there!"
+                  })
