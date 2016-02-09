@@ -19,8 +19,15 @@ def check_slackaccount_checkins(slackaccount):
 
 
 def check_checkin(checkin):
-    token = checkin.slackaccount.bot_access_token
-    user_channel_id = get_user_channel_id()
+    slackaccount = checking.slackaccount
+    token = slackaccount.bot_access_token
+    user_channel_id = checkin.get_user_channel_id()
+
+    # slackaccount.api_call(
+    #     'chat.postMessage',
+    #     text=("Hi there, just reminding you about your daily checkin! "
+    #           "Type `/checkin` to start :)"),
+    #     channel=user_channel_id)
 
     requests.post('%s%s' % (settings.HEATHER_RELAY, 'rtm'),
                   headers={'X-Bot-Access-Token': token},

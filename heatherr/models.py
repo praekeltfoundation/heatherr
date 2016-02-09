@@ -22,7 +22,7 @@ class SlackAccount(models.Model):
 
     def api_call(self, method, **kwargs):
         data = {
-            'token': self.access_token,
+            'token': self.bot_access_token,
         }
         data.update(**kwargs)
         response = requests.post(

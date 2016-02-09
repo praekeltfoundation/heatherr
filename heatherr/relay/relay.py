@@ -54,7 +54,9 @@ class RelayProtocol(RTMProtocol):
         if isBinary:
             log.err("Binary message received: {0} bytes".format(len(payload)))
 
-        self.relay.relay(json.loads(payload))
+        data = json.loads(payload)
+        if data["type"] == "message":
+            self.relay.relay(data)
 
     def send_ping(self):
         return self.send_message({

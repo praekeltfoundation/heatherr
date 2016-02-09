@@ -60,3 +60,10 @@ class Checkin(models.Model):
             return True
 
         return (self.last_checkin - yesterday).days <= -days
+
+
+class CheckinItem(models.Model):
+
+    slackaccount = models.ForeignKey('heatherr.SlackAccount')
+    user_id = models.CharField(blank=True, max_length=255)
+    created_at = models.DateTimeField(blank=True, auto_now_add=True)
