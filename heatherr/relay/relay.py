@@ -14,6 +14,9 @@ from twisted.internet.task import LoopingCall
 from twisted.web import server
 from twisted.python import log
 
+from twisted.web import client
+client._HTTP11ClientFactory.noisy = False
+
 from .protocol import RTMProtocol, RTMFactory
 
 
@@ -33,19 +36,21 @@ class RelayProtocol(RTMProtocol):
     def __init__(self, session_data):
         RTMProtocol.__init__(self)
         self.session_data = session_data
-        self.counter = 0
+        self.bot_user_id = session_data['self']['id']
         self.lc = None
         self.relay = None
+        self.bot_access_token = None
 
     def onOpen(self):
         self.relay = self.factory.relay
+        self.bot_access_token = self.factory.bot_access_token
         self.lc = LoopingCall(self.send_ping)
         self.lc.clock = self.clock
         self.lc.start(3, now=True)
 
     def onClose(self, wasClean, code, reason):
         if self.relay is not None:
-            self.relay.remove_protocol(self.factory.token)
+            self.relay.remove_protocol(self.bot_access_token)
 
         if self.lc is not None:
             self.lc.stop()
@@ -55,8 +60,7 @@ class RelayProtocol(RTMProtocol):
             log.err("Binary message received: {0} bytes".format(len(payload)))
 
         data = json.loads(payload)
-        if data["type"] == "message":
-            self.relay.relay(data)
+        self.relay.relay(self.bot_user_id, self.bot_access_token, data)
 
     def send_ping(self):
         return self.send_message({
@@ -71,10 +75,10 @@ class RelayFactory(RTMFactory):
 
     protocol = RelayProtocol
 
-    def __init__(self, relay, token, session_data, debug=False):
+    def __init__(self, relay, bot_access_token, session_data, debug=False):
         RTMFactory.__init__(self, session_data['url'], debug=debug)
         self.relay = relay
-        self.token = token
+        self.bot_access_token = bot_access_token
         self.session_data = session_data
 
     def buildProtocol(self, addr):
@@ -141,6 +145,7 @@ class Relay(object):
 
     @app.route('/rtm', methods=['POST'])
     def send_rtm(self, request):
+        print request
         request.setHeader('Content-Type', 'application/json')
         data = json.load(request.content)
         d = self.get_protocol(token=request.getHeader('X-Bot-Access-Token'))
@@ -186,12 +191,19 @@ class Relay(object):
         return endpoint.connect(
             RelayFactory(self, token, data, debug=self.debug))
 
-    def relay(self, payload):
+    def relay(self, bot_user_id, bot_access_token, payload):
+        print 'bot_user_id', bot_user_id
+        print 'bot_access_token', bot_access_token
         d = treq.post(
             self.heatherr_url,
             auth=self.auth,
             data=json.dumps(payload),
-            headers={'Content-Type': 'application/json'})
+            headers={
+                'Content-Type': 'application/json',
+                'X-Bot-User-Id': bot_user_id,
+                'X-Bot-Access-Token': bot_access_token,
+            },
+            timeout=2)
         d.addCallback(lambda r: r.json())
         d.addCallback(lambda d: log.msg(d))
         return d

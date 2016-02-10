@@ -38,29 +38,30 @@ class CheckinModelTest(CheckinTestCase):
 
     @responses.activate
     def test_require_weekly_first_time(self):
-        checkin = self.mk_checkin(interval=Checkin.WEEKLY)
         with freeze_time('2016-02-03 06:00:00'):
+            checkin = self.mk_checkin(interval=Checkin.WEEKLY)
             self.assertFalse(checkin.required())
 
         with freeze_time('2016-02-03 06:00:00'):
+            checkin = self.mk_checkin(interval=Checkin.WEEKLY)
             self.assertTrue(checkin.required(target_hour=8))
 
     @responses.activate
     def test_require_with_previous_run(self):
-        weekly_checkin = self.mk_checkin(
-            interval=Checkin.WEEKLY,
-            last_checkin=timezone.now())
-        daily_checkin = self.mk_checkin(
-            interval=Checkin.DAILY,
-            last_checkin=timezone.now())
         with freeze_time('2016-02-03 06:00:00'):
+            weekly_checkin = self.mk_checkin(
+                interval=Checkin.WEEKLY,
+                last_checkin=timezone.now())
+            daily_checkin = self.mk_checkin(
+                interval=Checkin.DAILY,
+                last_checkin=timezone.now())
             self.assertFalse(weekly_checkin.required(target_hour=8))
             self.assertTrue(daily_checkin.required(target_hour=8))
 
     def test_required_with_users(self):
-        checkin = self.mk_checkin(interval=Checkin.DAILY,
-                                  last_checkin=timezone.now())
         with freeze_time('2016-02-03 06:00:00'):
+            checkin = self.mk_checkin(interval=Checkin.DAILY,
+                                      last_checkin=timezone.now())
             self.assertTrue(
                 checkin.required(target_hour=7, users={
                     checkin.user_id: {

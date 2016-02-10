@@ -44,7 +44,9 @@ class RelayTest(TestCase):
     def test_connect_patched(self):
         url, r = yield self.mk_relay()
         r.get_protocol = lambda *a, **kw: succeed(RelayProtocol({
-            'this': 'is session-data',
+            'self': {
+                'id': 'the-user-id',
+            }
         }))
         response = yield treq.post(
             '%s/connect' % (url,),
@@ -54,14 +56,18 @@ class RelayTest(TestCase):
             pool=self.pool)
         data = yield response.json()
         self.assertEqual(data, {
-            'this': 'is session-data',
+            'self': {
+                'id': 'the-user-id',
+            },
         })
 
     @inlineCallbacks
     def test_get_protocol(self):
         _, r = yield self.mk_relay()
         mock_proto = RelayProtocol({
-            'this': 'is session-data',
+            'self': {
+                'id': 'the-user-id'
+            },
         })
         r.rtm_start = lambda *a, **kw: succeed(mock_proto)
 
@@ -110,13 +116,18 @@ class RelayTest(TestCase):
         mock_post.return_value = succeed(mock_response)
 
         _, r = yield self.mk_relay('http://username:password@example.com/foo')
-        r.relay({'foo': 'bar'})
+        r.relay('user-id', 'access-token', {'foo': 'bar'})
 
         mock_post.assert_called_with(
             'http://example.com/foo',
             auth=('username', 'password'),
             data='{"foo": "bar"}',
-            headers={'Content-Type': 'application/json'})
+            headers={
+                'Content-Type': 'application/json',
+                'X-Bot-Access-Token': 'access-token',
+                'X-Bot-User-Id': 'user-id',
+            },
+            timeout=2)
 
     @inlineCallbacks
     def test_send_rtm(self):
@@ -140,21 +151,27 @@ class RelayTest(TestCase):
         relay.relay = Mock()
 
         protocol = RelayProtocol({
-            'this': 'is session-data',
+            'self': {
+                'id': 'the-user-id',
+            }
         })
         protocol.relay = relay
+        protocol.bot_access_token = 'the-access-token'
         protocol.onMessage('{"foo": "bar"}', False)
-        relay.relay.assert_called_with({"foo": "bar"})
+        relay.relay.assert_called_with(
+            'the-user-id', 'the-access-token', {"foo": "bar"})
 
     @inlineCallbacks
     def test_protocol_close(self):
         _, r = yield self.mk_relay()
 
         protocol = RelayProtocol({
-            'this': 'is session-data',
+            'self': {
+                'id': 'the-user-id',
+            },
         })
         protocol.factory = Mock()
-        protocol.factory.token = 'the-token'
+        protocol.bot_access_token = 'the-token'
         protocol.relay = r
 
         r.set_protocol('the-token', protocol)
@@ -164,7 +181,9 @@ class RelayTest(TestCase):
 
     def test_ping(self):
         protocol = RelayProtocol({
-            'this': 'is session-data',
+            'self': {
+                'id': 'the-user-id',
+            },
         })
         protocol.clock = Clock()
         protocol.factory = Mock()

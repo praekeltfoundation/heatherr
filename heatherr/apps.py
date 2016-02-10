@@ -12,3 +12,5 @@ class HeatherrConfig(AppConfig):
         for app in apps.get_app_configs():
             if os.path.isfile(os.path.join(app.path, 'commands.py')):
                 import_module('%s.commands' % (app.module.__name__,))
+            if os.path.isfile(os.path.join(app.path, 'bots.py')):
+                import_module('%s.bots' % (app.module.__name__,))
