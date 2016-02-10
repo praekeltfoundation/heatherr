@@ -176,7 +176,7 @@ class Relay(object):
         d = treq.post('https://slack.com/api/rtm.start',
                       params=params)
         d.addCallback(lambda response: response.json())
-        d.addCallback(self.connect_ws, bot_token)
+        d.addCallback(self.connect_ws)
         return d
 
     def connect_ws(self, data):
@@ -200,7 +200,15 @@ class Relay(object):
                 'X-Bot-User-Id': bot_user_id,
             },
             timeout=2)
-        if response.getHeader('Content-Type') == 'application/json':
-            data = yield r.json()
+        headers = response.headers
+        if headers.getRawHeaders('Content-Type') == ['application/json']:
+            data = yield response.json()
+            protocol = self.connections.get(bot_user_id)
+
+            if protocol is None:
+                log.err('Protocol gone missing while trying to reply.')
+                return
+
             for message in data:
+                print 'sending message', data
                 protocol.send_message(message)

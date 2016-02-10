@@ -63,14 +63,16 @@ class Dispatcher(object):
 
     @csrf_exempt
     def bots(self, request):
-        bot_access_token = request.META['HTTP_X_BOT_ACCESS_TOKEN']
         bot_user_id = request.META['HTTP_X_BOT_USER_ID']
         data = json.load(request)
-        responses = dict([(name, bot.handle(bot_user_id,
-                                            bot_access_token,
-                                            data))
-                          for name, bot in self.bot_registry.items()])
-        return JsonResponse(responses)
+
+        bot_responses = []
+        for bot in self.bot_registry.values():
+            responses = bot.handle(bot_user_id, data)
+            if responses:
+                bot_responses.extend(responses)
+
+        return JsonResponse(filter(None, bot_responses), safe=False)
 
 
 class BotMessage(dict):
@@ -101,7 +103,7 @@ class BotRouter(object):
             return handler
         return decorator
 
-    def handle(self, bot_user_id, bot_access_token, message):
+    def handle(self, bot_user_id, message):
         logger.debug(repr(message))
         if 'type' not in message:
             if not message['ok']:
@@ -121,17 +123,19 @@ class BotRouter(object):
                 RuntimeWarning)
             return None
 
-        return getattr(self, handler_name)(bot_access_token, message)
+        return getattr(self, handler_name)(bot_user_id, message)
 
-    def handle_message(self, bot_access_token, message):
+    def handle_message(self, bot_user_id, message):
         text = message['text']
+        responses = []
         for handler, patterns in self.registry.items():
             for pattern in patterns:
                 match = re.match(pattern, text)
                 if match:
-                    handler(
-                        BotMessage(bot_access_token, message), match)
+                    responses.append(
+                        handler(bot_user_id, BotMessage(message), match))
 
+        return responses
 
 
 
