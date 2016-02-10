@@ -75,22 +75,13 @@ class Dispatcher(object):
 
 class BotMessage(dict):
 
-    def __init__(self, bot_access_token, payload):
-        super(BotMessage, self).__init__(payload)
-        self.bot_access_token = bot_access_token
-
     def reply(self, text, type='message', channel=None, id=None):
-        return requests.post('%s%s' % (settings.HEATHERR_RELAY, 'rtm'),
-                             data=json.dumps({
-                                'id': id,
-                                'type': type,
-                                'channel': self.get('channel', channel),
-                                'text': text,
-                             }),
-                             headers={
-                                'Content-Type': 'application/json',
-                                'X-Bot-Access-Token': self.bot_access_token,
-                             })
+        return {
+           'id': id,
+           'type': type,
+           'channel': self.get('channel', channel),
+           'text': text,
+        }
 
 
 class BotRouter(object):

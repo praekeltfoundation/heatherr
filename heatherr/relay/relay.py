@@ -9,7 +9,7 @@ import treq
 
 from twisted.internet import reactor, ssl
 from twisted.internet.endpoints import SSL4ClientEndpoint
-from twisted.internet.defer import succeed
+from twisted.internet.defer import succeed, inlineCallbacks
 from twisted.internet.task import LoopingCall
 from twisted.web import server
 from twisted.python import log
@@ -39,18 +39,16 @@ class RelayProtocol(RTMProtocol):
         self.bot_user_id = session_data['self']['id']
         self.lc = None
         self.relay = None
-        self.bot_access_token = None
 
     def onOpen(self):
         self.relay = self.factory.relay
-        self.bot_access_token = self.factory.bot_access_token
         self.lc = LoopingCall(self.send_ping)
         self.lc.clock = self.clock
         self.lc.start(3, now=True)
 
     def onClose(self, wasClean, code, reason):
         if self.relay is not None:
-            self.relay.remove_protocol(self.bot_access_token)
+            self.relay.remove_protocol(self.bot_user_id)
 
         if self.lc is not None:
             self.lc.stop()
@@ -60,7 +58,7 @@ class RelayProtocol(RTMProtocol):
             log.err("Binary message received: {0} bytes".format(len(payload)))
 
         data = json.loads(payload)
-        self.relay.relay(self.bot_user_id, self.bot_access_token, data)
+        self.relay.relay(self.bot_user_id, data)
 
     def send_ping(self):
         return self.send_message({
@@ -75,10 +73,9 @@ class RelayFactory(RTMFactory):
 
     protocol = RelayProtocol
 
-    def __init__(self, relay, bot_access_token, session_data, debug=False):
+    def __init__(self, relay, session_data, debug=False):
         RTMFactory.__init__(self, session_data['url'], debug=debug)
         self.relay = relay
-        self.bot_access_token = bot_access_token
         self.session_data = session_data
 
     def buildProtocol(self, addr):
@@ -128,7 +125,8 @@ class Relay(object):
     @app.route('/connect', methods=['POST'])
     def connect(self, request):
         request.setHeader('Content-Type', 'application/json')
-        d = self.get_protocol(token=request.getHeader('X-Bot-Access-Token'))
+        d = self.get_protocol(bot_id=request.getUser(),
+                              bot_token=request.getPassword())
         d.addCallback(
             lambda protocol: json.dumps(protocol.session_data, indent=2))
         return d
@@ -137,7 +135,7 @@ class Relay(object):
     def im_open(self, request):
         request.setHeader('Content-Type', 'application/json')
         d = treq.post('https://slack.com/api/im.open', data={
-            'token': request.getHeader('X-Bot-Access-Token'),
+            'token': request.getPassword(),
             'user': request.args.get('user'),
         })
         d.addCallback(lambda response: response.content())
@@ -145,43 +143,43 @@ class Relay(object):
 
     @app.route('/rtm', methods=['POST'])
     def send_rtm(self, request):
-        print request
         request.setHeader('Content-Type', 'application/json')
         data = json.load(request.content)
-        d = self.get_protocol(token=request.getHeader('X-Bot-Access-Token'))
+        d = self.get_protocol(bot_id=request.getUser(),
+                              bot_token=request.getPassword())
         d.addCallback(
             lambda protocol: protocol.send_message(data))
         return d
 
-    def set_protocol(self, token, protocol):
-        self.connections[token] = protocol
+    def set_protocol(self, bot_id, protocol):
+        self.connections[bot_id] = protocol
         return protocol
 
-    def remove_protocol(self, token):
-        log.msg('Removing protocol for %s' % (token,))
-        return self.connections.pop(token, None)
+    def remove_protocol(self, bot_id):
+        log.msg('Removing protocol for %s' % (bot_id,))
+        return self.connections.pop(bot_id, None)
 
-    def get_protocol(self, token, **kwargs):
-        if token in self.connections:
-            return succeed(self.connections[token])
+    def get_protocol(self, bot_id, bot_token, **kwargs):
+        if bot_id in self.connections:
+            return succeed(self.connections[bot_id])
 
-        d = self.rtm_start(token, **kwargs)
+        d = self.rtm_start(bot_token, **kwargs)
         d.addCallback(
-            lambda protocol: self.set_protocol(token, protocol))
+            lambda protocol: self.set_protocol(bot_id, protocol))
         return d
 
-    def rtm_start(self, token, **kwargs):
+    def rtm_start(self, bot_token, **kwargs):
         params = {
-            'token': token
+            'token': bot_token
         }
         params.update(kwargs)
         d = treq.post('https://slack.com/api/rtm.start',
                       params=params)
         d.addCallback(lambda response: response.json())
-        d.addCallback(self.connect_ws, token)
+        d.addCallback(self.connect_ws, bot_token)
         return d
 
-    def connect_ws(self, data, token):
+    def connect_ws(self, data):
         from autobahn.websocket.protocol import parseWsUrl
         (isSecure, host, port, resource, path, params) = parseWsUrl(
             data['url'])
@@ -189,21 +187,20 @@ class Relay(object):
         endpoint = SSL4ClientEndpoint(
             self.clock, host, port, ssl.ClientContextFactory())
         return endpoint.connect(
-            RelayFactory(self, token, data, debug=self.debug))
+            RelayFactory(self, data, debug=self.debug))
 
-    def relay(self, bot_user_id, bot_access_token, payload):
-        print 'bot_user_id', bot_user_id
-        print 'bot_access_token', bot_access_token
-        d = treq.post(
+    @inlineCallbacks
+    def relay(self, bot_user_id, payload):
+        response = yield treq.post(
             self.heatherr_url,
             auth=self.auth,
             data=json.dumps(payload),
             headers={
                 'Content-Type': 'application/json',
                 'X-Bot-User-Id': bot_user_id,
-                'X-Bot-Access-Token': bot_access_token,
             },
             timeout=2)
-        d.addCallback(lambda r: r.json())
-        d.addCallback(lambda d: log.msg(d))
-        return d
+        if response.getHeader('Content-Type') == 'application/json':
+            data = yield r.json()
+            for message in data:
+                protocol.send_message(message)

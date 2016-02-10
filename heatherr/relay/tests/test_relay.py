@@ -43,16 +43,16 @@ class RelayTest(TestCase):
     @inlineCallbacks
     def test_connect_patched(self):
         url, r = yield self.mk_relay()
-        r.get_protocol = lambda *a, **kw: succeed(RelayProtocol({
+        r.get_protocol = Mock()
+        r.get_protocol.return_value = succeed(RelayProtocol({
             'self': {
-                'id': 'the-user-id',
+                'id': 'the-user-id'
             }
         }))
+
         response = yield treq.post(
             '%s/connect' % (url,),
-            headers={
-                'X-Bot-Access-Token': 'foo',
-            },
+            auth=('bot-id', 'bot-token'),
             pool=self.pool)
         data = yield response.json()
         self.assertEqual(data, {
@@ -60,6 +60,8 @@ class RelayTest(TestCase):
                 'id': 'the-user-id',
             },
         })
+        r.get_protocol.assert_called_with(
+            bot_id='bot-id', bot_token='bot-token')
 
     @inlineCallbacks
     def test_get_protocol(self):
@@ -69,19 +71,21 @@ class RelayTest(TestCase):
                 'id': 'the-user-id'
             },
         })
-        r.rtm_start = lambda *a, **kw: succeed(mock_proto)
+        r.rtm_start = Mock()
+        r.rtm_start.return_value = succeed(mock_proto)
 
-        protocol = yield r.get_protocol('token')
+        protocol = yield r.get_protocol('bot-id', 'bot-token')
         self.assertEqual(protocol, mock_proto)
         self.assertEqual(r.connections, {
-            'token': mock_proto
+            'bot-id': mock_proto
         })
+        r.rtm_start.assert_called_with('bot-token')
 
     @inlineCallbacks
     def test_get_protocol_cached(self):
         _, r = yield self.mk_relay()
-        r.connections['foo'] = 'Cached Protocol Value'
-        protocol = yield r.get_protocol('foo')
+        r.connections['bot-id'] = 'Cached Protocol Value'
+        protocol = yield r.get_protocol('bot-id', 'bot-token')
         self.assertEqual(protocol, 'Cached Protocol Value')
 
     @inlineCallbacks
@@ -116,7 +120,7 @@ class RelayTest(TestCase):
         mock_post.return_value = succeed(mock_response)
 
         _, r = yield self.mk_relay('http://username:password@example.com/foo')
-        r.relay('user-id', 'access-token', {'foo': 'bar'})
+        r.relay('user-id', {'foo': 'bar'})
 
         mock_post.assert_called_with(
             'http://example.com/foo',
@@ -124,7 +128,6 @@ class RelayTest(TestCase):
             data='{"foo": "bar"}',
             headers={
                 'Content-Type': 'application/json',
-                'X-Bot-Access-Token': 'access-token',
                 'X-Bot-User-Id': 'user-id',
             },
             timeout=2)
@@ -136,15 +139,19 @@ class RelayTest(TestCase):
         mock_protocol.send_message.return_value = None
 
         url, r = yield self.mk_relay()
-        r.get_protocol = lambda *a, **kw: succeed(mock_protocol)
+        r.get_protocol = Mock()
+        r.get_protocol.return_value = succeed(mock_protocol)
+
         yield treq.post(
             '%s/rtm' % (url,),
             data=json.dumps({'foo': 'bar'}),
-            headers={'X-Bot-Access-Token': 'token'},
+            auth=('bot-id', 'bot-token'),
             pool=self.pool)
         mock_protocol.send_message.assert_called_with({
             'foo': 'bar'
         })
+        r.get_protocol.assert_called_with(bot_id='bot-id',
+                                          bot_token='bot-token')
 
     def test_protocol_relay(self):
         relay = Mock()
@@ -156,10 +163,9 @@ class RelayTest(TestCase):
             }
         })
         protocol.relay = relay
-        protocol.bot_access_token = 'the-access-token'
+        protocol.bot_user_id = 'the-user-id'
         protocol.onMessage('{"foo": "bar"}', False)
-        relay.relay.assert_called_with(
-            'the-user-id', 'the-access-token', {"foo": "bar"})
+        relay.relay.assert_called_with('the-user-id', {"foo": "bar"})
 
     @inlineCallbacks
     def test_protocol_close(self):
@@ -171,10 +177,10 @@ class RelayTest(TestCase):
             },
         })
         protocol.factory = Mock()
-        protocol.bot_access_token = 'the-token'
+        protocol.bot_user_id = 'bot-user-id'
         protocol.relay = r
 
-        r.set_protocol('the-token', protocol)
+        r.set_protocol('bot-user-id', protocol)
 
         protocol.onClose(True, None, None)
         self.assertEqual(r.connections, {})

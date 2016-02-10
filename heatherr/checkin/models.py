@@ -31,15 +31,18 @@ class Checkin(models.Model):
             return self.user_channel_id
 
         response = requests.post(
-            '%s%s' % (settings.HEATHER_RELAY, 'im.open'),
-            headers={'X-Bot-Access-Token': self.bot_access_token})
+            'https://slack.com/api/im.open',
+            data = {
+                'token': self.slackaccount.bot_access_token,
+                'user': self.user_id,
+            })
 
         data = response.json()
         channel_id = data['channel']['id']
         self.user_channel_id = channel_id
         self.save()
 
-        return self.user_channel_id()
+        return self.user_channel_id
 
     def required(self, current_time=None, target_hour=9, users={}):
         current_time = arrow.get(current_time or arrow.utcnow())
