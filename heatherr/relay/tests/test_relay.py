@@ -109,8 +109,7 @@ class RelayTest(TestCase):
         _, r = yield self.mk_relay()
         resp = yield r.rtm_start('token')
         self.assertEqual(resp, 'dummy return value')
-        mock_connect_ws.assert_called_with(
-            {'foo': 'bar'}, 'token')
+        mock_connect_ws.assert_called_with({'foo': 'bar'})
 
     @patch.object(treq, 'post')
     @inlineCallbacks
