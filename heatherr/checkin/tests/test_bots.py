@@ -1,6 +1,5 @@
 from django.test import TestCase
 
-# from ..bots import ambient
 
 class TestBots(TestCase):
 

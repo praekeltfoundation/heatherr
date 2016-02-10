@@ -8,8 +8,6 @@ import warnings
 import re
 import inspect
 
-import requests
-
 import logging
 
 from django.conf import settings
@@ -79,10 +77,10 @@ class BotMessage(dict):
 
     def reply(self, text, type='message', channel=None, id=None):
         return {
-           'id': id,
-           'type': type,
-           'channel': self.get('channel', channel),
-           'text': text,
+            'id': id,
+            'type': type,
+            'channel': self.get('channel', channel),
+            'text': text,
         }
 
 
@@ -136,7 +134,6 @@ class BotRouter(object):
                         handler(bot_user_id, BotMessage(message), match))
 
         return responses
-
 
 
 class CommandRouter(object):

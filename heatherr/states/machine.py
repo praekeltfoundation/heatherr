@@ -9,7 +9,6 @@ class StateMachine(object):
         self.current_state.run()
 
 
-
 class StateMachineException(Exception):
     pass
 
@@ -38,3 +37,4 @@ class State(object):
         return new_state
 
     def run(self):
+        pass

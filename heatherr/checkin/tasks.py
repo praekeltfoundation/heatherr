@@ -1,6 +1,10 @@
 from heatherr import celery_app
 from heatherr.models import SlackAccount
 
+from django.conf import settings
+
+import requests
+
 
 @celery_app.task(ignore_result=True)
 def check_all_checkins():
@@ -19,7 +23,7 @@ def check_slackaccount_checkins(slackaccount):
 
 
 def check_checkin(checkin):
-    slackaccount = checking.slackaccount
+    slackaccount = checkin.slackaccount
     token = slackaccount.bot_access_token
     user_channel_id = checkin.get_user_channel_id()
 
@@ -31,8 +35,6 @@ def check_checkin(checkin):
 
     requests.post('%s%s' % (settings.HEATHER_RELAY, 'rtm'),
                   headers={'X-Bot-Access-Token': token},
-                  data={
-                      "type": "message",
-                      "channel": user_channel_id,
-                      "text": "Hi there!"
-                  })
+                  data={"type": "message",
+                        "channel": user_channel_id,
+                        "text": "Hi there!"})

@@ -10,6 +10,7 @@ def thankyou(bot_user_id, message, match):
     data = match.groupdict()
     return message.reply('you thanked: %(name)s' % data)
 
+
 @bot.ambient(r'(.+$)')
 def everything(bot_user_id, message, match):
     (content,) = match.groups()

@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.db import models
 
+import requests
 import arrow
 
 
@@ -31,8 +32,7 @@ class Checkin(models.Model):
             return self.user_channel_id
 
         response = requests.post(
-            'https://slack.com/api/im.open',
-            data = {
+            'https://slack.com/api/im.open', data={
                 'token': self.slackaccount.bot_access_token,
                 'user': self.user_id,
             })
