@@ -18,6 +18,11 @@ class CheckinModelTest(CheckinTestCase):
                 'tz': 'Africa/Johannesburg',
             }
         })
+        self.mock_api_call('im.open', {
+            'channel': {
+                'id': 'channel-id'
+            }
+        })
 
     @responses.activate
     def test_get_user_info(self):
@@ -25,6 +30,18 @@ class CheckinModelTest(CheckinTestCase):
         self.assertEqual(checkin.get_user_info(), {
             'tz': 'Africa/Johannesburg'
         })
+
+    @responses.activate
+    def test_get_user_channel_id(self):
+        checkin = self.mk_checkin()
+        self.assertEqual(checkin.user_channel_id, None)
+        self.assertEqual(checkin.get_user_channel_id(), 'channel-id')
+        self.assertEqual(
+            Checkin.objects.get(pk=checkin.pk).user_channel_id,
+            'channel-id')
+        self.assertEqual(
+            Checkin.objects.get(pk=checkin.pk).get_user_channel_id(),
+            'channel-id')
 
     @responses.activate
     def test_require_daily_first_time(self):

@@ -5,6 +5,7 @@ from twisted.internet import reactor
 from twisted.internet.defer import succeed, inlineCallbacks, returnValue
 from twisted.internet.endpoints import serverFromString
 from twisted.web.client import HTTPConnectionPool
+from twisted.web.http_headers import Headers
 from twisted.internet.task import Clock
 
 from heatherr.relay.relay import Relay, RelaySite, RelayProtocol
@@ -115,7 +116,14 @@ class RelayTest(TestCase):
     @inlineCallbacks
     def test_relay(self, mock_post):
         mock_response = Mock()
-        mock_response.json = lambda: succeed({})
+        mock_response.headers
+        mock_response.headers = Headers({
+            'Content-Type': ['application/json']
+        })
+
+        mock_response.json = Mock()
+        mock_response.json.return_value = succeed([])
+
         mock_post.return_value = succeed(mock_response)
 
         _, r = yield self.mk_relay('http://username:password@example.com/foo')
@@ -130,6 +138,36 @@ class RelayTest(TestCase):
                 'X-Bot-User-Id': 'user-id',
             },
             timeout=2)
+
+    @patch.object(treq, 'post')
+    @inlineCallbacks
+    def test_relay_with_inline_response(self, mock_post):
+        mock_response = Mock()
+        mock_response.headers
+        mock_response.headers = Headers({
+            'Content-Type': ['application/json']
+        })
+
+        mock_response.json = Mock()
+        mock_response.json.return_value = succeed([{
+            'text': 'the-outbound-reply'
+        }])
+
+        mock_post.return_value = succeed(mock_response)
+
+        _, r = yield self.mk_relay('http://username:password@example.com/foo')
+
+        mock_protocol = Mock()
+        mock_protocol.send_message = Mock()
+        mock_protocol.send_message.return_value = None
+
+        r.connections['user-id'] = mock_protocol
+
+        yield r.relay('user-id', {'foo': 'bar'})
+
+        mock_protocol.send_message.assert_called_with({
+            'text': 'the-outbound-reply'
+        })
 
     @inlineCallbacks
     def test_send_rtm(self):

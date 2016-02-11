@@ -79,7 +79,7 @@ class BotMessage(dict):
         return {
             'id': id,
             'type': type,
-            'channel': self.get('channel', channel),
+            'channel': channel or self.get('channel'),
             'text': text,
         }
 

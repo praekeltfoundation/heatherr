@@ -131,16 +131,6 @@ class Relay(object):
             lambda protocol: json.dumps(protocol.session_data, indent=2))
         return d
 
-    @app.route('/im.open', methods=['POST'])
-    def im_open(self, request):
-        request.setHeader('Content-Type', 'application/json')
-        d = treq.post('https://slack.com/api/im.open', data={
-            'token': request.getPassword(),
-            'user': request.args.get('user'),
-        })
-        d.addCallback(lambda response: response.content())
-        return d
-
     @app.route('/rtm', methods=['POST'])
     def send_rtm(self, request):
         request.setHeader('Content-Type', 'application/json')
@@ -210,5 +200,4 @@ class Relay(object):
                 return
 
             for message in data:
-                print 'sending message', data
                 protocol.send_message(message)
