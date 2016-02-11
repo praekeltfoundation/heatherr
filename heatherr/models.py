@@ -5,6 +5,12 @@ import requests
 
 
 class SlackAccount(models.Model):
+
+    CONNECTING = 'connecting'
+    ONLINE = 'online'
+    OFFLINE = 'offline'
+    ERROR = 'error'
+
     user = models.ForeignKey('auth.user', null=True)
     access_token = models.CharField(max_length=255)
     scope = models.CharField(max_length=255)
@@ -17,11 +23,11 @@ class SlackAccount(models.Model):
     bot_access_token = models.CharField(max_length=255)
     bot_enabled = models.BooleanField(default=False)
     bot_status = models.CharField(max_length=255, choices=[
-        ('connecting', 'Connecting'),
-        ('online', 'Online'),
-        ('offline', 'Offline'),
-        ('error', 'Error'),
-    ], default='offline')
+        (CONNECTING, 'Connecting'),
+        (ONLINE, 'Online'),
+        (OFFLINE, 'Offline'),
+        (ERROR, 'Error'),
+    ], default=OFFLINE)
     bot_checkin = models.DateTimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -44,6 +50,6 @@ class SlackAccount(models.Model):
                      for member in response['members']])
 
     def get_absolute_url(self):
-        return reverse('accounts:slack-detail', kwargs={
+        return reverse('accounts:slack-update', kwargs={
             'pk': self.pk,
         })

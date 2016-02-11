@@ -10,6 +10,7 @@ from django.shortcuts import render, redirect
 from django.views.generic.edit import UpdateView
 
 from heatherr.models import SlackAccount
+from heatherr.tasks import connect_bot, disconnect_bot
 
 import requests
 
@@ -86,4 +87,8 @@ class SlackAccountUpdateView(UpdateView):
 
     def form_valid(self, form):
         messages.success(self.request, 'Successfully updated.')
+        if form.cleaned_data['bot_enabled']:
+            connect_bot.delay(self.object.pk)
+        else:
+            disconnect_bot.delay(self.object.pk)
         return super(SlackAccountUpdateView, self).form_valid(form)

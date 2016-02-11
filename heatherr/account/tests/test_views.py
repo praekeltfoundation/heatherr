@@ -79,10 +79,10 @@ class TestAccountViews(TestCase):
         self.assertEqual(slackaccount.bot_user_id, 'bot-user-id')
         self.assertEqual(slackaccount.bot_access_token, 'bot-access-token')
 
-    def test_account_detail(self):
+    def test_account_update(self):
         self.client.login(username='username', password='password')
         slackaccount = SlackAccount.objects.create(user=self.user)
-        response = self.client.get(reverse('accounts:slack-detail', kwargs={
+        response = self.client.get(reverse('accounts:slack-update', kwargs={
             'pk': slackaccount.pk,
         }))
-        self.assertTemplateUsed(response, 'heatherr/slackaccount_detail.html')
+        self.assertTemplateUsed(response, 'heatherr/slackaccount_form.html')

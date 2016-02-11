@@ -13,6 +13,7 @@ import logging
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
 
 from heatherr.models import SlackAccount
 
@@ -140,7 +141,8 @@ class BotRouter(object):
 
     def handle_pong(self, bot_user_id, message):
         SlackAccount.objects.filter(bot_user_id=bot_user_id).update(
-            bot_status='connected')
+            bot_status=SlackAccount.ONLINE,
+            bot_checkin=timezone.now())
 
 
 class CommandRouter(object):

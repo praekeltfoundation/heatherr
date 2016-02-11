@@ -10,3 +10,4 @@ htmlcov/
 .coverage.*
 utils/
 _trial_temp/
+celerybeat-schedule

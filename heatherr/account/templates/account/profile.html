@@ -33,12 +33,12 @@
     <tr>
       <th>{{forloop.counter}}</th>
       <td>
-        <a href="{% url 'accounts:slack-detail' pk=account.pk %}">
+        <a href="{% url 'accounts:slack-update' pk=account.pk %}">
           {{account.team_name}}
         </a>
       </td>
       <td>
-        <a href="{% url 'accounts:slack-detail' pk=account.pk %}">
+        <a href="{% url 'accounts:slack-update' pk=account.pk %}">
           {{account.updated_at|naturaltime}}
         </a>
       </td>

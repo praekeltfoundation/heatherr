@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from heatherr import celery_app
 from heatherr.models import SlackAccount
 
@@ -17,10 +19,10 @@ def connect_bot(slackaccount_pk):
     try:
         response.raise_for_status()
         slackaccount.bot_enabled = True
-        slackaccount.bot_status = 'connecting'
-    except requests.exception.HTTPError:
+        slackaccount.bot_status = SlackAccount.CONNECTING
+    except requests.exceptions.HTTPError:
         slackaccount.bot_enabled = False
-        slackaccount.bot_status = 'error'
+        slackaccount.bot_status = SlackAccount.ERROR
 
     slackaccount.save()
 
@@ -34,15 +36,16 @@ def disconnect_bot(slackaccount_pk):
 
     response.raise_for_status()
     slackaccount.bot_enabled = False
-    slackaccount.bot_status = 'offline'
+    slackaccount.bot_status = SlackAccount.OFFLINE
     slackaccount.save()
 
 
 @celery_app.task(ignore_result=True)
-def ensure_bots_connected():
+def ensure_bots_connected(minutes=3):
     enabled = SlackAccount.objects.filter(bot_enabled=True)
     slackaccounts = enabled.filter(
-        Q(bot_checkin__isnull=True) | Q(bot_checkin__lte=timezone.now()))
+        Q(bot_checkin__isnull=True) |
+        Q(bot_checkin__lte=(timezone.now() - timedelta(minutes=minutes))))
 
     for slackaccount in slackaccounts:
         connect_bot(slackaccount.pk)

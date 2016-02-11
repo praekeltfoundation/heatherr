@@ -11,5 +11,5 @@ urlpatterns = [
     url(
         r'^integration/(?P<pk>[0-9]+)/$',
         login_required(views.SlackAccountUpdateView.as_view()),
-        name='slack-detail'),
+        name='slack-update'),
 ]

@@ -43,9 +43,11 @@
         <tr>
           <th>Bot</th>
           <td>
-            {{object.get_bot_status_display}}
+            {{object.get_bot_status_display}}, last check in:
             {% if object.bot_checkin %}
-              , last check in: {{object.bot_checkin|naturaltime}}
+              {{object.bot_checkin|naturaltime}}
+            {% else %}
+              Never
             {% endif %}
           </td>
         </tr>
