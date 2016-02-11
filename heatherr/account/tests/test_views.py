@@ -2,6 +2,7 @@ import responses
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.conf import settings
 from django.test import TestCase, override_settings
 
 from heatherr.models import SlackAccount
@@ -79,10 +80,27 @@ class TestAccountViews(TestCase):
         self.assertEqual(slackaccount.bot_user_id, 'bot-user-id')
         self.assertEqual(slackaccount.bot_access_token, 'bot-access-token')
 
-    def test_account_update(self):
+    def test_account_view(self):
         self.client.login(username='username', password='password')
         slackaccount = SlackAccount.objects.create(user=self.user)
         response = self.client.get(reverse('accounts:slack-update', kwargs={
             'pk': slackaccount.pk,
         }))
         self.assertTemplateUsed(response, 'heatherr/slackaccount_form.html')
+
+    @responses.activate
+    def test_bot_status_update(self):
+        responses.add(
+            responses.POST, '%s%s' % (settings.HEATHERR_RELAY, 'connect'),
+            json={})
+
+        self.client.login(username='username', password='password')
+        slackaccount = SlackAccount.objects.create(user=self.user)
+        self.assertEqual(slackaccount.bot_enabled, False)
+        with override_settings(CELERY_ALWAYS_EAGER=True):
+            response = self.client.post(
+                reverse('accounts:slack-update',
+                        kwargs={'pk': slackaccount.pk}),
+                data={'bot_enabled': True})
+        self.assertEqual(
+            SlackAccount.objects.get(pk=slackaccount.pk).bot_enabled, True)
