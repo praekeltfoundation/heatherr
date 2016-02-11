@@ -4,6 +4,7 @@ from twisted.trial.unittest import TestCase
 from twisted.internet import reactor
 from twisted.internet.defer import succeed, inlineCallbacks, returnValue
 from twisted.internet.endpoints import serverFromString
+from twisted.test.proto_helpers import StringTransport
 from twisted.web.client import HTTPConnectionPool
 from twisted.web.http_headers import Headers
 from twisted.internet.task import Clock
@@ -63,6 +64,27 @@ class RelayTest(TestCase):
         })
         r.get_protocol.assert_called_with(
             bot_id='bot-id', bot_token='bot-token')
+
+    @inlineCallbacks
+    def test_disconnect(self):
+        url, r = yield self.mk_relay()
+        protocol = RelayProtocol({
+            'self': {
+                'id': 'the-user-id'
+            }
+        })
+        protocol.transport = StringTransport()
+        protocol.transport.loseConnection = Mock()
+        protocol.transport.loseConnection.return_value = None
+
+        r.connections['bot-id'] = protocol
+
+        yield treq.post(
+            '%s/disconnect' % (url,),
+            auth=('bot-id', 'bot-token'),
+            pool=self.pool)
+
+        protocol.transport.loseConnection.assert_called_with()
 
     @inlineCallbacks
     def test_get_protocol(self):

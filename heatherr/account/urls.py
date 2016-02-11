@@ -10,6 +10,6 @@ urlpatterns = [
     url(r'^authorize/', views.authorize, name='authorize'),
     url(
         r'^integration/(?P<pk>[0-9]+)/$',
-        login_required(views.SlackAccountDetailView.as_view()),
-        name='slack-detail'),
+        login_required(views.SlackAccountUpdateView.as_view()),
+        name='slack-update'),
 ]

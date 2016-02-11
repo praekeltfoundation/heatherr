@@ -1,9 +1,16 @@
 from django.db import models
+from django.core.urlresolvers import reverse
 
 import requests
 
 
 class SlackAccount(models.Model):
+
+    CONNECTING = 'connecting'
+    ONLINE = 'online'
+    OFFLINE = 'offline'
+    ERROR = 'error'
+
     user = models.ForeignKey('auth.user', null=True)
     access_token = models.CharField(max_length=255)
     scope = models.CharField(max_length=255)
@@ -14,6 +21,14 @@ class SlackAccount(models.Model):
     incoming_webhook_configuration_url = models.CharField(max_length=255)
     bot_user_id = models.CharField(max_length=255)
     bot_access_token = models.CharField(max_length=255)
+    bot_enabled = models.BooleanField(default=False)
+    bot_status = models.CharField(max_length=255, choices=[
+        (CONNECTING, 'Connecting'),
+        (ONLINE, 'Online'),
+        (OFFLINE, 'Offline'),
+        (ERROR, 'Error'),
+    ], default=OFFLINE)
+    bot_checkin = models.DateTimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -33,3 +48,8 @@ class SlackAccount(models.Model):
         response = self.api_call('users.list')
         return dict([(member['id'], member)
                      for member in response['members']])
+
+    def get_absolute_url(self):
+        return reverse('accounts:slack-update', kwargs={
+            'pk': self.pk,
+        })

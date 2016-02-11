@@ -128,6 +128,14 @@ class Relay(object):
             lambda protocol: json.dumps(protocol.session_data, indent=2))
         return d
 
+    @app.route('/disconnect', methods=['POST'])
+    def disconnect(self, request):
+        request.setHeader('Content-Type', 'application/json')
+        d = self.get_protocol(bot_id=request.getUser(),
+                              bot_token=request.getPassword())
+        d.addCallback(lambda protocol: protocol.transport.loseConnection())
+        return d
+
     @app.route('/rtm', methods=['POST'])
     def send_rtm(self, request):
         request.setHeader('Content-Type', 'application/json')

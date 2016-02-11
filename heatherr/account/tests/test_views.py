@@ -2,6 +2,7 @@ import responses
 
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.conf import settings
 from django.test import TestCase, override_settings
 
 from heatherr.models import SlackAccount
@@ -79,10 +80,68 @@ class TestAccountViews(TestCase):
         self.assertEqual(slackaccount.bot_user_id, 'bot-user-id')
         self.assertEqual(slackaccount.bot_access_token, 'bot-access-token')
 
-    def test_account_detail(self):
+    def test_account_view(self):
         self.client.login(username='username', password='password')
         slackaccount = SlackAccount.objects.create(user=self.user)
-        response = self.client.get(reverse('accounts:slack-detail', kwargs={
+        response = self.client.get(reverse('accounts:slack-update', kwargs={
             'pk': slackaccount.pk,
         }))
-        self.assertTemplateUsed(response, 'heatherr/slackaccount_detail.html')
+        self.assertTemplateUsed(response, 'heatherr/slackaccount_form.html')
+
+    @responses.activate
+    def test_bot_status_connect(self):
+        responses.add(
+            responses.POST, '%s%s' % (settings.HEATHERR_RELAY, 'connect'),
+            json={})
+
+        self.client.login(username='username', password='password')
+        slackaccount = SlackAccount.objects.create(user=self.user)
+        self.assertEqual(slackaccount.bot_enabled, False)
+        with override_settings(CELERY_ALWAYS_EAGER=True):
+            self.client.post(
+                reverse('accounts:slack-update',
+                        kwargs={'pk': slackaccount.pk}),
+                data={'bot_enabled': True})
+
+        reloaded = SlackAccount.objects.get(pk=slackaccount.pk)
+        self.assertEqual(reloaded.bot_enabled, True)
+        self.assertEqual(reloaded.bot_status, SlackAccount.CONNECTING)
+
+    @responses.activate
+    def test_bot_status_connect_fail(self):
+        responses.add(
+            responses.POST, '%s%s' % (settings.HEATHERR_RELAY, 'connect'),
+            json={}, status=404)
+
+        self.client.login(username='username', password='password')
+        slackaccount = SlackAccount.objects.create(user=self.user)
+
+        with override_settings(CELERY_ALWAYS_EAGER=True):
+            print self.client.post(
+                reverse('accounts:slack-update',
+                        kwargs={'pk': slackaccount.pk}),
+                data={'bot_enabled': True})
+
+        reloaded = SlackAccount.objects.get(pk=slackaccount.pk)
+        self.assertEqual(reloaded.bot_enabled, False)
+        self.assertEqual(reloaded.bot_status, SlackAccount.ERROR)
+
+    @responses.activate
+    def test_bot_status_disconnect(self):
+        responses.add(
+            responses.POST, '%s%s' % (settings.HEATHERR_RELAY, 'disconnect'),
+            json={})
+
+        self.client.login(username='username', password='password')
+        slackaccount = SlackAccount.objects.create(
+            user=self.user, bot_enabled=True)
+
+        with override_settings(CELERY_ALWAYS_EAGER=True):
+            self.client.post(
+                reverse('accounts:slack-update',
+                        kwargs={'pk': slackaccount.pk}),
+                data={'bot_enabled': False})
+
+        reloaded = SlackAccount.objects.get(pk=slackaccount.pk)
+        self.assertEqual(reloaded.bot_enabled, False)
+        self.assertEqual(reloaded.bot_status, SlackAccount.OFFLINE)
