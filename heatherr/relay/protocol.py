@@ -8,3 +8,4 @@ class RTMProtocol(WebSocketClientProtocol):
 
 class RTMFactory(WebSocketClientFactory):
     protocol = RTMProtocol
+    noisy = False

@@ -23,9 +23,8 @@ from heatherr.views import dispatcher
 urlpatterns = [
     url(r'^$', RedirectView.as_view(url=settings.LOGIN_URL)),
     url(r'^', include('social.apps.django_app.urls', namespace='social')),
-    url(r'^commands/', dispatcher.view, name='dispatcher'),
-    # NOTE: This is here for backwards compatibility.
-    url(r'^announce/', dispatcher.view, name='dispatcher'),
+    url(r'^commands/', dispatcher.commands, name='commands'),
+    url(r'^bots/', dispatcher.bots, name='bots'),
     url(r'^accounts/', include('heatherr.account.urls', namespace='accounts')),
     url(r'^admin/', include(admin.site.urls)),
 ]

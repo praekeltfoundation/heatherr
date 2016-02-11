@@ -59,7 +59,7 @@ class CommandTestCase(HeatherrTestCase):
             'channel_id': channel_id,
             'channel_name': channel_name,
         }
-        return self.client.post(reverse('dispatcher'), parameters)
+        return self.client.post(reverse('commands'), parameters)
 
     def assertCommandResponse(self, command_str, expected_response,
                               team_id=None, user_id=None, token=None,

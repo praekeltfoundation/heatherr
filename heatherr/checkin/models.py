@@ -2,6 +2,7 @@ from datetime import timedelta
 
 from django.db import models
 
+import requests
 import arrow
 
 
@@ -13,6 +14,7 @@ class Checkin(models.Model):
     slackaccount = models.ForeignKey('heatherr.SlackAccount')
     channel_id = models.CharField(blank=True, max_length=255)
     user_id = models.CharField(blank=True, max_length=255)
+    user_channel_id = models.CharField(blank=True, max_length=255, null=True)
     interval = models.CharField(blank=True, max_length=255, choices=[
         (DAILY, 'Daily'),
         (WEEKLY, 'Weekly'),
@@ -24,6 +26,23 @@ class Checkin(models.Model):
     def get_user_info(self):
         data = self.slackaccount.api_call('users.info', user=self.user_id)
         return data['user']
+
+    def get_user_channel_id(self):
+        if self.user_channel_id:
+            return self.user_channel_id
+
+        response = requests.post(
+            'https://slack.com/api/im.open', data={
+                'token': self.slackaccount.bot_access_token,
+                'user': self.user_id,
+            })
+
+        data = response.json()
+        channel_id = data['channel']['id']
+        self.user_channel_id = channel_id
+        self.save()
+
+        return self.user_channel_id
 
     def required(self, current_time=None, target_hour=9, users={}):
         current_time = arrow.get(current_time or arrow.utcnow())
@@ -44,3 +63,10 @@ class Checkin(models.Model):
             return True
 
         return (self.last_checkin - yesterday).days <= -days
+
+
+class CheckinItem(models.Model):
+
+    slackaccount = models.ForeignKey('heatherr.SlackAccount')
+    user_id = models.CharField(blank=True, max_length=255)
+    created_at = models.DateTimeField(blank=True, auto_now_add=True)

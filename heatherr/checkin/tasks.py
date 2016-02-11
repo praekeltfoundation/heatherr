@@ -19,6 +19,4 @@ def check_slackaccount_checkins(slackaccount):
 
 
 def check_checkin(checkin):
-    # At this point we need to get more oAuth scopes because incoming
-    # webhook URLs cannot do private messages.
     pass
