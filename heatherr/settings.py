@@ -11,8 +11,11 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from __future__ import absolute_import
+
 import os
 import dj_database_url
+from celery.schedules import crontab
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -177,6 +180,15 @@ LOGGING = {
             'level': 'DEBUG',
         }
     }
+}
+
+BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERYBEAT_SCHEDULE = {
+    'ensure-bots-connected': {
+        'task': 'heatherr.tasks.ensure_bots_connected',
+        'schedule': crontab(),  # every minute
+    },
 }
 
 try:  # pragma: no cover

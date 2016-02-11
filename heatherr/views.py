@@ -14,6 +14,9 @@ from django.conf import settings
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.decorators.csrf import csrf_exempt
 
+from heatherr.models import SlackAccount
+
+
 logger = logging.getLogger(__name__)
 
 
@@ -134,6 +137,10 @@ class BotRouter(object):
                         handler(bot_user_id, BotMessage(message), match))
 
         return responses
+
+    def handle_pong(self, bot_user_id, message):
+        SlackAccount.objects.filter(bot_user_id=bot_user_id).update(
+            bot_status='connected')
 
 
 class CommandRouter(object):

@@ -7,3 +7,4 @@ pip:
   - "raven<=5.0"
 dependencies:
   - libpq-dev
+  - redis-server

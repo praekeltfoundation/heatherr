@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
-from django.views.generic import DetailView
+from django.views.generic.edit import UpdateView
 
 from heatherr.models import SlackAccount
 
@@ -73,12 +73,17 @@ def authorize(request):
     return redirect(reverse('accounts:profile'))
 
 
-class SlackAccountDetailView(DetailView):
+class SlackAccountUpdateView(UpdateView):
     model = SlackAccount
+    fields = ['bot_enabled']
 
     def get_context_data(self, **kwargs):
         context = super(
-            SlackAccountDetailView, self).get_context_data(**kwargs)
+            SlackAccountUpdateView, self).get_context_data(**kwargs)
         context['SLACK_CLIENT_ID'] = settings.SLACK_CLIENT_ID
         context['SLACK_SCOPES'] = settings.SLACK_SCOPES
         return context
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Successfully updated.')
+        return super(SlackAccountUpdateView, self).form_valid(form)
