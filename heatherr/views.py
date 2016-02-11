@@ -93,7 +93,7 @@ class BotRouter(object):
     def ambient(self, *patterns):
         def decorator(func):
             self.registry[func].extend(list(patterns))
-            setattr(func, 'patterns', frozenset(patterns))
+            setattr(func, 'patterns', list(patterns))
 
             @wraps(func)
             def handler(*args, **kwargs):
