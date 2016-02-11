@@ -14,10 +14,10 @@ from twisted.internet.task import LoopingCall
 from twisted.web import server
 from twisted.python import log
 
+from .protocol import RTMProtocol, RTMFactory
+
 from twisted.web import client
 client._HTTP11ClientFactory.noisy = False
-
-from .protocol import RTMProtocol, RTMFactory
 
 
 class RelaySite(server.Site):
@@ -54,9 +54,6 @@ class RelayProtocol(RTMProtocol):
             self.lc.stop()
 
     def onMessage(self, payload, isBinary):
-        if isBinary:
-            log.err("Binary message received: {0} bytes".format(len(payload)))
-
         data = json.loads(payload)
         self.relay.relay(self.bot_user_id, data)
 

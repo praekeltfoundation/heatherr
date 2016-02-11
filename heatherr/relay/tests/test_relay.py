@@ -8,7 +8,7 @@ from twisted.web.client import HTTPConnectionPool
 from twisted.web.http_headers import Headers
 from twisted.internet.task import Clock
 
-from heatherr.relay.relay import Relay, RelaySite, RelayProtocol
+from heatherr.relay.relay import Relay, RelaySite, RelayProtocol, RelayFactory
 
 import treq
 
@@ -237,3 +237,14 @@ class RelayTest(TestCase):
         protocol.sendMessage.assert_has_calls([
             call('{"type": "ping"}'),
             call('{"type": "ping"}')])
+
+    def test_factory(self):
+        factory = RelayFactory('dummy relay', {
+            'url': 'wss://foo/',
+            'self': {
+                'id': 'bot-user-id'
+            }
+        })
+        protocol = factory.buildProtocol('addr')
+        self.assertEqual(protocol.factory, factory)
+        self.assertEqual(protocol.bot_user_id, 'bot-user-id')
