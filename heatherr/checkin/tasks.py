@@ -1,10 +1,6 @@
 from heatherr import celery_app
 from heatherr.models import SlackAccount
 
-from django.conf import settings
-
-import requests
-
 
 @celery_app.task(ignore_result=True)
 def check_all_checkins():

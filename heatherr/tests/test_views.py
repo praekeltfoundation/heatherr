@@ -7,7 +7,6 @@ from heatherr.tests import CommandTestCase
 from heatherr.views import dispatcher, BotRouter, BotMessage, Dispatcher
 
 
-
 class TestDispatcher(CommandTestCase):
 
     def test_not_found_handler(self):
@@ -92,7 +91,6 @@ class TestBotRouter(CommandTestCase):
     def test_dispatcher_bots(self):
         disp = Dispatcher('slack-token')
         bot = disp.bot('the-bot')
-
 
         @bot.ambient(r'.+')
         def echo(bot_user_id, message, pattern):
