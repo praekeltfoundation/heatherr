@@ -89,7 +89,7 @@ class TestAccountViews(TestCase):
         self.assertTemplateUsed(response, 'heatherr/slackaccount_form.html')
 
     @responses.activate
-    def test_bot_status_update(self):
+    def test_bot_status_connect(self):
         responses.add(
             responses.POST, '%s%s' % (settings.HEATHERR_RELAY, 'connect'),
             json={})
@@ -98,9 +98,50 @@ class TestAccountViews(TestCase):
         slackaccount = SlackAccount.objects.create(user=self.user)
         self.assertEqual(slackaccount.bot_enabled, False)
         with override_settings(CELERY_ALWAYS_EAGER=True):
-            response = self.client.post(
+            self.client.post(
                 reverse('accounts:slack-update',
                         kwargs={'pk': slackaccount.pk}),
                 data={'bot_enabled': True})
-        self.assertEqual(
-            SlackAccount.objects.get(pk=slackaccount.pk).bot_enabled, True)
+
+        reloaded = SlackAccount.objects.get(pk=slackaccount.pk)
+        self.assertEqual(reloaded.bot_enabled, True)
+        self.assertEqual(reloaded.bot_status, SlackAccount.CONNECTING)
+
+    @responses.activate
+    def test_bot_status_connect_fail(self):
+        responses.add(
+            responses.POST, '%s%s' % (settings.HEATHERR_RELAY, 'connect'),
+            json={}, status=404)
+
+        self.client.login(username='username', password='password')
+        slackaccount = SlackAccount.objects.create(user=self.user)
+
+        with override_settings(CELERY_ALWAYS_EAGER=True):
+            print self.client.post(
+                reverse('accounts:slack-update',
+                        kwargs={'pk': slackaccount.pk}),
+                data={'bot_enabled': True})
+
+        reloaded = SlackAccount.objects.get(pk=slackaccount.pk)
+        self.assertEqual(reloaded.bot_enabled, False)
+        self.assertEqual(reloaded.bot_status, SlackAccount.ERROR)
+
+    @responses.activate
+    def test_bot_status_disconnect(self):
+        responses.add(
+            responses.POST, '%s%s' % (settings.HEATHERR_RELAY, 'disconnect'),
+            json={})
+
+        self.client.login(username='username', password='password')
+        slackaccount = SlackAccount.objects.create(
+            user=self.user, bot_enabled=True)
+
+        with override_settings(CELERY_ALWAYS_EAGER=True):
+            self.client.post(
+                reverse('accounts:slack-update',
+                        kwargs={'pk': slackaccount.pk}),
+                data={'bot_enabled': False})
+
+        reloaded = SlackAccount.objects.get(pk=slackaccount.pk)
+        self.assertEqual(reloaded.bot_enabled, False)
+        self.assertEqual(reloaded.bot_status, SlackAccount.OFFLINE)

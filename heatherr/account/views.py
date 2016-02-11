@@ -87,8 +87,9 @@ class SlackAccountUpdateView(UpdateView):
 
     def form_valid(self, form):
         messages.success(self.request, 'Successfully updated.')
+        return_val = super(SlackAccountUpdateView, self).form_valid(form)
         if form.cleaned_data['bot_enabled']:
             connect_bot.delay(self.object.pk)
         else:
             disconnect_bot.delay(self.object.pk)
-        return super(SlackAccountUpdateView, self).form_valid(form)
+        return return_val
