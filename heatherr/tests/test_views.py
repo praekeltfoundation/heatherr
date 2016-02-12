@@ -40,15 +40,68 @@ class TestBotRouter(CommandTestCase):
         bot = BotRouter('the-bot')
 
         @bot.ambient(r'.+$')
-        def echo(bot_user_id, message, match):
-            return '%s said %s' % (bot_user_id, message['text'])
+        def echo(bot_user_id, bot_user_name, message, match):
+            return '%s said %s' % (bot_user_name, message['text'])
 
-        [response] = bot.handle('the-bot-user-id', {
+        [response] = bot.handle('the-bot-user-id', 'bot', {
             'text': 'the text',
             'type': 'message',
             'channel': 'C1000',
         })
-        self.assertEqual(response, 'the-bot-user-id said the text')
+        self.assertEqual(response, 'bot said the text')
+
+    def test_bot_direct_mention(self):
+        bot = BotRouter('the-bot')
+
+        @bot.ambient('@BOTUSERID: hi there!')
+        def echo(bot_user_id, bot_user_name, message, match):
+            return 'direct mention to %s' % (bot_user_name,)
+
+        [response] = bot.handle('the-bot-user-id', 'bot', {
+            'text': '<@the-bot-user-id>: hi there!',
+            'type': 'message',
+            'channel': 'C1000',
+        })
+        self.assertEqual(response, 'direct mention to bot')
+
+    def test_bot_mention(self):
+        bot = BotRouter('the-bot')
+
+        @bot.ambient('hi there @BOTUSERID')
+        def echo(bot_user_id, bot_user_name, message, match):
+            return 'mention to %s' % (bot_user_name,)
+
+        [response] = bot.handle('the-bot-user-id', 'bot', {
+            'text': 'hi there <@the-bot-user-id>',
+            'type': 'message',
+            'channel': 'C1000',
+        })
+        self.assertEqual(response, 'mention to bot')
+
+    def test_bot_direct_message(self):
+        bot = BotRouter('the-bot')
+
+        @bot.direct_message(r'^.+$')
+        def echo(bot_user_id, bot_user_name, message, match):
+            return '%s said %s' % (bot_user_name, message['text'])
+
+        self.assertEqual(
+            bot.handle('the-bot-user-id', 'bot', {
+                'text': 'the text',
+                'type': 'message',
+                'channel': 'D1000',
+            }),
+            ['bot said the text'])
+
+        self.assertEqual(
+            bot.handle('the-bot-user-id', 'bot', {
+                'text': 'the text',
+                'type': 'message',
+                #  NOTE: this is a channel starting with C
+                #        ie, not a direct message
+                'channel': 'C1000',
+            }),
+            [])
 
     def test_bot_message(self):
         msg = {
@@ -71,13 +124,13 @@ class TestBotRouter(CommandTestCase):
 
     def test_received_typeless(self):
         bot = BotRouter('the-bot')
-        self.assertEqual(bot.handle('bot-user-id', {
+        self.assertEqual(bot.handle('bot-user-id', 'bot', {
             'ok': False
         }), None)
 
     def test_received_echo(self):
         bot = BotRouter('the-bot')
-        self.assertEqual(bot.handle('bot-user-id', {
+        self.assertEqual(bot.handle('bot-user-id', 'bot', {
             'user': 'bot-user-id',
             'type': 'message',
             'text': 'marco polo',
@@ -85,7 +138,7 @@ class TestBotRouter(CommandTestCase):
 
     def test_unknown_type(self):
         bot = BotRouter('the-bot')
-        self.assertEqual(bot.handle('bot-user-id', {
+        self.assertEqual(bot.handle('bot-user-id', 'bot', {
             'type': 'foo'
         }), None)
 
@@ -94,13 +147,14 @@ class TestBotRouter(CommandTestCase):
         bot = disp.bot('the-bot')
 
         @bot.ambient(r'.+')
-        def echo(bot_user_id, message, pattern):
-            return message.reply('%s: %s' % (bot_user_id, message['text']))
+        def echo(bot_user_id, bot_user_name, message, pattern):
+            return message.reply('%s: %s' % (bot_user_name, message['text']))
 
         response = disp.bots(RequestFactory().post(
             '/bots/',
             content_type='application/json',
             HTTP_X_BOT_USER_ID='bot-user-id',
+            HTTP_X_BOT_USER_NAME='bot',
             data=json.dumps({
                 'text': 'foo',
                 'type': 'message',
@@ -109,7 +163,7 @@ class TestBotRouter(CommandTestCase):
         ))
         [reply] = json.loads(response.content)
         self.assertEqual(reply, {
-            'text': 'bot-user-id: foo',
+            'text': 'bot: foo',
             'type': 'message',
             'channel': 'channel-id',
             'id': None,
