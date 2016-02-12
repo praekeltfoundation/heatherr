@@ -92,11 +92,14 @@ class BotRouter(object):
 
     def __init__(self, name):
         self.name = name
-        self.registry = defaultdict(list)
+        self.registry_ambient = defaultdict(list)
+        self.registry_direct_message = defaultdict(list)
+        self.registry_direct_mention = defaultdict(list)
+        self.registry_mention = defaultdict(list)
 
     def ambient(self, *patterns):
         def decorator(func):
-            self.registry[func].extend(list(patterns))
+            self.registry_ambient[func].extend(list(patterns))
             setattr(func, 'patterns', list(patterns))
 
             @wraps(func)
@@ -113,7 +116,7 @@ class BotRouter(object):
             return
 
         if message.get('user') == bot_user_id:
-            logger.debug('Got echoed back a bots own message.')
+            logger.debug('Slack echoed back a bots own message.')
             return
 
         message_type = message['type']
@@ -127,10 +130,17 @@ class BotRouter(object):
 
         return getattr(self, handler_name)(bot_user_id, message)
 
+    def get_handler(self, message):
+        return self.ambient_message_handler
+
     def handle_message(self, bot_user_id, message):
+        handler = self.get_handler(message)
+        return handler(bot_user_id, message)
+
+    def ambient_message_handler(self, bot_user_id, message):
         text = message['text']
         responses = []
-        for handler, patterns in self.registry.items():
+        for handler, patterns in self.registry_ambient.items():
             for pattern in patterns:
                 match = re.match(pattern, text)
                 if match:
