@@ -91,7 +91,7 @@ class TestAccountViews(TestCase):
     @responses.activate
     def test_bot_status_connect(self):
         responses.add(
-            responses.POST, '%s%s' % (settings.HEATHERR_RELAY, 'connect'),
+            responses.POST, '%s%s' % (settings.HEATHERRD_URL, 'connect'),
             json={})
 
         self.client.login(username='username', password='password')
@@ -110,7 +110,7 @@ class TestAccountViews(TestCase):
     @responses.activate
     def test_bot_status_connect_fail(self):
         responses.add(
-            responses.POST, '%s%s' % (settings.HEATHERR_RELAY, 'connect'),
+            responses.POST, '%s%s' % (settings.HEATHERRD_URL, 'connect'),
             json={}, status=404)
 
         self.client.login(username='username', password='password')
@@ -129,7 +129,7 @@ class TestAccountViews(TestCase):
     @responses.activate
     def test_bot_status_disconnect(self):
         responses.add(
-            responses.POST, '%s%s' % (settings.HEATHERR_RELAY, 'disconnect'),
+            responses.POST, '%s%s' % (settings.HEATHERRD_URL, 'disconnect'),
             json={})
 
         self.client.login(username='username', password='password')
