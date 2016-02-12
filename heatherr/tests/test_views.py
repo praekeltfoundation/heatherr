@@ -46,6 +46,7 @@ class TestBotRouter(CommandTestCase):
         [response] = bot.handle('the-bot-user-id', {
             'text': 'the text',
             'type': 'message',
+            'channel': 'C1000',
         })
         self.assertEqual(response, 'the-bot-user-id said the text')
 

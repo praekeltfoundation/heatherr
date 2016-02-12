@@ -130,23 +130,24 @@ class BotRouter(object):
 
         return getattr(self, handler_name)(bot_user_id, message)
 
-    def get_handler(self, message):
-        return self.ambient_message_handler
-
     def handle_message(self, bot_user_id, message):
-        handler = self.get_handler(message)
-        return handler(bot_user_id, message)
+        return self.match_registry(
+            bot_user_id, message, self.get_registry(message))
 
-    def ambient_message_handler(self, bot_user_id, message):
-        text = message['text']
+    def get_registry(self, message):
+        if message['channel'].startswith('D'):
+            return self.registry_direct_message
+
+        return self.registry_ambient
+
+    def match_registry(self, bot_user_id, message, registry):
         responses = []
-        for handler, patterns in self.registry_ambient.items():
+        for handler, patterns in registry.items():
             for pattern in patterns:
-                match = re.match(pattern, text)
+                match = re.match(pattern, message['text'])
                 if match:
                     responses.append(
                         handler(bot_user_id, BotMessage(message), match))
-
         return responses
 
     def handle_pong(self, bot_user_id, message):
