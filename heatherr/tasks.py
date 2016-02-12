@@ -14,7 +14,7 @@ import requests
 def connect_bot(slackaccount_pk):
     slackaccount = SlackAccount.objects.get(pk=slackaccount_pk)
     response = requests.post(
-        '%s%s' % (settings.HEATHERR_RELAY, 'connect'),
+        '%s%s' % (settings.HEATHERRD_URL, 'connect'),
         auth=(slackaccount.bot_user_id, slackaccount.bot_access_token))
     try:
         response.raise_for_status()
@@ -31,7 +31,7 @@ def connect_bot(slackaccount_pk):
 def disconnect_bot(slackaccount_pk):
     slackaccount = SlackAccount.objects.get(pk=slackaccount_pk)
     response = requests.post(
-        '%s%s' % (settings.HEATHERR_RELAY, 'disconnect'),
+        '%s%s' % (settings.HEATHERRD_URL, 'disconnect'),
         auth=(slackaccount.bot_user_id, slackaccount.bot_access_token))
 
     response.raise_for_status()
