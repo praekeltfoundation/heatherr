@@ -192,7 +192,7 @@ CELERYBEAT_SCHEDULE = {
     'check-all-checkins': {
         'task': 'heatherr.checkin.tasks.check_all_checkins',
         'schedule': crontab(minute='0', hour='*',  # every hour
-                            day_of_week='mon,tue,web,thu,fri'),  # not weekend
+                            day_of_week='mon,tue,wed,thu,fri'),  # not weekend
     }
 }
 
