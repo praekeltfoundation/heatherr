@@ -57,8 +57,8 @@ class CheckinTest(CheckinTestCase, CommandTestCase):
             '/checkin list',
             '\n'.join([
                 'You have the following checkins set:',
-                '1. weekly in <#channel-1|channel-name-1>',
-                '2. daily in <#channel-2|channel-name-2>',
+                '- #1, a weekly checkin for <#channel-1|channel-name-1>',
+                '- #2, a daily checkin for <#channel-2|channel-name-2>',
             ]))
 
     def test_remove(self):

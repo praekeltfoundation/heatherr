@@ -61,7 +61,7 @@ def list_checkins(request, match):
         return 'You have no checkins set.'
 
     lines = ['You have the following checkins set:']
-    lines.extend(['%s. %s in <#%s|%s>' % (
+    lines.extend(['- #%s, a %s checkin for <#%s|%s>' % (
                   checkin.pk, checkin.interval,
                   checkin.channel_id, checkin.channel_name)
                   for checkin in checkins])
