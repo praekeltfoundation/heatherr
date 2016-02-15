@@ -14,7 +14,7 @@ class CheckinTest(CheckinTestCase, CommandTestCase):
         response = self.send_command('/checkin daily')
         self.assertEqual(response.json(), {
             'text': (
-                'I\'ll prompt you daily for a `channel_name`'
+                'I\'ll prompt you daily for a <#channel_id|channel_name>'
                 ' team check-in'),
         })
         [checkin] = checkins
@@ -27,7 +27,7 @@ class CheckinTest(CheckinTestCase, CommandTestCase):
         response = self.send_command('/checkin weekly')
         self.assertEqual(response.json(), {
             'text': (
-                'I\'ll prompt you weekly for a `channel_name` '
+                'I\'ll prompt you weekly for a <#channel_id|channel_name> '
                 'team check-in'),
         })
         [checkin] = Checkin.objects.filter(slackaccount=self.slackaccount)
@@ -43,11 +43,11 @@ class CheckinTest(CheckinTestCase, CommandTestCase):
         self.assertCommandResponse(
             '/checkin stop weekly',
             ("Cool, I've removed your weekly reminders for "
-             "`channel_name`"))
+             "<#channel_id|channel_name>"))
         self.assertEqual(checkins.count(), 0)
 
     def test_checkin_stop_non_existent(self):
         self.assertCommandResponse(
             '/checkin stop weekly',
             ("Sorry, I don't have any weekly check-ins to remove for "
-             "you in `channel_name`"))
+             "you in <#channel_id|channel_name>"))
