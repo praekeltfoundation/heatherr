@@ -36,16 +36,6 @@ class CheckinTest(CheckinTestCase, CommandTestCase):
         self.assertEqual(checkin.channel_id, self.default_channel_id)
         self.assertEqual(checkin.last_checkin, None)
 
-    def test_checkin_stop(self):
-        self.mk_checkin(interval=Checkin.WEEKLY)
-        checkins = Checkin.objects.filter(slackaccount=self.slackaccount)
-        self.assertEqual(checkins.count(), 1)
-        self.assertCommandResponse(
-            '/checkin stop weekly',
-            ("Cool, I've removed your weekly reminders for "
-             "<#channel_id|channel_name>"))
-        self.assertEqual(checkins.count(), 0)
-
     def test_checkin_list(self):
         self.mk_checkin(interval=Checkin.WEEKLY,
                         channel_id='channel-1',

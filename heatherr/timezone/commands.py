@@ -35,6 +35,5 @@ def for_(request, match):
     text = '<@%s> is in %s, local time is %s' % (
         member['id'], member['tz_label'], localtime.format('h:mm A'))
     return JsonResponse({
-        'response_type': 'in_channel',
         'text': text,
     })
