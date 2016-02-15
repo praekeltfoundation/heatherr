@@ -62,7 +62,7 @@ def remove_checking(request, match):
     `/checkin remove #<number>`
 
     Remove a checkin, the #number matches the #number returned by
-    `/checkin list`
+    list
     """
     slackaccount = SlackAccount.objects.get(
         team_id=request.POST['team_id'])
