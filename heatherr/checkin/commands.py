@@ -10,6 +10,12 @@ checkin = dispatcher.command('/checkin')
 
 @checkin.respond(r'^(?P<interval>daily|weekly)$')
 def daily_or_weekly(request, match):
+    """
+    `/checkin daily`
+
+    Sets a daily checkin for you for the current channel at 9am in
+    according to the timezone your Slack account profile.
+    """
     slackaccount = SlackAccount.objects.get(
         team_id=request.POST['team_id'])
     channel_id = request.POST['channel_id']
@@ -27,31 +33,13 @@ def daily_or_weekly(request, match):
         interval, channel_id, channel_name)
 
 
-@checkin.respond(r'^stop (?P<interval>daily|weekly)$')
-def stop_checkin(request, match):
-    slackaccount = SlackAccount.objects.get(
-        team_id=request.POST['team_id'])
-    channel_id = request.POST['channel_id']
-    channel_name = request.POST['channel_name']
-    user_id = request.POST['user_id']
-    (interval,) = match.groups()
-    checkins = Checkin.objects.filter(
-        slackaccount=slackaccount,
-        channel_id=channel_id,
-        user_id=user_id,
-        interval=interval)
-
-    rows_deleted, _ = checkins.delete()
-    if rows_deleted:
-        return ('Cool, I\'ve removed your %s reminders for <#%s|%s>') % (
-            interval, channel_id, channel_name)
-    return ('Sorry, I don\'t have any %s check-ins'
-            ' to remove for you in <#%s|%s>') % (
-                interval, channel_id, channel_name)
-
-
 @checkin.respond(r'^list$')
 def list_checkins(request, match):
+    """
+    `/checkin list`
+
+    List all of the checkins you're subscribed to.
+    """
     slackaccount = SlackAccount.objects.get(
         team_id=request.POST['team_id'])
     user_id = request.POST['user_id']
@@ -70,6 +58,12 @@ def list_checkins(request, match):
 
 @checkin.respond(r'^remove #?(?P<pk>\d+)$')
 def remove_checking(request, match):
+    """
+    `/checkin remove #<number>`
+
+    Remove a checkin, the #number matches the #number returned by
+    `/checkin list`
+    """
     slackaccount = SlackAccount.objects.get(
         team_id=request.POST['team_id'])
     user_id = request.POST['user_id']
