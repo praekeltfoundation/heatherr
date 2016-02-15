@@ -158,7 +158,7 @@ class BotRouter(object):
             return self.registry_direct_message
         return self.registry_ambient
 
-    def handle_pong(self, bot_user_id, message):
+    def handle_pong(self, bot_user_id, bot_user_name, message):
         SlackAccount.objects.filter(bot_user_id=bot_user_id).update(
             bot_status=SlackAccount.ONLINE,
             bot_checkin=timezone.now())
