@@ -66,11 +66,12 @@ class Dispatcher(object):
     @csrf_exempt
     def bots(self, request):
         bot_user_id = request.META['HTTP_X_BOT_USER_ID']
+        bot_user_name = request.META['HTTP_X_BOT_USER_NAME']
         data = json.load(request)
 
         bot_responses = []
         for bot in self.bot_registry.values():
-            responses = bot.handle(bot_user_id, data)
+            responses = bot.handle(bot_user_id, bot_user_name, data)
             if responses:
                 bot_responses.extend(responses)
 
@@ -92,12 +93,13 @@ class BotRouter(object):
 
     def __init__(self, name):
         self.name = name
-        self.registry = defaultdict(list)
+        self.registry_ambient = defaultdict(list)
+        self.registry_direct_message = defaultdict(list)
 
-    def ambient(self, *patterns):
+    def _registry_decorator(self, patterns, registry):
         def decorator(func):
-            self.registry[func].extend(list(patterns))
-            setattr(func, 'patterns', list(patterns))
+            registry[func].extend(patterns)
+            setattr(func, 'patterns', patterns)
 
             @wraps(func)
             def handler(*args, **kwargs):
@@ -105,7 +107,15 @@ class BotRouter(object):
             return handler
         return decorator
 
-    def handle(self, bot_user_id, message):
+    def ambient(self, *patterns):
+        return self._registry_decorator(
+            list(patterns), self.registry_ambient)
+
+    def direct_message(self, *patterns):
+        return self._registry_decorator(
+            list(patterns), self.registry_direct_message)
+
+    def handle(self, bot_user_id, bot_user_name, message):
         logger.debug(repr(message))
         if 'type' not in message:
             if not message['ok']:
@@ -113,7 +123,7 @@ class BotRouter(object):
             return
 
         if message.get('user') == bot_user_id:
-            logger.debug('Got echoed back a bots own message.')
+            logger.debug('Slack echoed back a bots own message.')
             return
 
         message_type = message['type']
@@ -125,19 +135,28 @@ class BotRouter(object):
                 RuntimeWarning)
             return None
 
-        return getattr(self, handler_name)(bot_user_id, message)
+        return getattr(self, handler_name)(bot_user_id, bot_user_name, message)
 
-    def handle_message(self, bot_user_id, message):
-        text = message['text']
+    def handle_message(self, bot_user_id, bot_user_name, message):
+        registry = self.get_registry(bot_user_id, message)
         responses = []
-        for handler, patterns in self.registry.items():
+        for handler, patterns in registry.items():
             for pattern in patterns:
-                match = re.match(pattern, text)
+                p1 = re.sub('@BOTUSERID', '<@%s>' % (bot_user_id,), pattern)
+                p2 = re.sub('BOTUSERNAME', bot_user_name, p1)
+                match = re.match(p2, message['text'])
                 if match:
                     responses.append(
-                        handler(bot_user_id, BotMessage(message), match))
-
+                        handler(bot_user_id,
+                                bot_user_name,
+                                BotMessage(message),
+                                match))
         return responses
+
+    def get_registry(self, bot_user_id, message):
+        if message['channel'].startswith('D'):
+            return self.registry_direct_message
+        return self.registry_ambient
 
     def handle_pong(self, bot_user_id, message):
         SlackAccount.objects.filter(bot_user_id=bot_user_id).update(
