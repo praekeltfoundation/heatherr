@@ -36,10 +36,6 @@ def stop_checkin(request, match):
         channel_id=channel_id,
         user_id=user_id,
         interval=interval)
-    print [c.pk for c in checkins]
-    
-    for c in Checkin.objects.all():
-        print c.pk, c.user_id, c.channel_id, c.interval, c.slackaccount.pk
 
     rows_deleted, _ = checkins.delete()
     if rows_deleted:
