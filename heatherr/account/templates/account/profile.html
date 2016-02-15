@@ -39,7 +39,7 @@
       </td>
       <td>
         <a href="{% url 'accounts:slack-update' pk=account.pk %}">
-          {{account.updated_at|naturaltime}}
+          {{account.created_at|naturaltime}}
         </a>
       </td>
     </tr>
