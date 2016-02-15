@@ -13,15 +13,18 @@ def daily_or_weekly(request, match):
     slackaccount = SlackAccount.objects.get(
         team_id=request.POST['team_id'])
     channel_id = request.POST['channel_id']
+    channel_name = request.POST['channel_name']
     user_id = request.POST['user_id']
     (interval,) = match.groups()
-    Checkin.objects.create(
+    checkin, created = Checkin.objects.get_or_create(
         slackaccount=slackaccount,
         channel_id=channel_id,
         user_id=user_id,
         interval=interval)
-    return 'I\'ll prompt you %s for a <#%s> team check-in' % (
-        interval, channel_id)
+    checkin.channel_name = channel_name
+    checkin.save()
+    return 'I\'ll prompt you %s for a <#%s|%s> team check-in' % (
+        interval, channel_id, channel_name)
 
 
 @checkin.respond(r'^stop (?P<interval>daily|weekly)$')
@@ -29,6 +32,7 @@ def stop_checkin(request, match):
     slackaccount = SlackAccount.objects.get(
         team_id=request.POST['team_id'])
     channel_id = request.POST['channel_id']
+    channel_name = request.POST['channel_name']
     user_id = request.POST['user_id']
     (interval,) = match.groups()
     checkins = Checkin.objects.filter(
@@ -39,7 +43,8 @@ def stop_checkin(request, match):
 
     rows_deleted, _ = checkins.delete()
     if rows_deleted:
-        return ('Cool, I\'ve removed your %s reminders for <#%s>') % (
-            interval, channel_id)
+        return ('Cool, I\'ve removed your %s reminders for <#%s|%s>') % (
+            interval, channel_id, channel_name)
     return ('Sorry, I don\'t have any %s check-ins'
-            ' to remove for you in <#%s>') % (interval, channel_id)
+            ' to remove for you in <#%s|%s>') % (
+                interval, channel_id, channel_name)

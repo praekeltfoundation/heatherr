@@ -27,11 +27,14 @@ def check_checkin(checkin):
         'files.upload',
         channels=user_channel_id,
         initial_comment=(
-            "Hey! Gentle reminder to send your %s update to let your <#%s> "
+            "Hey! Gentle reminder to send your %s update to let your <#%s|%s> "
             "team know what been busy with. Here's a template to help you "
             "get started. Type `/checkin stop %s` if you want me to stop "
             "sending these reminders.") % (
-                checkin.interval, checkin.channel_id, checkin.interval),
+                checkin.interval,
+                checkin.channel_id,
+                checkin.channel_name,
+                checkin.interval),
         content=pkg_resources.resource_string(
             'heatherr.checkin',
             'templates/checkin-%s-template.txt' % (checkin.interval,))

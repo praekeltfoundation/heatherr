@@ -13,6 +13,7 @@ class Checkin(models.Model):
 
     slackaccount = models.ForeignKey('heatherr.SlackAccount')
     channel_id = models.CharField(blank=True, max_length=255)
+    channel_name = models.CharField(blank=True, max_length=255, null=True)
     user_id = models.CharField(blank=True, max_length=255)
     user_channel_id = models.CharField(blank=True, max_length=255, null=True)
     interval = models.CharField(blank=True, max_length=255, choices=[
