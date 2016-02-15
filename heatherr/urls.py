@@ -13,15 +13,16 @@ Including another URLconf
     1. Add an import:  from blog import urls as blog_urls
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
-from django.conf import settings
+
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic.base import RedirectView
 from heatherr.views import dispatcher
+from django.core.urlresolvers import reverse_lazy
 
 
 urlpatterns = [
-    url(r'^$', RedirectView.as_view(url=settings.LOGIN_URL)),
+    url(r'^$', RedirectView.as_view(url=reverse_lazy('accounts:profile'))),
     url(r'^', include('social.apps.django_app.urls', namespace='social')),
     url(r'^commands/', dispatcher.commands, name='commands'),
     url(r'^bots/', dispatcher.bots, name='bots'),
