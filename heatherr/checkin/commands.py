@@ -23,7 +23,7 @@ def daily_or_weekly(request, match):
         interval=interval)
     checkin.channel_name = channel_name
     checkin.save()
-    return 'I\'ll prompt you %s for a #%s team check-in' % (
+    return 'I\'ll prompt you %s for a `%s` team check-in' % (
         interval, channel_name)
 
 
@@ -43,8 +43,8 @@ def stop_checkin(request, match):
 
     rows_deleted, _ = checkins.delete()
     if rows_deleted:
-        return ('Cool, I\'ve removed your %s reminders for #%s') % (
+        return ('Cool, I\'ve removed your %s reminders for `%s`') % (
             interval, channel_name)
     return ('Sorry, I don\'t have any %s check-ins'
-            ' to remove for you in #%s') % (
+            ' to remove for you in `%s`') % (
                 interval, channel_name)
