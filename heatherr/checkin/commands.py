@@ -68,7 +68,7 @@ def list_checkins(request, match):
     return '\n'.join(lines)
 
 
-@checkin.respond(r'^remove (?P<pk>\d+)$')
+@checkin.respond(r'^remove #?(?P<pk>\d+)$')
 def remove_checking(request, match):
     slackaccount = SlackAccount.objects.get(
         team_id=request.POST['team_id'])
