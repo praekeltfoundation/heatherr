@@ -68,4 +68,4 @@ class TasksTest(CheckinTestCase):
                 'heatherr.checkin', 'templates/checkin-daily-template.txt')
             in args)
         self.assertTrue('channels=%s' % (checkin.user_channel_id,) in args)
-        self.assertTrue('/checkin stop daily' in args)
+        self.assertTrue('/checkin remove %s' % (checkin.pk,) in args)

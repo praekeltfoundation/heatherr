@@ -46,8 +46,38 @@ class CheckinTest(CheckinTestCase, CommandTestCase):
              "<#channel_id|channel_name>"))
         self.assertEqual(checkins.count(), 0)
 
+    def test_checkin_list(self):
+        self.mk_checkin(interval=Checkin.WEEKLY,
+                        channel_id='channel-1',
+                        channel_name='channel-name-1')
+        self.mk_checkin(interval=Checkin.DAILY,
+                        channel_id='channel-2',
+                        channel_name='channel-name-2')
+        self.assertCommandResponse(
+            '/checkin list',
+            '\n'.join([
+                'You have the following checkins set:',
+                '1. weekly in <#channel-1|channel-name-1>',
+                '2. daily in <#channel-2|channel-name-2>',
+            ]))
+
+    def test_remove(self):
+        self.mk_checkin(interval=Checkin.WEEKLY,
+                        channel_id='channel-1',
+                        channel_name='channel-name-1')
+        self.mk_checkin(interval=Checkin.DAILY,
+                        channel_id='channel-2',
+                        channel_name='channel-name-2')
+        checkins = Checkin.objects.filter(slackaccount=self.slackaccount)
+        self.assertEqual(checkins.count(), 2)
+        self.assertCommandResponse(
+            '/checkin remove 1',
+            'Daily for <#%s|%s> was removed.' % (
+                'channel-1', 'channel-name-1'))
+        checkins = Checkin.objects.filter(slackaccount=self.slackaccount)
+        self.assertEqual(checkins.count(), 1)
+
     def test_checkin_stop_non_existent(self):
         self.assertCommandResponse(
-            '/checkin stop weekly',
-            ("Sorry, I don't have any weekly check-ins to remove for "
-             "you in <#channel_id|channel_name>"))
+            '/checkin remove 1',
+            "Sorry, that reminder doesn't exist")

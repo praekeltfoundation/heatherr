@@ -48,3 +48,34 @@ def stop_checkin(request, match):
     return ('Sorry, I don\'t have any %s check-ins'
             ' to remove for you in <#%s|%s>') % (
                 interval, channel_id, channel_name)
+
+
+@checkin.respond(r'^list$')
+def list_checkins(request, match):
+    slackaccount = SlackAccount.objects.get(
+        team_id=request.POST['team_id'])
+    user_id = request.POST['user_id']
+    checkins = Checkin.objects.filter(
+        slackaccount=slackaccount, user_id=user_id)
+    lines = ['You have the following checkins set:']
+    lines.extend(['%s. %s in <#%s|%s>' % (
+                  checkin.pk, checkin.interval,
+                  checkin.channel_id, checkin.channel_name)
+                  for checkin in checkins])
+    return '\n'.join(lines)
+
+
+@checkin.respond(r'^remove (?P<pk>\d+)$')
+def remove_checking(request, match):
+    slackaccount = SlackAccount.objects.get(
+        team_id=request.POST['team_id'])
+    user_id = request.POST['user_id']
+    (pk,) = match.groups()
+    try:
+        checkin = Checkin.objects.get(
+            slackaccount=slackaccount, user_id=user_id, pk=pk)
+        checkin.delete()
+        return 'Daily for <#%s|%s> was removed.' % (
+            checkin.channel_id, checkin.channel_name)
+    except Checkin.DoesNotExist:
+        return 'Sorry, that reminder doesn\'t exist'

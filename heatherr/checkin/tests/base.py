@@ -9,11 +9,13 @@ class CheckinTestCase(HeatherrTestCase):
                    last_checkin=None,
                    user_id='user_id',
                    user_channel_id='user_channel_id',
-                   channel_id='channel_id'):
+                   channel_id='channel_id',
+                   channel_name='channel_name'):
         slackaccount = slackaccount or self.get_slack_account()
         return Checkin.objects.create(
             slackaccount=slackaccount,
             channel_id=channel_id,
+            channel_name=channel_name,
             user_id=user_id,
             user_channel_id=user_channel_id,
             interval=interval,
