@@ -69,6 +69,10 @@ class Dispatcher(object):
         bot_user_name = request.META['HTTP_X_BOT_USER_NAME']
         data = json.load(request)
 
+        if not data:
+            logger.info('Received empty data from Heatherrd: %r' % (data,))
+            return JsonResponse([], safe=False)
+
         bot_responses = []
         for bot in self.bot_registry.values():
             responses = bot.handle(bot_user_id, bot_user_name, data)
