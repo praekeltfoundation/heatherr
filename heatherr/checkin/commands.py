@@ -57,6 +57,9 @@ def list_checkins(request, match):
     user_id = request.POST['user_id']
     checkins = Checkin.objects.filter(
         slackaccount=slackaccount, user_id=user_id)
+    if not checkins.count():
+        return 'You have no checkins set.'
+
     lines = ['You have the following checkins set:']
     lines.extend(['%s. %s in <#%s|%s>' % (
                   checkin.pk, checkin.interval,
