@@ -189,6 +189,11 @@ CELERYBEAT_SCHEDULE = {
         'task': 'heatherr.tasks.ensure_bots_connected',
         'schedule': crontab(),  # every minute
     },
+    'check-all-checkins': {
+        'task': 'heatherr.checkin.tasks.check_all_checkins',
+        'schedule': crontab(minute='0', hour='*',  # every hour
+                            day_of_week='mon,tue,web,thu,fri'),  # not weekend
+    }
 }
 
 try:  # pragma: no cover
