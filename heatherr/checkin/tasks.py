@@ -1,3 +1,5 @@
+import pkg_resources
+
 from heatherr import celery_app
 from heatherr.models import SlackAccount
 
@@ -19,4 +21,18 @@ def check_slackaccount_checkins(slackaccount):
 
 
 def check_checkin(checkin):
-    pass
+    user_channel_id = checkin.get_user_channel_id()
+    slackaccount = checkin.slackaccount
+    return slackaccount.api_call(
+        'files.upload',
+        channels=user_channel_id,
+        initial_comment=(
+            "Hey! Gentle reminder to send your %s update to let your <#%s> "
+            "team know what been busy with. Here's a template to help you "
+            "get started. Type `/checkin stop %s` if you want me to stop "
+            "sending these reminders.") % (
+                checkin.interval, checkin.channel_id, checkin.interval),
+        content=pkg_resources.resource_string(
+            'heatherr.checkin',
+            'templates/checkin-%s-template.txt' % (checkin.interval,))
+    )
