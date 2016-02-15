@@ -33,7 +33,7 @@ class CheckinModelTest(CheckinTestCase):
 
     @responses.activate
     def test_get_user_channel_id(self):
-        checkin = self.mk_checkin()
+        checkin = self.mk_checkin(user_channel_id=None)
         self.assertEqual(checkin.user_channel_id, None)
         self.assertEqual(checkin.get_user_channel_id(), 'channel-id')
         self.assertEqual(

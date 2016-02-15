@@ -1,3 +1,8 @@
+import json
+import pkg_resources
+
+from urllib import unquote_plus, unquote
+
 from heatherr.checkin.models import Checkin
 from heatherr.checkin.tests.base import CheckinTestCase
 from heatherr.checkin import tasks
@@ -38,3 +43,29 @@ class TasksTest(CheckinTestCase):
             with freeze_time('2016-02-03 08:00:00'):
                 tasks.check_all_checkins()
             patched_checkin.assert_called_with(checkin1)
+
+    @responses.activate
+    def test_checkin(self):
+
+        responses.add(
+            responses.POST, 'https://slack.com/api/files.upload',
+            content_type='application/json',
+            body=json.dumps({}))
+
+        slackaccount = self.get_slack_account()
+        checkin = self.mk_checkin(
+            slackaccount=slackaccount, user_id='user-1',
+            interval=Checkin.DAILY,
+            user_channel_id='the-user-channel-id')
+        tasks.check_checkin(checkin)
+        [call] = responses.calls
+        self.assertEqual(
+            call.request.url, 'https://slack.com/api/files.upload')
+
+        args = unquote(unquote_plus(call.request.body))
+        self.assertTrue(
+            pkg_resources.resource_string(
+                'heatherr.checkin', 'templates/checkin-daily-template.txt')
+            in args)
+        self.assertTrue('channels=%s' % (checkin.user_channel_id,) in args)
+        self.assertTrue('/checkin stop daily' in args)
