@@ -29,7 +29,8 @@ def daily_or_weekly(request, match):
         interval=interval)
     checkin.channel_name = channel_name
     checkin.save()
-    return 'I\'ll prompt you %s for a <#%s|%s> team check-in' % (
+    return ('I\'ll prompt you %s for a <#%s|%s> team check-in '
+            'at 9am your time.') % (
         interval, channel_id, channel_name)
 
 

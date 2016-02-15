@@ -15,7 +15,7 @@ class CheckinTest(CheckinTestCase, CommandTestCase):
         self.assertEqual(response.json(), {
             'text': (
                 'I\'ll prompt you daily for a <#channel_id|channel_name>'
-                ' team check-in'),
+                ' team check-in at 9am your time.'),
         })
         [checkin] = checkins
         self.assertEqual(checkin.interval, Checkin.DAILY)
@@ -28,7 +28,7 @@ class CheckinTest(CheckinTestCase, CommandTestCase):
         self.assertEqual(response.json(), {
             'text': (
                 'I\'ll prompt you weekly for a <#channel_id|channel_name> '
-                'team check-in'),
+                'team check-in at 9am your time.'),
         })
         [checkin] = Checkin.objects.filter(slackaccount=self.slackaccount)
         self.assertEqual(checkin.interval, Checkin.WEEKLY)
