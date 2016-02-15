@@ -11,7 +11,7 @@ checkin = dispatcher.command('/checkin')
 @checkin.respond(r'^(?P<interval>daily|weekly)$')
 def daily_or_weekly(request, match):
     """
-    `/checkin daily`
+    `/checkin daily` or `/checkin weekly`
 
     Sets a daily checkin for you for the current channel at 9am in
     according to the timezone your Slack account profile.
