@@ -39,7 +39,7 @@ def check_checkin(checkin):
                 checkin.channel_name,
                 checkin.pk),
         filetype='post',
-        title='%s check-in',
+        title='%s check-in' % (checkin.get_interval_display(),),
         content=pkg_resources.resource_string(
             'heatherr.checkin',
             'templates/checkin-%s-template.txt' % (checkin.interval,))
