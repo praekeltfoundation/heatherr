@@ -1,5 +1,7 @@
 import pkg_resources
 
+from django.utils import timezone
+
 from heatherr import celery_app
 from heatherr.models import SlackAccount
 
@@ -23,7 +25,7 @@ def check_slackaccount_checkins(slackaccount):
 def check_checkin(checkin):
     user_channel_id = checkin.get_user_channel_id()
     slackaccount = checkin.slackaccount
-    return slackaccount.api_call(
+    response = slackaccount.api_call(
         'files.upload',
         channels=user_channel_id,
         initial_comment=(
@@ -42,3 +44,5 @@ def check_checkin(checkin):
             'heatherr.checkin',
             'templates/checkin-%s-template.txt' % (checkin.interval,))
     )
+    checkin.last_checkin = timezone.now()
+    return response
