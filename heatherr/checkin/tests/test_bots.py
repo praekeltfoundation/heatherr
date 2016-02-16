@@ -12,7 +12,8 @@ class TestBots(TestCase):
         pattern = thankyou.patterns[0]
         self.assertEqual(
             thankyou(
-                'bot-user-id', BotMessage({'text': 'hi there!'}),
+                'bot-user-id', 'bot-user-name',
+                BotMessage({'text': 'hi there!'}),
                 re.match(pattern, 'thanks user!')), {
                 'text': 'you thanked: user',
                 'type': 'message',
