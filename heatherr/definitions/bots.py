@@ -43,3 +43,16 @@ def get_definition(bot_user_id, bot_user_name, message, match):
             ])
         }])
     )
+
+
+@definitions.ambient(r'@BOTUSERID: remove (?P<pk>\d+) for (?P<acronym>[A-Z]+)$')  # noqa
+def remove_definition(bot_user_id, bot_user_name, message, match):
+    slackaccount = SlackAccount.objects.get(bot_user_id=bot_user_id)
+    data = match.groupdict()
+    deleted_rows, _ = Acronym.objects.filter(
+        slackaccount=slackaccount,
+        pk=data['pk'],
+        acronym=data['acronym']).delete()
+    if deleted_rows:
+        return message.reply('Deleted %(pk)s for %(acronym)s.' % data)
+    return message.reply('Sorry, don\'t know what to delete.')

@@ -52,3 +52,28 @@ class TestBots(HeatherrTestCase):
             call.request.url, 'https://slack.com/api/chat.postMessage')
         self.assertTrue(
             'something+about+FOO' in call.request.body)
+
+    def test_remove_definitions(self):
+        acronym = Acronym.objects.create(
+            slackaccount=self.slackaccount,
+            acronym='FOO',
+            definition='something about FOO')
+        [resp] = definitions.handle(
+            'bot-user-id', 'bot-user-name', BotMessage({
+                'text': '<@bot-user-id>: remove %s for %s' % (
+                    acronym.pk, acronym.acronym),
+                'type': 'message',
+                'channel': 'C1000',
+                'timestamp': 1,
+            }))
+        self.assertEqual(resp['text'], 'Deleted 1 for FOO.')
+
+    def test_remove_non_existent_definitions(self):
+        [resp] = definitions.handle(
+            'bot-user-id', 'bot-user-name', BotMessage({
+                'text': '<@bot-user-id>: remove 1 for FOO',
+                'type': 'message',
+                'channel': 'C1000',
+                'timestamp': 1,
+            }))
+        self.assertEqual(resp['text'], 'Sorry, don\'t know what to delete.')
