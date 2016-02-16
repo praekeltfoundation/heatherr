@@ -41,7 +41,7 @@ def disconnect_bot(slackaccount_pk):
 
 
 @celery_app.task(ignore_result=True)
-def ensure_bots_connected(minutes=3):
+def ensure_bots_connected(minutes=1):
     enabled = SlackAccount.objects.filter(bot_enabled=True)
     slackaccounts = enabled.filter(
         Q(bot_checkin__isnull=True) |
