@@ -40,8 +40,8 @@ def get_definition(bot_user_id, bot_user_name, message, match):
         as_user=True,
         text='Definitions for *%s*' % data['acronym'],
         attachments=json.dumps([{
-            'pretext': ('Type `<@%s> remove <number> for %s` '
-                        'to remove defintions') % (
+            'pretext': ('Type `<@%s>: remove <number> for %s` '
+                        'to remove definitions') % (
                             bot_user_id, data['acronym'],),
             'text': '\n'.join([
                 '%s (%s)' % (acronym.definition, acronym.pk)
@@ -60,5 +60,10 @@ def remove_definition(bot_user_id, bot_user_name, message, match):
         pk=data['pk'],
         acronym=data['acronym']).delete()
     if deleted_rows:
+        slackaccount.api_call(
+            'reactions.add',
+            name='thumbsup',
+            channel=message['channel'],
+            timestamp=str(message['ts']),)
         return message.reply('Deleted %(pk)s for %(acronym)s.' % data)
     return message.reply('Sorry, don\'t know what to delete.')
