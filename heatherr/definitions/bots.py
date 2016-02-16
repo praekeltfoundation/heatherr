@@ -27,7 +27,7 @@ def get_definition(bot_user_id, bot_user_name, message, match):
     slackaccount = SlackAccount.objects.get(bot_user_id=bot_user_id)
     data = match.groupdict()
     acronyms = Acronym.objects.filter(slackaccount=slackaccount,
-                                      acronym=data['acronym'])
+                                      acronym__icontains=data['acronym'])
     if not acronyms.exists():
         return message.reply('I don\'t have any definitions for %s.' % (
             data['acronym'],))
