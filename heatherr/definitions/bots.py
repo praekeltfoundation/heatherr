@@ -19,10 +19,12 @@ def add_defintion(bot_user_id, bot_user_name, message, match):
         'reactions.add',
         name='thumbsup',
         channel=message['channel'],
-        timestamp=message['timestamp'],)
+        timestamp=str(message['ts']),)
 
 
-@definitions.ambient(r'@BOTUSERID: (?P<acronym>[A-Z]+)\?')
+@definitions.ambient(r'@BOTUSERID: (?P<acronym>[A-Z]+)\?',
+                     r'@BOTUSERID: what is (?P<acronym>[A-Z]+)\??',
+                     r'@BOTUSERID: what does (?P<acronym>[A-Z]+) mean\??')
 def get_definition(bot_user_id, bot_user_name, message, match):
     slackaccount = SlackAccount.objects.get(bot_user_id=bot_user_id)
     data = match.groupdict()

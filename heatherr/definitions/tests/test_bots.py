@@ -24,7 +24,7 @@ class TestBots(HeatherrTestCase):
             'text': '<@bot-user-id>: FOO is something about this',
             'type': 'message',
             'channel': 'C1000',
-            'timestamp': 1,
+            'ts': 1,
         }))
         [acronym] = Acronym.objects.all()
         self.assertEqual(acronym.slackaccount, self.slackaccount)
@@ -45,7 +45,7 @@ class TestBots(HeatherrTestCase):
             'text': '<@bot-user-id>: FOO?',
             'type': 'message',
             'channel': 'C1000',
-            'timestamp': 1,
+            'ts': 1,
         }))
         [call] = responses.calls
         self.assertEqual(
@@ -64,7 +64,7 @@ class TestBots(HeatherrTestCase):
                     acronym.pk, acronym.acronym),
                 'type': 'message',
                 'channel': 'C1000',
-                'timestamp': 1,
+                'ts': 1,
             }))
         self.assertEqual(resp['text'], 'Deleted 1 for FOO.')
 
@@ -74,6 +74,6 @@ class TestBots(HeatherrTestCase):
                 'text': '<@bot-user-id>: remove 1 for FOO',
                 'type': 'message',
                 'channel': 'C1000',
-                'timestamp': 1,
+                'ts': 1,
             }))
         self.assertEqual(resp['text'], 'Sorry, don\'t know what to delete.')
