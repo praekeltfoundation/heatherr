@@ -37,7 +37,7 @@ def get_definition(bot_user_id, bot_user_name, message, match):
     slackaccount.api_call(
         'chat.postMessage',
         channel=message['channel'],
-        text='Definitions for %s' % data['acronym'],
+        text='Definitions for *%s*' % data['acronym'],
         pretext='Type `<@%s> remove <number> for %s` to remove defintions' % (
             bot_user_id, data['acronym'],),
         attachments=json.dumps([{
