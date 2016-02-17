@@ -52,6 +52,8 @@ class Dispatcher(object):
 
     def bot(self, name, auto_document=True):
         r = BotRouter(name)
+        if auto_document:
+            r.auto_document()
         self.bot_registry.setdefault(name, r)
         return self.bot_registry[name]
 
@@ -104,7 +106,7 @@ class BotRouter(object):
     def _registry_decorator(self, patterns, registry):
         def decorator(func):
             registry[func].extend(patterns)
-            setattr(func, 'patterns', patterns)
+            # setattr(func, 'patterns', patterns)
 
             @wraps(func)
             def handler(*args, **kwargs):
@@ -119,6 +121,28 @@ class BotRouter(object):
     def direct_message(self, *patterns):
         return self._registry_decorator(
             list(patterns), self.registry_direct_message)
+
+    def auto_document(self):
+        self.ambient(r'^@BOTUSERID: help$')(self.handle_ambient_help)
+        # self.direct_message(r'^help$', r'^@BOTUSERID: help$')(
+        #     self.handle_direct_message_help)
+
+    def handle_ambient_help(
+            self, bot_user_id, bot_user_name, message, match):
+        """
+        Ask a bot for help:
+
+            @BOTUSERID: help
+
+        Prints out the help for the bot.
+        """
+        docstrings = '\n\n'.join(
+            [inspect.cleandoc(func.__doc__) for func in self.registry_ambient])
+
+        help_str = 'Help for *%s*\n\n%s' % (self.name, docstrings)
+        return help_str\
+            .replace('@BOTUSERID', '<@%s>' % (bot_user_id,)) \
+            .replace('BOTUSERNAME', bot_user_name)
 
     def handle(self, bot_user_id, bot_user_name, message):
         logger.debug(repr(message))

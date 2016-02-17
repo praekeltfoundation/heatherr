@@ -168,3 +168,20 @@ class TestBotRouter(CommandTestCase):
             'channel': 'channel-id',
             'id': None,
         })
+
+    def test_autodoc(self):
+        bot = dispatcher.bot('bot!', auto_document=True)
+
+        @bot.ambient('baz')
+        def baz(bot_user_id, bot_user_name, message, match):
+            """This thing returns baz"""
+            return 'baz'
+
+        [help_str] = bot.handle('bot-user-id', 'bot-user-name', {
+            'text': '<@bot-user-id>: help',
+            'type': 'message',
+            'channel': 'C1000',
+            'ts': 1
+        })
+        self.assertTrue('This thing returns baz' in help_str)
+        self.assertTrue('<@bot-user-id>: help' in help_str)

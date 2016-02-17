@@ -10,13 +10,13 @@ definitions = dispatcher.bot('Definitions')
 
 @definitions.ambient(
     r'@BOTUSERID: (?P<acronym>[A-Za-z]+) is (?P<definition>.+)$')
-def add_defintion(bot_user_id, bot_user_name, message, match):
+def add_definition(bot_user_id, bot_user_name, message, match):
     """
     Teach the bot a definition:
 
-        @BOTUSERNAME: UNICEF is The United Nations Children's Emergency Fund
+        @BOTUSERID: UNICEF is The United Nations Children's Emergency Fund
 
-    @BOTUSERNAME will respond by adding a :thumbsup: reaction to your message
+    @BOTUSERID will respond by adding a :thumbsup: reaction to your message
     once the definition has been added.
     """
     slackaccount = SlackAccount.objects.get(bot_user_id=bot_user_id)
@@ -38,11 +38,11 @@ def get_definition(bot_user_id, bot_user_name, message, match):
     """
     Ask the bot for a definition
 
-        @BOTUSERNAME: what does UNICEF mean?
-        @BOTUSERNAME: what is UNICEF?
-        @BOTUSERNAME: UNICEF?
+        @BOTUSERID: what does UNICEF mean?
+        @BOTUSERID: what is UNICEF?
+        @BOTUSERID: UNICEF?
 
-    @BOTUSERNAME will respond with the definitions it knows about.
+    @BOTUSERID will respond with the definitions it knows about.
     Each definition has a unique number which one can use should it
     need to be removed.
     """
@@ -74,11 +74,11 @@ def get_definition(bot_user_id, bot_user_name, message, match):
 @definitions.ambient(r'@BOTUSERID: remove (?P<pk>\d+) for (?P<acronym>[A-Za-z]+)$')  # noqa
 def remove_definition(bot_user_id, bot_user_name, message, match):
     """
-    Remove a defintion:
+    Remove a definition:
 
-        @BOTUSERNAME: remove 1 for UNICEF
+        @BOTUSERID: remove 1 for UNICEF
 
-    @BOTUSERNAME will respond by adding a :thumbsup: reaction to your message
+    @BOTUSERID will respond by adding a :thumbsup: reaction to your message
     once it's been removed.
     """
     slackaccount = SlackAccount.objects.get(bot_user_id=bot_user_id)
@@ -87,11 +87,10 @@ def remove_definition(bot_user_id, bot_user_name, message, match):
         slackaccount=slackaccount,
         pk=data['pk'],
         acronym=data['acronym']).delete()
-    if deleted_rows:
-        slackaccount.api_call(
-            'reactions.add',
-            name='thumbsup',
-            channel=message['channel'],
-            timestamp=str(message['ts']),)
-        return message.reply('Deleted %(pk)s for %(acronym)s.' % data)
-    return message.reply('Sorry, don\'t know what to delete.')
+    if not deleted_rows:
+        return message.reply('Sorry, don\'t know what to delete.')
+    slackaccount.api_call(
+        'reactions.add',
+        name='thumbsup',
+        channel=message['channel'],
+        timestamp=str(message['ts']),)
