@@ -51,7 +51,8 @@ class Dispatcher(object):
         return r
 
     def bot(self, name, auto_document=True):
-        self.bot_registry.setdefault(name, BotRouter(name))
+        r = BotRouter(name)
+        self.bot_registry.setdefault(name, r)
         return self.bot_registry[name]
 
     @csrf_exempt
