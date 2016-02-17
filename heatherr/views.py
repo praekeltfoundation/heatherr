@@ -130,7 +130,7 @@ class BotRouter(object):
     def handle_ambient_help(
             self, bot_user_id, bot_user_name, message, match):
         """
-        Ask a bot for help:
+        *Ask a bot for help*:
 
             @BOTUSERID: help
 
@@ -139,7 +139,7 @@ class BotRouter(object):
         docstrings = '\n\n'.join(
             [inspect.cleandoc(func.__doc__) for func in self.registry_ambient])
 
-        help_str = 'Help for *%s*\n\n%s' % (self.name, docstrings)
+        help_str = 'Help for _%s_\n\n%s' % (self.name, docstrings)
         reply = help_str\
             .replace('@BOTUSERID', '<@%s>' % (bot_user_id,)) \
             .replace('BOTUSERNAME', bot_user_name)
