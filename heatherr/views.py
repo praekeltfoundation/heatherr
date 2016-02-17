@@ -140,9 +140,10 @@ class BotRouter(object):
             [inspect.cleandoc(func.__doc__) for func in self.registry_ambient])
 
         help_str = 'Help for *%s*\n\n%s' % (self.name, docstrings)
-        return help_str\
+        reply = help_str\
             .replace('@BOTUSERID', '<@%s>' % (bot_user_id,)) \
             .replace('BOTUSERNAME', bot_user_name)
+        return message.reply(reply)
 
     def handle(self, bot_user_id, bot_user_name, message):
         logger.debug(repr(message))

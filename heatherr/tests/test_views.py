@@ -183,5 +183,5 @@ class TestBotRouter(CommandTestCase):
             'channel': 'C1000',
             'ts': 1
         })
-        self.assertTrue('This thing returns baz' in help_str)
-        self.assertTrue('<@bot-user-id>: help' in help_str)
+        self.assertTrue('This thing returns baz' in help_str['text'])
+        self.assertTrue('<@bot-user-id>: help' in help_str['text'])
