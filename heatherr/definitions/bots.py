@@ -71,7 +71,7 @@ def get_definition(bot_user_id, bot_user_name, message, match):
     )
 
 
-@definitions.ambient(r'@BOTUSERID: remove (?P<pk>\d+) for (?P<acronym>[A-Z]+)$')  # noqa
+@definitions.ambient(r'@BOTUSERID: remove (?P<pk>\d+) for (?P<acronym>[A-Za-z]+)$')  # noqa
 def remove_definition(bot_user_id, bot_user_name, message, match):
     """
     Remove a defintion:
