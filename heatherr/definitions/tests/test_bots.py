@@ -31,7 +31,6 @@ class TestBots(HeatherrTestCase):
         self.assertEqual(acronym.acronym, 'FOO')
         self.assertEqual(acronym.definition, 'something about this')
 
-    @responses.activate
     def test_get_definition(self):
 
         self.mock_api_call('chat.postMessage', json.dumps({}))
@@ -41,19 +40,20 @@ class TestBots(HeatherrTestCase):
             acronym='FOO',
             definition='something about FOO')
 
-        definitions.handle('bot-user-id', 'bot-user-name', BotMessage({
-            'text': '<@bot-user-id>: FOO?',
-            'type': 'message',
-            'channel': 'C1000',
-            'ts': 1,
-        }))
-        [call] = responses.calls
-        self.assertEqual(
-            call.request.url, 'https://slack.com/api/chat.postMessage')
-        self.assertTrue(
-            'something+about+FOO' in call.request.body)
+        [resp] = definitions.handle(
+            'bot-user-id', 'bot-user-name', BotMessage({
+                'text': '<@bot-user-id>: FOO?',
+                'type': 'message',
+                'channel': 'C1000',
+                'ts': 1,
+            }))
+        self.assertEqual(resp['text'], 'something about FOO (1)')
 
+    @responses.activate
     def test_remove_definitions(self):
+
+        self.mock_api_call('reactions.add', json.dumps({}))
+
         acronym = Acronym.objects.create(
             slackaccount=self.slackaccount,
             acronym='FOO',
@@ -66,7 +66,10 @@ class TestBots(HeatherrTestCase):
                 'channel': 'C1000',
                 'ts': 1,
             }))
-        self.assertEqual(resp['text'], 'Deleted 1 for FOO.')
+        call = responses.calls[0]
+        self.assertEqual(
+            call.request.url, 'https://slack.com/api/reactions.add')
+        self.assertTrue('thumbsup' in call.request.body)
 
     def test_remove_non_existent_definitions(self):
         [resp] = definitions.handle(

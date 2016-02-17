@@ -1,5 +1,3 @@
-import json
-
 from heatherr.views import dispatcher
 from heatherr.models import SlackAccount
 from heatherr.definitions.models import Acronym
@@ -53,22 +51,9 @@ def get_definition(bot_user_id, bot_user_name, message, match):
     if not acronyms.exists():
         return message.reply('I don\'t have any definitions for %s.' % (
             data['acronym'],))
-
-    slackaccount.api_call(
-        'chat.postMessage',
-        channel=message['channel'],
-        as_user=True,
-        text='Definitions for *%s*' % data['acronym'],
-        attachments=json.dumps([{
-            'pretext': ('Type `<@%s>: remove <number> for %s` '
-                        'to remove definitions') % (
-                            bot_user_id, data['acronym'],),
-            'text': '\n'.join([
-                '%s (%s)' % (acronym.definition, acronym.pk)
-                for acronym in acronyms
-            ])
-        }])
-    )
+    return message.reply('\n'.join([
+        '%s (%s)' % (acronym.definition, acronym.pk)
+        for acronym in acronyms]))
 
 
 @definitions.ambient(r'@BOTUSERID: remove (?P<pk>\d+) for (?P<acronym>[A-Za-z]+)$')  # noqa
