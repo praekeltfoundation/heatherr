@@ -11,7 +11,7 @@ import inspect
 import logging
 
 from django.conf import settings
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 
@@ -218,11 +218,13 @@ class CommandRouter(object):
                 match = re.match(pattern, text)
                 if match:
                     response = handler(request, match)
-                    if isinstance(response, basestring):
-                        return JsonResponse({
-                            'text': response
-                        })
-                    return response
+                    if response:
+                        if isinstance(response, basestring):
+                            return JsonResponse({
+                                'text': response
+                            })
+                        return response
+                    return HttpResponse()
         return self.noop(text)
 
     def auto_document(self):
