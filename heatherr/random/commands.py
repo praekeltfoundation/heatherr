@@ -7,7 +7,7 @@ from heatherr.models import SlackAccount
 slap = dispatcher.command('/slap')
 
 
-@slap.respond(r'^@?(?P<target>[A-Za-z\-\.0-9]+)$')
+@slap.respond(r'^@(?P<target>[A-Za-z\-\.0-9]+)$')
 def slap(request, match):
     """
     `/slap @userid`
