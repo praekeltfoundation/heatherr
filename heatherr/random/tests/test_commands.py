@@ -1,5 +1,6 @@
 from urllib import unquote_plus, unquote
 
+from django.test import override_settings
 from heatherr.tests.base import CommandTestCase
 
 import responses
@@ -29,8 +30,10 @@ class RandomTest(CommandTestCase):
         self.mock_api_call('reactions.add', data={
             'ok': True,
         })
-        self.send_command(
-            '/poll Should we jump off a bridge? Yes, No or Maybe?')
+        with override_settings(CELERY_ALWAYS_EAGER=True):
+            self.send_command(
+                '/poll Should we jump off a bridge? Yes, No or Maybe?')
+
         [post, reaction1, reaction2, reaction3] = responses.calls
         self.assertTrue('bridge' in post.request.body)
         self.assertTrue('Yes' in post.request.body)
