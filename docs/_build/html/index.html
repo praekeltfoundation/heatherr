@@ -38,19 +38,140 @@
             
   <div class="section" id="welcome-to-heatherr-s-documentation">
 <h1>Welcome to Heatherr&#8217;s documentation!<a class="headerlink" href="#welcome-to-heatherr-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>Contents:</p>
-<div class="toctree-wrapper compound">
-<ul class="simple">
-</ul>
+<div class="section" id="module-heatherr.timezone.commands">
+<span id="timezone"></span><h2>Timezone<a class="headerlink" href="#module-heatherr.timezone.commands" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="heatherr.timezone.commands.for_">
+<code class="descclassname">heatherr.timezone.commands.</code><code class="descname">for_</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#heatherr.timezone.commands.for_" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>for &lt;friend&#8217;s name&gt;</cite></p>
+<p>Print the local timezone and time for a friend on Slack.</p>
+</dd></dl>
+
 </div>
+<div class="section" id="module-heatherr.checkin.commands">
+<span id="daily-or-weekly-team-check-ins"></span><h2>Daily or Weekly team check-ins<a class="headerlink" href="#module-heatherr.checkin.commands" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="heatherr.checkin.commands.daily_or_weekly">
+<code class="descclassname">heatherr.checkin.commands.</code><code class="descname">daily_or_weekly</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#heatherr.checkin.commands.daily_or_weekly" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>/checkin daily</cite> or <cite>/checkin weekly</cite></p>
+<p>Sets a daily checkin for you for the current channel at 9am in
+according to the timezone your Slack account profile.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="heatherr.checkin.commands.list_checkins">
+<code class="descclassname">heatherr.checkin.commands.</code><code class="descname">list_checkins</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#heatherr.checkin.commands.list_checkins" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>/checkin list</cite></p>
+<p>List all of the checkins you&#8217;re subscribed to.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="heatherr.checkin.commands.remove_checking">
+<code class="descclassname">heatherr.checkin.commands.</code><code class="descname">remove_checking</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#heatherr.checkin.commands.remove_checking" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>/checkin remove #&lt;number&gt;</cite></p>
+<p>Remove a checkin, the #number matches the #number returned by
+list</p>
+</dd></dl>
+
 </div>
-<div class="section" id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span>Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span>Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span>Search Page</span></a></li>
-</ul>
+<div class="section" id="module-heatherr.definitions.bots">
+<span id="definitions"></span><h2>Definitions<a class="headerlink" href="#module-heatherr.definitions.bots" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="heatherr.definitions.bots.add_definition">
+<code class="descclassname">heatherr.definitions.bots.</code><code class="descname">add_definition</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#heatherr.definitions.bots.add_definition" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>Teach the bot a definition</em>:</p>
+<blockquote>
+<div>&#64;BOTUSERID: UNICEF is The United Nations Children&#8217;s Emergency Fund</div></blockquote>
+<p>&#64;BOTUSERID will respond by adding a :thumbsup: reaction to your message
+once the definition has been added.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="heatherr.definitions.bots.get_definition">
+<code class="descclassname">heatherr.definitions.bots.</code><code class="descname">get_definition</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#heatherr.definitions.bots.get_definition" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>Ask the bot for a definition</em>:</p>
+<blockquote>
+<div>&#64;BOTUSERID: what does UNICEF mean?
+&#64;BOTUSERID: what is UNICEF?
+&#64;BOTUSERID: UNICEF?</div></blockquote>
+<p>&#64;BOTUSERID will respond with the definitions it knows about.
+Each definition has a unique number which one can use should it
+need to be removed.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="heatherr.definitions.bots.remove_definition">
+<code class="descclassname">heatherr.definitions.bots.</code><code class="descname">remove_definition</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#heatherr.definitions.bots.remove_definition" title="Permalink to this definition">¶</a></dt>
+<dd><p><em>Remove a definition</em>:</p>
+<blockquote>
+<div>&#64;BOTUSERID: remove 1 for UNICEF</div></blockquote>
+<p>&#64;BOTUSERID will respond by adding a :thumbsup: reaction to your message
+once it&#8217;s been removed.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-heatherr.groups.commands">
+<span id="group-announcements"></span><h2>Group Announcements<a class="headerlink" href="#module-heatherr.groups.commands" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="heatherr.groups.commands.announce">
+<code class="descclassname">heatherr.groups.commands.</code><code class="descname">announce</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#heatherr.groups.commands.announce" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>announce &lt;group-name&gt; &lt;your message&gt;</cite></p>
+<p>Broadcast a message to all the members in a group</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="heatherr.groups.commands.create">
+<code class="descclassname">heatherr.groups.commands.</code><code class="descname">create</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#heatherr.groups.commands.create" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>create &lt;new-group-name&gt;</cite></p>
+<p>Create a new group.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="heatherr.groups.commands.join">
+<code class="descclassname">heatherr.groups.commands.</code><code class="descname">join</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#heatherr.groups.commands.join" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>join &lt;group-name&gt;</cite></p>
+<p>Join a group.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="heatherr.groups.commands.leave">
+<code class="descclassname">heatherr.groups.commands.</code><code class="descname">leave</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#heatherr.groups.commands.leave" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>leave &lt;group-name&gt;</cite></p>
+<p>Leave a group</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="heatherr.groups.commands.list">
+<code class="descclassname">heatherr.groups.commands.</code><code class="descname">list</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#heatherr.groups.commands.list" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>list</cite></p>
+<p>List the known groups.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="heatherr.groups.commands.members">
+<code class="descclassname">heatherr.groups.commands.</code><code class="descname">members</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#heatherr.groups.commands.members" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>members &lt;group-name&gt;</cite></p>
+<p>List the members in a group.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-heatherr.random.commands">
+<span id="random-things"></span><h2>Random things<a class="headerlink" href="#module-heatherr.random.commands" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="heatherr.random.commands.poll">
+<code class="descclassname">heatherr.random.commands.</code><code class="descname">poll</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#heatherr.random.commands.poll" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>/poll Should we jump off a bridge? Yes, No, Maybe?</cite></p>
+<p>Create a poll</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="heatherr.random.commands.slap">
+<code class="descclassname">heatherr.random.commands.</code><code class="descname">slap</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#heatherr.random.commands.slap" title="Permalink to this definition">¶</a></dt>
+<dd><p><cite>/slap &#64;userid</cite></p>
+<p>Slaps the &#64;userid</p>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -61,8 +182,14 @@
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Welcome to Heatherr&#8217;s documentation!</a></li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<li><a class="reference internal" href="#">Welcome to Heatherr&#8217;s documentation!</a><ul>
+<li><a class="reference internal" href="#module-heatherr.timezone.commands">Timezone</a></li>
+<li><a class="reference internal" href="#module-heatherr.checkin.commands">Daily or Weekly team check-ins</a></li>
+<li><a class="reference internal" href="#module-heatherr.definitions.bots">Definitions</a></li>
+<li><a class="reference internal" href="#module-heatherr.groups.commands">Group Announcements</a></li>
+<li><a class="reference internal" href="#module-heatherr.random.commands">Random things</a></li>
+</ul>
+</li>
 </ul>
 <div class="relations">
 <h3>Related Topics</h3>

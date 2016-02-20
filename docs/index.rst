@@ -6,17 +6,33 @@
 Welcome to Heatherr's documentation!
 ====================================
 
-Contents:
+Timezone
+~~~~~~~~
 
-.. toctree::
-   :maxdepth: 2
+.. automodule:: heatherr.timezone.commands
+    :members:
 
 
+Daily or Weekly team check-ins
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Indices and tables
-==================
+.. automodule:: heatherr.checkin.commands
+    :members:
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+Definitions
+~~~~~~~~~~~
 
+.. automodule:: heatherr.definitions.bots
+    :members:
+
+Group Announcements
+~~~~~~~~~~~~~~~~~~~
+
+.. automodule:: heatherr.groups.commands
+    :members:
+
+Random things
+~~~~~~~~~~~~~
+
+.. automodule:: heatherr.random.commands
+    :members:
