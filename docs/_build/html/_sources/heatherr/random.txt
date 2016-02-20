@@ -1,5 +1,0 @@
-Random Stuff
-============
-
-.. automodule:: heatherr.random.commands
-    :members:
