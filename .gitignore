@@ -11,3 +11,4 @@ htmlcov/
 utils/
 _trial_temp/
 celerybeat-schedule
+/docs/_build/
