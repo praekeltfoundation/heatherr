@@ -13,9 +13,14 @@ slap = dispatcher.command('/slap')
 @slap.respond(r'^@(?P<target>[A-Za-z\-\.0-9]+)$')
 def slap(request, match):
     """
-    `/slap @userid`
+    Slaps someone around a bit with a large trout::
 
-    Slaps the @userid
+        /slap @userid
+
+    Returns::
+
+        @smn slaps @userid around a bit with a large trout.
+
     """
     slackaccount = SlackAccount.objects.get(
         team_id=request.POST['team_id'])
@@ -35,9 +40,22 @@ poll = dispatcher.command('/poll')
 @poll.respond(r'^(?P<question>.+)\? (?P<options>.+)$')
 def poll(request, match):
     """
-    `/poll Should we jump off a bridge? Yes, No, Maybe?`
+    Create a poll::
 
-    Create a poll
+        /poll Should we jump off a bridge? Yes, No, Maybe?
+
+    Returns::
+
+        Poll from @smn:
+        Should we jump off a bridge?
+        :one: Yes
+        :two: No
+        :three: Maybe?
+
+    It will also automatically attach as many reactions as there are options
+    to the message posted. Voting is done by people clicking the reactions
+    that match their choices.
+
     """
     team_id = request.POST['team_id']
     user_id = request.POST['user_id']

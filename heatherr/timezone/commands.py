@@ -14,9 +14,14 @@ time = dispatcher.command('/time')
 @time.respond(r'^for @?(?P<name>.+)$')
 def for_(request, match):
     """
-    `for <friend's name>`
+    Print the local timezone and time for a friend on Slack::
 
-    Print the local timezone and time for a friend on Slack.
+        /time for @smn
+
+        @smn is in Central European Time, local time is 5:29 PM
+
+    The timezone is retrieved from the person's Slack account profile.
+    If it's incorrect then have it updated there.
     """
     slackaccount = SlackAccount.objects.get(
         team_id=request.POST['team_id'])

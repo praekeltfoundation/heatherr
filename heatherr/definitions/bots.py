@@ -10,7 +10,7 @@ definitions = dispatcher.bot('Definitions')
     r'@BOTUSERID: (?P<acronym>[A-Za-z]+) is (?P<definition>.+)$')
 def add_definition(bot_user_id, bot_user_name, message, match):
     """
-    *Teach the bot a definition*:
+    Teach the bot a definition::
 
         @BOTUSERID: UNICEF is The United Nations Children's Emergency Fund
 
@@ -34,7 +34,7 @@ def add_definition(bot_user_id, bot_user_name, message, match):
                      r'@BOTUSERID: what does (?P<acronym>[A-Za-z]+) mean\??')
 def get_definition(bot_user_id, bot_user_name, message, match):
     """
-    *Ask the bot for a definition*:
+    Ask the bot for a definition::
 
         @BOTUSERID: what does UNICEF mean?
         @BOTUSERID: what is UNICEF?
@@ -59,7 +59,7 @@ def get_definition(bot_user_id, bot_user_name, message, match):
 @definitions.ambient(r'@BOTUSERID: remove (?P<pk>\d+) for (?P<acronym>[A-Za-z]+)$')  # noqa
 def remove_definition(bot_user_id, bot_user_name, message, match):
     """
-    *Remove a definition*:
+    Remove a definition::
 
         @BOTUSERID: remove 1 for UNICEF
 

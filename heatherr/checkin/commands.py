@@ -11,10 +11,17 @@ checkin = dispatcher.command('/checkin')
 @checkin.respond(r'^(?P<interval>daily|weekly)$')
 def daily_or_weekly(request, match):
     """
-    `/checkin daily` or `/checkin weekly`
+    Set a daily checkin for you for the current channel at 9am in
+    according to the timezone your Slack account profile::
 
-    Sets a daily checkin for you for the current channel at 9am in
-    according to the timezone your Slack account profile.
+        /checkin daily or
+        /checkin weekly
+
+    Returns::
+
+        I'll prompt you daily for a #testing team check-in at
+        9am your time.
+
     """
     slackaccount = SlackAccount.objects.get(
         team_id=request.POST['team_id'])
@@ -37,9 +44,15 @@ def daily_or_weekly(request, match):
 @checkin.respond(r'^list$')
 def list_checkins(request, match):
     """
-    `/checkin list`
+    List all of the checkins you're subscribed to::
 
-    List all of the checkins you're subscribed to.
+        /checkin list
+
+    Returns::
+
+        You have the following checkins set:
+        - #5, a daily checkin for #testing
+
     """
     slackaccount = SlackAccount.objects.get(
         team_id=request.POST['team_id'])
@@ -60,10 +73,15 @@ def list_checkins(request, match):
 @checkin.respond(r'^remove #?(?P<pk>\d+)$')
 def remove_checking(request, match):
     """
-    `/checkin remove #<number>`
-
     Remove a checkin, the #number matches the #number returned by
-    list
+    list::
+
+        /checkin remove #5
+
+    Returns::
+
+        Daily for #testing was removed.
+
     """
     slackaccount = SlackAccount.objects.get(
         team_id=request.POST['team_id'])

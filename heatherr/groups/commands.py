@@ -13,9 +13,15 @@ bellman = dispatcher.command('/bellman')
 @bellman.respond(r'^list$')
 def list(request, match):
     """
-    `list`
+    List the known groups::
 
-    List the known groups.
+        /bellman list
+
+    Returns::
+
+        Groups:
+        - testing (member)
+
     """
     groups = Group.objects.filter(
         slackaccount__team_id=request.POST['team_id'])
@@ -40,9 +46,14 @@ def list(request, match):
 @bellman.respond(r'^create (?P<group_name>[\w-]+)$')
 def create(request, match):
     """
-    `create <new-group-name>`
+    Create a new group::
 
-    Create a new group.
+        /bellman create foo
+
+    Returns::
+
+        The group foo has been created.
+
     """
     (group_name,) = match.groups()
     slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
@@ -58,9 +69,14 @@ def create(request, match):
 @bellman.respond(r'^join (?P<group_name>[\w-]+)$')
 def join(request, match):
     """
-    `join <group-name>`
+    Join a group::
 
-    Join a group.
+        /bellman join foo
+
+    Returns::
+
+        You've joined foo and will start receiving announcements for this group.
+
     """
     (group_name,) = match.groups()
     slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
@@ -89,9 +105,14 @@ def join(request, match):
 @bellman.respond(r'^leave (?P<group_name>[\w-]+)$')
 def leave(request, match):
     """
-    `leave <group-name>`
+    Leave a group::
 
-    Leave a group
+        /bellman leave foo
+
+    Returns::
+
+        You've been removed from foo.
+
     """
     (group_name,) = match.groups()
     slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
@@ -109,9 +130,14 @@ def leave(request, match):
 @bellman.respond(r'^members (?P<group_name>[\w-]+)$')
 def members(request, match):
     """
-    `members <group-name>`
+    List the members in a group::
 
-    List the members in a group.
+        /bellman members foo
+
+    Returns::
+
+        There are no people in foo.
+
     """
     (group_name,) = match.groups()
     slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
@@ -132,9 +158,11 @@ def members(request, match):
 @bellman.respond(r'^announce (?P<group_name>[\w-]+) (?P<message>.+)$')
 def announce(request, match):
     """
-    `announce <group-name> <your message>`
+    Broadcast a message to all the members in a group::
 
-    Broadcast a message to all the members in a group
+        /bellman announce foo hello world!
+
+
     """
     (group_name, message) = match.groups()
     slackaccount = SlackAccount.objects.get(team_id=request.POST['team_id'])
