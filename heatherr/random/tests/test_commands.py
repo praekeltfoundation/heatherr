@@ -13,8 +13,9 @@ class RandomTest(CommandTestCase):
 
     @responses.activate
     def test_slap(self):
-
-        self.mock_api_call('chat.postMessage', data={})
+        self.mock_api_call('chat.postMessage', data={
+            'ts': 1,
+        })
         self.send_command('/slap @foo')
         [call] = responses.calls
         args = unquote(unquote_plus(call.request.body))
