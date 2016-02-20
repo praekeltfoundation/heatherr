@@ -1,8 +1,8 @@
 from heatherr.groups.models import Group, Person
-from heatherr.tests import CommandTestCase
+from heatherr.tests import HeatherrTestCase, CommandTestMixin
 
 
-class GroupsCommandTestCase(CommandTestCase):
+class GroupsCommandTestCase(HeatherrTestCase, CommandTestMixin):
 
     def setUp(self):
         self.slackaccount = self.get_slack_account()

@@ -3,11 +3,12 @@ import json
 from django.test import override_settings
 from django.test.client import RequestFactory
 
-from heatherr.tests import CommandTestCase
+from heatherr.tests import (
+    HeatherrTestCase, CommandTestMixin, BotTestMixin)
 from heatherr.views import dispatcher, BotRouter, BotMessage, Dispatcher
 
 
-class TestDispatcher(CommandTestCase):
+class TestDispatcher(HeatherrTestCase, CommandTestMixin):
 
     def test_not_found_handler(self):
         self.assertCommandResponse(
@@ -33,74 +34,74 @@ class TestDispatcher(CommandTestCase):
         dispatcher.unregister('/foo')
 
 
-class TestBotRouter(CommandTestCase):
+class TestBotRouter(HeatherrTestCase, BotTestMixin):
 
     def test_bot_ambient(self):
 
         bot = BotRouter('the-bot')
 
         @bot.ambient(r'.+$')
-        def echo(bot_user_id, bot_user_name, message, match):
-            return '%s said %s' % (bot_user_name, message['text'])
+        def echo(request, match):
+            return '%s said %s' % (request.bot_name, request.message['text'])
 
-        [response] = bot.handle('the-bot-user-id', 'bot', {
+        [response] = bot.handle(self.mk_bot_request({
             'text': 'the text',
             'type': 'message',
             'channel': 'C1000',
-        })
+        }, bot_name='bot'))
         self.assertEqual(response, 'bot said the text')
 
     def test_bot_direct_mention(self):
         bot = BotRouter('the-bot')
 
         @bot.ambient('@BOTUSERID: hi there!')
-        def echo(bot_user_id, bot_user_name, message, match):
-            return 'direct mention to %s' % (bot_user_name,)
+        def echo(request, match):
+            return 'direct mention to %s' % (request.bot_name,)
 
-        [response] = bot.handle('the-bot-user-id', 'bot', {
-            'text': '<@the-bot-user-id>: hi there!',
+        [response] = bot.handle(self.mk_bot_request({
+            'text': '<@bot-user-id>: hi there!',
             'type': 'message',
             'channel': 'C1000',
-        })
-        self.assertEqual(response, 'direct mention to bot')
+        }))
+        self.assertEqual(response, 'direct mention to bot-user-name')
 
     def test_bot_mention(self):
         bot = BotRouter('the-bot')
 
         @bot.ambient('hi there @BOTUSERID')
-        def echo(bot_user_id, bot_user_name, message, match):
-            return 'mention to %s' % (bot_user_name,)
+        def echo(request, match):
+            return 'mention to %s' % (request.bot_name,)
 
-        [response] = bot.handle('the-bot-user-id', 'bot', {
-            'text': 'hi there <@the-bot-user-id>',
+        [response] = bot.handle(self.mk_bot_request({
+            'text': 'hi there <@bot-user-id>',
             'type': 'message',
             'channel': 'C1000',
-        })
-        self.assertEqual(response, 'mention to bot')
+        }))
+        self.assertEqual(response, 'mention to bot-user-name')
 
     def test_bot_direct_message(self):
         bot = BotRouter('the-bot')
 
         @bot.direct_message(r'^.+$')
-        def echo(bot_user_id, bot_user_name, message, match):
-            return '%s said %s' % (bot_user_name, message['text'])
+        def echo(request, match):
+            return '%s said %s' % (request.bot_name, request.message['text'])
 
         self.assertEqual(
-            bot.handle('the-bot-user-id', 'bot', {
+            bot.handle(self.mk_bot_request({
                 'text': 'the text',
                 'type': 'message',
                 'channel': 'D1000',
-            }),
-            ['bot said the text'])
+            })),
+            ['bot-user-name said the text'])
 
         self.assertEqual(
-            bot.handle('the-bot-user-id', 'bot', {
+            bot.handle(self.mk_bot_request({
                 'text': 'the text',
                 'type': 'message',
                 #  NOTE: this is a channel starting with C
                 #        ie, not a direct message
                 'channel': 'C1000',
-            }),
+            })),
             [])
 
     def test_bot_message(self):
@@ -124,31 +125,32 @@ class TestBotRouter(CommandTestCase):
 
     def test_received_typeless(self):
         bot = BotRouter('the-bot')
-        self.assertEqual(bot.handle('bot-user-id', 'bot', {
+        self.assertEqual(bot.handle(self.mk_bot_request({
             'ok': False
-        }), None)
+        })), None)
 
     def test_received_echo(self):
         bot = BotRouter('the-bot')
-        self.assertEqual(bot.handle('bot-user-id', 'bot', {
+        self.assertEqual(bot.handle(self.mk_bot_request({
             'user': 'bot-user-id',
             'type': 'message',
             'text': 'marco polo',
-        }), None)
+        })), None)
 
     def test_unknown_type(self):
         bot = BotRouter('the-bot')
-        self.assertEqual(bot.handle('bot-user-id', 'bot', {
+        self.assertEqual(bot.handle(self.mk_bot_request({
             'type': 'foo'
-        }), None)
+        })), None)
 
     def test_dispatcher_bots(self):
         disp = Dispatcher('slack-token')
         bot = disp.bot('the-bot')
 
         @bot.ambient(r'.+')
-        def echo(bot_user_id, bot_user_name, message, pattern):
-            return message.reply('%s: %s' % (bot_user_name, message['text']))
+        def echo(request, match):
+            return request.message.reply(
+                '%s: %s' % (request.bot_name, request.message['text']))
 
         response = disp.bots(RequestFactory().post(
             '/bots/',
@@ -173,15 +175,15 @@ class TestBotRouter(CommandTestCase):
         bot = dispatcher.bot('bot!', auto_document=True)
 
         @bot.ambient('baz')
-        def baz(bot_user_id, bot_user_name, message, match):
+        def baz(request, match):
             """This thing returns baz"""
             return 'baz'
 
-        [help_str] = bot.handle('bot-user-id', 'bot-user-name', {
+        [help_str] = bot.handle(self.mk_bot_request({
             'text': '<@bot-user-id>: help',
             'type': 'message',
             'channel': 'C1000',
             'ts': 1
-        })
+        }))
         self.assertTrue('This thing returns baz' in help_str['text'])
         self.assertTrue('<@bot-user-id>: help' in help_str['text'])

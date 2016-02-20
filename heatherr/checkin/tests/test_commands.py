@@ -1,9 +1,9 @@
 from heatherr.checkin.tests.base import CheckinTestCase
-from heatherr.tests.base import CommandTestCase
+from heatherr.tests.base import CommandTestMixin
 from heatherr.checkin.models import Checkin
 
 
-class CheckinTest(CheckinTestCase, CommandTestCase):
+class CheckinTest(CheckinTestCase, CommandTestMixin):
 
     def setUp(self):
         self.slackaccount = self.get_slack_account()

@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from heatherr.models import SlackAccount
+from heatherr.views import BotMessage, BotRequest
 
 import responses
 
@@ -32,7 +33,7 @@ class HeatherrTestCase(TestCase):
             json=data)
 
 
-class CommandTestCase(HeatherrTestCase):
+class CommandTestMixin(object):
 
     default_user_id = 'user_id'
     default_channel_id = 'channel_id'
@@ -72,3 +73,10 @@ class CommandTestCase(HeatherrTestCase):
         self.assertEqual(data['text'], expected_response)
         if response_type is not None:
             self.assertEqual(data['response_type'], response_type)
+
+
+class BotTestMixin(object):
+
+    def mk_bot_request(self, data,
+                       bot_id='bot-user-id', bot_name='bot-user-name'):
+        return BotRequest(bot_id, bot_name, BotMessage(data))

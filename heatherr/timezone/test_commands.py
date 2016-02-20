@@ -1,10 +1,10 @@
-from heatherr.tests import CommandTestCase
+from heatherr.tests import HeatherrTestCase, CommandTestMixin
 from freezegun import freeze_time
 
 import responses
 
 
-class TestTimeZone(CommandTestCase):
+class TestTimeZone(HeatherrTestCase, CommandTestMixin):
 
     def setUp(self):
         self.slackaccount = self.get_slack_account()

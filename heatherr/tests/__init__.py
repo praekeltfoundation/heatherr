@@ -1,4 +1,4 @@
-from .base import CommandTestCase, HeatherrTestCase
+from .base import HeatherrTestCase, CommandTestMixin, BotTestMixin
 
 
-__all__ = ['CommandTestCase', 'HeatherrTestCase']
+__all__ = ['HeatherrTestCase', 'CommandTestMixin', 'BotTestMixin']

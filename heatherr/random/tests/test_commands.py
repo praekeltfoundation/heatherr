@@ -1,12 +1,12 @@
 from urllib import unquote_plus, unquote
 
 from django.test import override_settings
-from heatherr.tests.base import CommandTestCase
+from heatherr.tests.base import HeatherrTestCase, CommandTestMixin
 
 import responses
 
 
-class RandomTest(CommandTestCase):
+class RandomTest(HeatherrTestCase, CommandTestMixin):
 
     def setUp(self):
         self.slackaccount = self.get_slack_account()
