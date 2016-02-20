@@ -121,6 +121,12 @@ class BotRouter(object):
             @wraps(func)
             def handler(request, match):
                 return func(request, match)
+            handler.__doc__ = '\n\n'.join([
+                inspect.cleandoc(handler.__doc__),
+                'Patterns it responds to for *%s*::' % (self.name,),
+                '\t%s' % ('\n\t'.join(patterns),)
+            ])
+
             return handler
         return decorator
 
@@ -213,6 +219,12 @@ class CommandRouter(object):
             @wraps(func)
             def handler(request, match):
                 return func(request, match)
+            handler.__doc__ = '\n\n'.join([
+                inspect.cleandoc(handler.__doc__),
+                'Patterns it responds to after *%s*::' % (self.command,),
+                '\t%s' % ('\n\t'.join(patterns),)
+            ])
+
             return handler
         return decorator
 
