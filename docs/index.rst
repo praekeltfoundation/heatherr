@@ -1,6 +1,7 @@
 .. include:: ../README.rst
 
-Writing a thing that responds to Slash commands.
+Writing a Slash command
+=======================
 
 .. code:: python
 
@@ -18,6 +19,28 @@ Writing a thing that responds to Slash commands.
 
 If you configure this for Slack then `/8ball will I find true love?` will
 randomly return either yes or no.
+
+Writing a Bot
+=============
+
+.. code:: python
+
+    from heatherr.views import dispatcher
+    from random imoprt random
+
+    bot = dispatcher.commands('Jokes')
+
+    @bot.ambient('@BOTUSERID: joke\??')
+    def knock_knock(request, match):
+        return request.message.reply('I don\'t do jokes.')
+
+
+`@BOTUSERID` is automatically replaced with the bot user id that's been
+registered with Slack. So if your bot is called `@heatherr` then `@BOTUSERID`
+will match `@heather`. On a low level Slack sends the `<@bot-user-id>` but
+the clients display this as `@heather`.
+
+`BOTUSERNAME` is also automatically replaced and that will match `heather`.
 
 Timezone
 ~~~~~~~~
