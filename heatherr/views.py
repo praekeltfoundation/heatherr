@@ -122,7 +122,7 @@ class BotRouter(object):
             def handler(request, match):
                 return func(request, match)
             handler.__doc__ = '\n\n'.join([
-                inspect.cleandoc(handler.__doc__),
+                inspect.cleandoc(handler.__doc__ or 'Undocumented'),
                 'Patterns it responds to for *%s*::' % (self.name,),
                 '\t%s' % ('\n\t'.join(patterns),)
             ])
@@ -152,7 +152,8 @@ class BotRouter(object):
         Prints out the help for the bot.
         """
         docstrings = '\n\n'.join(
-            [inspect.cleandoc(func.__doc__) for func in self.registry_ambient])
+            [inspect.cleandoc(func.__doc__ or 'Undocumented')
+             for func in self.registry_ambient])
 
         help_str = 'Help for _%s_\n\n%s' % (self.name, docstrings)
         reply = help_str\
