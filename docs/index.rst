@@ -37,10 +37,10 @@ Writing a Bot
 
 `@BOTUSERID` is automatically replaced with the bot user id that's been
 registered with Slack. So if your bot is called `@heatherr` then `@BOTUSERID`
-will match `@heather`. On a low level Slack sends the `<@bot-user-id>` but
-the clients display this as `@heather`.
+will match `@heatherr`. On a low level Slack sends the `<@bot-user-id>` but
+the clients display this as `@heatherr`.
 
-`BOTUSERNAME` is also automatically replaced and that will match `heather`.
+`BOTUSERNAME` is also automatically replaced and that will match `heatherr`.
 
 Timezone
 ~~~~~~~~
