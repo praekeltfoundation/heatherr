@@ -75,7 +75,8 @@ def join(request, match):
 
     Returns::
 
-        You've joined foo and will start receiving announcements for this group.
+        You've joined foo and will start receiving announcements for
+        this group.
 
     """
     (group_name,) = match.groups()
