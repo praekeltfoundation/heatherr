@@ -26,7 +26,7 @@ Writing a Bot
 .. code:: python
 
     from heatherr.views import dispatcher
-    from random imoprt random
+    from random import random
 
     bot = dispatcher.commands('Jokes')
 
