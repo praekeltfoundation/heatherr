@@ -17,8 +17,17 @@ def add_definition(request, match):
     @BOTUSERID will respond by adding a :thumbsup: reaction to your message
     once the definition has been added.
     """
+
+    ignored_words = [
+        'what',
+    ]
+
     slackaccount = SlackAccount.objects.get(bot_user_id=request.bot_id)
     data = match.groupdict()
+
+    if data['acronym'].lower() in ignored_words:
+        return
+
     Acronym.objects.get_or_create(slackaccount=slackaccount,
                                   acronym=data['acronym'],
                                   definition=data['definition'])
