@@ -55,19 +55,22 @@ def authorize(request):
     })
     data = response.json()
 
-    account, created = SlackAccount.objects.update_or_create(
-        team_id=data['team_id'], defaults={
-            'access_token': data['access_token'],
-            'scope': data['scope'],
-            'team_name': data['team_name'],
-            'incoming_webhook_url': data['incoming_webhook']['url'],
-            'incoming_webhook_channel': data['incoming_webhook']['channel'],
-            'incoming_webhook_configuration_url': (
+    if SlackAccount.objects.filter(team_id=data['team_id']).exists():
+        account = SlackAccount.objects.get(team_id=data['team_id'])
+    else:
+        account = SlackAccount.objects.create(
+            team_id=data['team_id'],
+            access_token=data['access_token'],
+            scope=data['scope'],
+            team_name=data['team_name'],
+            incoming_webhook_url=data['incoming_webhook']['url'],
+            incoming_webhook_channel=data['incoming_webhook']['channel'],
+            incoming_webhook_configuration_url=(
                 data['incoming_webhook']['configuration_url']),
-            'bot_user_id': data['bot']['bot_user_id'],
-            'bot_access_token': data['bot']['bot_access_token'],
-        }
-    )
+            bot_user_id=data['bot']['bot_user_id'],
+            bot_access_token=data['bot']['bot_access_token']
+        )
+
     account.users.add(request.user)
 
     messages.success(request, "Heatherr is now linked to %s." % (
