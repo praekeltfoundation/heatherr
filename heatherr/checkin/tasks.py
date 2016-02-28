@@ -45,4 +45,5 @@ def check_checkin(checkin):
             'templates/checkin-%s-template.txt' % (checkin.interval,))
     )
     checkin.last_checkin = timezone.now()
+    checkin.save()
     return response
