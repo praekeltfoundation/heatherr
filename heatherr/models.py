@@ -11,7 +11,7 @@ class SlackAccount(models.Model):
     OFFLINE = 'offline'
     ERROR = 'error'
 
-    user = models.ForeignKey('auth.user', null=True)
+    users = models.ManyToManyField('auth.user')
     access_token = models.CharField(max_length=255)
     scope = models.CharField(max_length=255)
     team_name = models.CharField(max_length=255)

@@ -56,7 +56,7 @@ def authorize(request):
     data = response.json()
 
     account, created = SlackAccount.objects.update_or_create(
-        user=request.user, team_id=data['team_id'], defaults={
+        team_id=data['team_id'], defaults={
             'access_token': data['access_token'],
             'scope': data['scope'],
             'team_name': data['team_name'],
@@ -68,6 +68,7 @@ def authorize(request):
             'bot_access_token': data['bot']['bot_access_token'],
         }
     )
+    account.users.add(request.user)
 
     messages.success(request, "Heatherr is now linked to %s." % (
         account.team_name,))

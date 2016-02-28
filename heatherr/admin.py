@@ -5,7 +5,7 @@ from .models import SlackAccount
 
 class SlackAccountAdmin(admin.ModelAdmin):
     readonly_fields = (
-        'user',
+        'users',
         'access_token',
         'scope',
         'team_name',
