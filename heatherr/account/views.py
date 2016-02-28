@@ -57,6 +57,10 @@ def authorize(request):
 
     if SlackAccount.objects.filter(team_id=data['team_id']).exists():
         account = SlackAccount.objects.get(team_id=data['team_id'])
+        messages.success(
+            request,
+            ("Heatherr was already linked to %s. It's now also "
+             "been added to your account") % (account.team_name,))
     else:
         account = SlackAccount.objects.create(
             team_id=data['team_id'],
@@ -70,11 +74,11 @@ def authorize(request):
             bot_user_id=data['bot']['bot_user_id'],
             bot_access_token=data['bot']['bot_access_token']
         )
+        messages.success(request, "Heatherr is now linked to %s." % (
+            account.team_name,))
 
     account.users.add(request.user)
 
-    messages.success(request, "Heatherr is now linked to %s." % (
-        account.team_name,))
     return redirect(reverse('accounts:profile'))
 
 
