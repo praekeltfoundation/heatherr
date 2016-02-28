@@ -1,18 +1,13 @@
-from django.test import TestCase
-from django.contrib.auth.models import User
-
 import responses
 
-from heatherr.models import SlackAccount
+from heatherr.tests.base import HeatherrTestCase
 
 
-class SlackAccountTest(TestCase):
+class SlackAccountTest(HeatherrTestCase):
 
     @responses.activate
     def test_api_call(self):
-        user = User.objects.create_user(
-            'username', 'user@example.org', 'password')
-        slackaccount = SlackAccount.objects.create(user=user)
+        slackaccount = self.get_slack_account()
         slackaccount.access_token = 'the-access-token'
         slackaccount.save()
 

@@ -24,7 +24,8 @@ class HeatherrTestCase(TestCase):
     def get_slack_account(self, username=None, team_id=None):
         user = self.get_user_account(username)
         slackaccount, _ = SlackAccount.objects.get_or_create(
-            user=user, team_id=(team_id or self.default_team_id))
+            team_id=(team_id or self.default_team_id))
+        slackaccount.users.add(user)
         return slackaccount
 
     def mock_api_call(self, method, data):

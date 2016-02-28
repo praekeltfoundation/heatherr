@@ -3,12 +3,13 @@ import responses
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.conf import settings
-from django.test import TestCase, override_settings
+from django.test import override_settings
 
 from heatherr.models import SlackAccount
+from heatherr.tests.base import HeatherrTestCase
 
 
-class TestAccountViews(TestCase):
+class TestAccountViews(HeatherrTestCase):
 
     def setUp(self):
         self.user = User.objects.create_user(
@@ -29,7 +30,7 @@ class TestAccountViews(TestCase):
 
     def test_profile(self):
         self.client.login(username='username', password='password')
-        SlackAccount.objects.create(user=self.user)
+        self.get_slack_account()
         response = self.client.get(reverse('accounts:profile'))
         self.assertTemplateUsed(response, 'account/profile.html')
 
@@ -82,7 +83,7 @@ class TestAccountViews(TestCase):
 
     def test_account_view(self):
         self.client.login(username='username', password='password')
-        slackaccount = SlackAccount.objects.create(user=self.user)
+        slackaccount = self.get_slack_account()
         response = self.client.get(reverse('accounts:slack-update', kwargs={
             'pk': slackaccount.pk,
         }))
@@ -95,7 +96,7 @@ class TestAccountViews(TestCase):
             json={})
 
         self.client.login(username='username', password='password')
-        slackaccount = SlackAccount.objects.create(user=self.user)
+        slackaccount = self.get_slack_account()
         self.assertEqual(slackaccount.bot_enabled, False)
         with override_settings(CELERY_ALWAYS_EAGER=True):
             self.client.post(
@@ -114,7 +115,7 @@ class TestAccountViews(TestCase):
             json={}, status=404)
 
         self.client.login(username='username', password='password')
-        slackaccount = SlackAccount.objects.create(user=self.user)
+        slackaccount = self.get_slack_account()
 
         with override_settings(CELERY_ALWAYS_EAGER=True):
             print self.client.post(
@@ -133,8 +134,9 @@ class TestAccountViews(TestCase):
             json={})
 
         self.client.login(username='username', password='password')
-        slackaccount = SlackAccount.objects.create(
-            user=self.user, bot_enabled=True)
+        slackaccount = self.get_slack_account()
+        slackaccount.bot_enabled = True
+        slackaccount.save()
 
         with override_settings(CELERY_ALWAYS_EAGER=True):
             self.client.post(
