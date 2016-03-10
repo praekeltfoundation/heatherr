@@ -46,3 +46,21 @@ class RandomTest(HeatherrTestCase, CommandTestMixin):
         self.assertTrue('name=one' in reaction1.request.body)
         self.assertTrue('name=two' in reaction2.request.body)
         self.assertTrue('name=three' in reaction3.request.body)
+
+    @responses.activate
+    def test_binary_poll(self):
+        self.mock_api_call('chat.postMessage', data={
+            'ts': 1,
+        })
+        self.mock_api_call('reactions.add', data={
+            'ok': True,
+        })
+        with override_settings(CELERY_ALWAYS_EAGER=True):
+            self.send_command(
+                '/poll Should we jump off a bridge?')
+
+        [post, reaction1, reaction2] = responses.calls
+        self.assertTrue('bridge' in post.request.body)
+
+        self.assertTrue('name=thumbsup' in reaction1.request.body)
+        self.assertTrue('name=thumbsdown' in reaction2.request.body)

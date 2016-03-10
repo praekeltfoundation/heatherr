@@ -31,6 +31,18 @@ def post_poll(team_id, user_id, channel_id, question, options):
         as_user=True,
     )
 
+    if not options:
+        slackaccount.api_call(
+            'reactions.add',
+            name='thumbsup',
+            channel=channel_id,
+            timestamp=str(resp['ts']))
+        slackaccount.api_call(
+            'reactions.add',
+            name='thumbsdown',
+            channel=channel_id,
+            timestamp=str(resp['ts']))
+
     for idx, option in enumerate(options):
         slackaccount.api_call(
             'reactions.add',

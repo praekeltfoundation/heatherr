@@ -37,7 +37,8 @@ def slap(request, match):
 poll = dispatcher.command('/poll')
 
 
-@poll.respond(r'^(?P<question>.+)\? (?P<options>.+)$')
+@poll.respond(r'^(?P<question>.+)\? (?P<options>.+)$',
+              r'^(?P<question>.+)\?$')
 def poll(request, match):
     """
     Create a poll::
@@ -60,7 +61,11 @@ def poll(request, match):
     team_id = request.POST['team_id']
     user_id = request.POST['user_id']
     channel_id = request.POST['channel_id']
-    (question, option_str) = match.groups()
-    options = re.split(r',\s*|\sor\s+', option_str)[:10]
-
+    data = match.groupdict()
+    question = data['question']
+    option_str = data.get('options', None)
+    if option_str:
+        options = re.split(r',\s*|\sor\s+', option_str)[:10]
+    else:
+        options = []
     post_poll.delay(team_id, user_id, channel_id, question, options)
