@@ -20,9 +20,13 @@ def connect_bot(slackaccount_pk):
         response.raise_for_status()
         slackaccount.bot_enabled = True
         slackaccount.bot_status = SlackAccount.CONNECTING
-    except requests.exceptions.HTTPError:
-        slackaccount.bot_enabled = False
-        slackaccount.bot_status = SlackAccount.ERROR
+        slackaccount.bot_error_count = 0
+    except (requests.exceptions.HTTPError,), e:
+        slackaccount.bot_error_count += 1
+        slackaccount.bot_error_message = str(e)
+        if slackaccount.bot_error_count > settings.BOT_MAX_ERROR_COUNT:
+            slackaccount.bot_enabled = False
+            slackaccount.bot_status = SlackAccount.ERROR
 
     slackaccount.save()
 

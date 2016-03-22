@@ -116,6 +116,8 @@ class TestAccountViews(HeatherrTestCase):
 
         self.client.login(username='username', password='password')
         slackaccount = self.get_slack_account()
+        slackaccount.bot_error_count = settings.BOT_MAX_ERROR_COUNT
+        slackaccount.save()
 
         with override_settings(CELERY_ALWAYS_EAGER=True):
             print self.client.post(

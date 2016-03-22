@@ -98,6 +98,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ.get(
 
 WSGI_APPLICATION = 'heatherr.wsgi.application'
 HEATHERRD_URL = 'http://127.0.0.1:8001/'
+BOT_MAX_ERROR_COUNT = 5
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases

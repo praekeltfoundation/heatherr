@@ -28,6 +28,8 @@ class SlackAccount(models.Model):
         (OFFLINE, 'Offline'),
         (ERROR, 'Error'),
     ], default=OFFLINE)
+    bot_error_count = models.IntegerField(blank=True, default=0)
+    bot_error_message = models.TextField(blank=True)
     bot_checkin = models.DateTimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
