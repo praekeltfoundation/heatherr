@@ -191,7 +191,7 @@ class BotRouter(object):
             for pattern in patterns:
                 p1 = re.sub('@BOTUSERID', '<@%s>' % (request.bot_id,), pattern)
                 p2 = re.sub('BOTUSERNAME', request.bot_name, p1)
-                match = re.match(p2, request.message['text'] or '')
+                match = re.match(p2, request.message.get('text') or '')
                 if match:
                     responses.append(handler(request, match))
         return responses
